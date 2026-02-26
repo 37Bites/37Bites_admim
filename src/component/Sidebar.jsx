@@ -1,194 +1,303 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { logout } from "../features/auth/authSlice";
-
+import { NavLink } from "react-router-dom";
 import {
-  Settings,
-  LogOut,
-  User,
   Menu,
   X,
-  Home,
-  Utensils,
+  ChevronDown,
+  ChevronRight,
+  LayoutDashboard,
   ClipboardList,
+  Store,
+  Calculator,
   Users,
-  ShoppingCart
+  BarChart3,
+  Map,
+  MessageCircle,
+  User,
+  Shield,
+  Layers,
+  FileText,
+  Package,
+  Sliders,
+  Percent,
+  CreditCard,
+  Truck,
+  UserCog,
+  Database,
+  Megaphone,
+  Ticket,
+  Gift,
+  Wrench
 } from "lucide-react";
 
-import { NavLink } from "react-router-dom";
-
 export default function Sidebar() {
-
   const [open, setOpen] = useState(false);
-  const dispatch = useDispatch();
+  const [dropdown, setDropdown] = useState(null);
+
+  const toggle = (name) => {
+    setDropdown(dropdown === name ? null : name);
+  };
+
+  const linkClass = ({ isActive }) =>
+    `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition
+    ${
+      isActive
+        ? "bg-white text-orange-600 font-semibold"
+        : "text-white hover:bg-orange-600/80"
+    }`;
+
+  const subLinkClass = ({ isActive }) =>
+    `block pl-10 py-1.5 text-sm transition
+    ${
+      isActive
+        ? "text-white font-medium"
+        : "text-orange-100 hover:text-white"
+    }`;
 
   return (
     <>
-      {/* Mobile Button */}
+      {/* Mobile Toggle */}
       <button
         onClick={() => setOpen(!open)}
-        className="lg:hidden fixed top-4 left-4 z-50 bg-orange-500 text-white p-2 rounded-md shadow-md"
+        className="lg:hidden fixed top-4 left-4 z-50 bg-orange-500 text-white p-2 rounded-md"
       >
-        {open ? <X /> : <Menu />}
+        {open ? <X size={20} /> : <Menu size={20} />}
       </button>
 
-
-      {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-screen z-40
-        bg-gradient-to-b from-orange-500 to-orange-700
-        text-white shadow-xl
-        transition-all duration-300
-        ${open ? "w-64" : "w-0"}
-        overflow-hidden lg:w-64`}
+        className={`fixed top-0 left-0 h-screen w-72 bg-gradient-to-b
+        from-orange-500 via-orange-600 to-orange-700 text-white shadow-xl z-40
+        transform transition-transform duration-300
+        ${open ? "translate-x-0" : "-translate-x-full"}
+        lg:translate-x-0`}
       >
-
-        {/* Logo */}
-        <NavLink to="/">
-       <div className="px-6 py-5 border-b border-orange-200 flex items-center gap-4 bg-orange-500">
-  
-  {/* Logo */}
-  <div className="h-14 w-14 rounded-2xl bg-orange-100 flex items-center justify-center shadow-sm">
-    <img
-      src="/logo.jpeg"
-      alt="37BITES"
-      className="h-10 w-10 object-contain rounded-xl"
-    />
-  </div>
-
-  {/* Brand Info */}
-  <div className="flex flex-col">
-    <h1 className="text-lg font-bold text-white tracking-wide">
-      37BITES
-    </h1>
-    <p className="text-xs text-white font-medium">
-      Restaurant Admin
-    </p>
-  </div>
-
-</div>
-        </NavLink>
-
-
-        {/* Menu */}
-        <div className="px-3 mt-4 space-y-2 h-[calc(100%-200px)] overflow-y-auto">
-
-
-          <NavLink
-            to="/dashboard"
-            className={({isActive}) =>
-              `flex items-center gap-3 px-4 py-3 rounded-xl transition
-              ${isActive
-                ? "bg-white text-orange-600 font-semibold"
-                : "hover:bg-orange-600"
-              }`
-            }
-          >
-            <Home className="w-5 h-5"/>
-            Dashboard
-          </NavLink>
-
-
-
-          <NavLink
-            to="/menu"
-            className={({isActive}) =>
-              `flex items-center gap-3 px-4 py-3 rounded-xl transition
-              ${isActive
-                ? "bg-white text-orange-600 font-semibold"
-                : "hover:bg-orange-600"
-              }`
-            }
-          >
-            <Utensils className="w-5 h-5"/>
-            Food Menu
-          </NavLink>
-
-
-
-          <NavLink
-            to="/orders"
-            className={({isActive}) =>
-              `flex items-center gap-3 px-4 py-3 rounded-xl transition
-              ${isActive
-                ? "bg-white text-orange-600 font-semibold"
-                : "hover:bg-orange-600"
-              }`
-            }
-          >
-            <ClipboardList className="w-5 h-5"/>
-            Orders
-          </NavLink>
-
-
-
-          <NavLink
-            to="/users"
-            className={({isActive}) =>
-              `flex items-center gap-3 px-4 py-3 rounded-xl transition
-              ${isActive
-                ? "bg-white text-orange-600 font-semibold"
-                : "hover:bg-orange-600"
-              }`
-            }
-          >
-            <Users className="w-5 h-5"/>
-            Customers
-          </NavLink>
-
-
-
-          <NavLink
-            to="/cart"
-            className={({isActive}) =>
-              `flex items-center gap-3 px-4 py-3 rounded-xl transition
-              ${isActive
-                ? "bg-white text-orange-600 font-semibold"
-                : "hover:bg-orange-600"
-              }`
-            }
-          >
-            <ShoppingCart className="w-5 h-5"/>
-            Cart
-          </NavLink>
-
-
+        <div className="px-6 py-5 border-b border-orange-400">
+          <h1 className="text-xl font-bold">37BITES</h1>
+          <p className="text-xs opacity-80">Restaurant Admin</p>
         </div>
 
+        <div className="px-4 py-4 space-y-6 overflow-y-auto h-[calc(100vh-80px)]">
 
+          {/* ================= ORDERS ================= */}
+          <div>
+            <h2 className="text-xs uppercase text-orange-200 mb-3 font-semibold">
+              Orders
+            </h2>
 
-        {/* Bottom Menu */}
-        <div className="absolute bottom-0 w-full border-t border-orange-400 p-3 space-y-1">
+            <NavLink to="/dashboard" className={linkClass}>
+              <LayoutDashboard size={16} /> Dashboard
+            </NavLink>
 
+            <NavLink to="/orders" className={linkClass}>
+              <ClipboardList size={16} /> Orders
+            </NavLink>
 
-          <NavLink to="/profile"
-            className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-orange-600"
-          >
-            <User className="w-5 h-5"/>
-            Profile
-          </NavLink>
+            <NavLink to="/stores" className={linkClass}>
+              <Store size={16} /> Stores
+            </NavLink>
 
+            <NavLink to="/accounting" className={linkClass}>
+              <Calculator size={16} /> Accounting
+            </NavLink>
 
+            <NavLink to="/customers" className={linkClass}>
+              <Users size={16} /> Customers
+            </NavLink>
 
-          <NavLink to="/setting"
-            className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-orange-600"
-          >
-            <Settings className="w-5 h-5"/>
-            Settings
-          </NavLink>
+            {/* Reports Dropdown */}
+            <button
+              onClick={() => toggle("reports")}
+              className="flex items-center justify-between w-full px-4 py-2.5 rounded-lg hover:bg-orange-600/80"
+            >
+              <span className="flex items-center gap-3">
+                <BarChart3 size={16} /> Reports
+              </span>
+              {dropdown === "reports" ? (
+                <ChevronDown size={16} />
+              ) : (
+                <ChevronRight size={16} />
+              )}
+            </button>
 
+            {dropdown === "reports" && (
+              <>
+                <NavLink to="/product-reviews" className={subLinkClass}>
+                  • Product Reviews
+                </NavLink>
+                <NavLink to="/product-performance" className={subLinkClass}>
+                  • Product Performance Reports
+                </NavLink>
+              </>
+            )}
 
+            <NavLink to="/admin-service-area" className={linkClass}>
+              <Map size={16} /> Admin Service Area
+            </NavLink>
 
-          <button
-            onClick={() => dispatch(logout())}
-            className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-red-200 hover:bg-red-500/20"
-          >
-            <LogOut className="w-5 h-5"/>
-            Logout
-          </button>
+            {/* Chat Dropdown */}
+            <button
+              onClick={() => toggle("chat")}
+              className="flex items-center justify-between w-full px-4 py-2.5 rounded-lg hover:bg-orange-600/80"
+            >
+              <span className="flex items-center gap-3">
+                <MessageCircle size={16} /> Chat
+              </span>
+              {dropdown === "chat" ? (
+                <ChevronDown size={16} />
+              ) : (
+                <ChevronRight size={16} />
+              )}
+            </button>
+
+            {dropdown === "chat" && (
+              <>
+                <NavLink to="/chat-user-vendor" className={subLinkClass}>
+                  • User / Vendor
+                </NavLink>
+                <NavLink to="/chat-user-driver" className={subLinkClass}>
+                  • User / Driver
+                </NavLink>
+              </>
+            )}
+          </div>
+
+          {/* ================= SETTINGS ================= */}
+          <div>
+            <h2 className="text-xs uppercase text-orange-200 mb-3 font-semibold">
+              Settings
+            </h2>
+
+            <NavLink to="/profile" className={linkClass}>
+              <User size={16} /> Profile
+            </NavLink>
+
+            <NavLink to="/security" className={linkClass}>
+              <Shield size={16} /> Security
+            </NavLink>
+
+            {/* Styling Dropdown */}
+            <button
+              onClick={() => toggle("styling")}
+              className="flex items-center justify-between w-full px-4 py-2.5 rounded-lg hover:bg-orange-600/80"
+            >
+              <span className="flex items-center gap-3">
+                <Layers size={16} /> Styling
+              </span>
+              {dropdown === "styling" ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+            </button>
+
+            {dropdown === "styling" && (
+              <>
+                <NavLink to="/app-styling" className={subLinkClass}>
+                  • App Styling
+                </NavLink>
+                <NavLink to="/web-styling" className={subLinkClass}>
+                  • Web Styling
+                </NavLink>
+              </>
+            )}
+
+            {/* CMS Dropdown */}
+            <button
+              onClick={() => toggle("cms")}
+              className="flex items-center justify-between w-full px-4 py-2.5 rounded-lg hover:bg-orange-600/80"
+            >
+              <span className="flex items-center gap-3">
+                <FileText size={16} /> CMS
+              </span>
+              {dropdown === "cms" ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+            </button>
+
+            {dropdown === "cms" && (
+              <>
+                <NavLink to="/pages" className={subLinkClass}>• Pages</NavLink>
+                <NavLink to="/emails" className={subLinkClass}>• Emails</NavLink>
+                <NavLink to="/notifications" className={subLinkClass}>• Notifications</NavLink>
+                <NavLink to="/sms" className={subLinkClass}>• SMS</NavLink>
+                <NavLink to="/reasons" className={subLinkClass}>• Reasons</NavLink>
+              </>
+            )}
+
+            {/* Manage Delivery Dropdown */}
+            <button
+              onClick={() => toggle("delivery")}
+              className="flex items-center justify-between w-full px-4 py-2.5 rounded-lg hover:bg-orange-600/80"
+            >
+              <span className="flex items-center gap-3">
+                <Truck size={16} /> Manage Delivery
+              </span>
+              {dropdown === "delivery" ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+            </button>
+
+            {dropdown === "delivery" && (
+              <>
+                <NavLink to="/delivery-options" className={subLinkClass}>
+                  • Delivery Options
+                </NavLink>
+                <NavLink to="/delivery-slot" className={subLinkClass}>
+                  • Delivery Slot
+                </NavLink>
+              </>
+            )}
+          </div>
+
+          {/* ================= MARKETING ================= */}
+          <div>
+            <h2 className="text-xs uppercase text-orange-200 mb-3 font-semibold">
+              Marketing
+            </h2>
+
+            {/* Banners Dropdown */}
+            <button
+              onClick={() => toggle("banners")}
+              className="flex items-center justify-between w-full px-4 py-2.5 rounded-lg hover:bg-orange-600/80"
+            >
+              <span className="flex items-center gap-3">
+                <Megaphone size={16} /> Banners
+              </span>
+              {dropdown === "banners" ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+            </button>
+
+            {dropdown === "banners" && (
+              <>
+                <NavLink to="/web-banners" className={subLinkClass}>
+                  • Web Banners
+                </NavLink>
+                <NavLink to="/mobile-banners" className={subLinkClass}>
+                  • Mobile Banners
+                </NavLink>
+              </>
+            )}
+
+            <NavLink to="/promocode" className={linkClass}>
+              <Ticket size={16} /> Promocode
+            </NavLink>
+
+            <NavLink to="/loyalty-cards" className={linkClass}>
+              <Gift size={16} /> Loyalty Cards
+            </NavLink>
+
+            <NavLink to="/campaigns" className={linkClass}>
+              <BarChart3 size={16} /> Campaigns
+            </NavLink>
+          </div>
+
+          {/* ================= EXTRA ================= */}
+          <div>
+            <h2 className="text-xs uppercase text-orange-200 mb-3 font-semibold">
+              Extra
+            </h2>
+
+            <NavLink to="/tools" className={linkClass}>
+              <Wrench size={16} /> Tools
+            </NavLink>
+
+            <NavLink to="/db-audit-logs" className={linkClass}>
+              <Database size={16} /> DB Audit Logs
+            </NavLink>
+          </div>
 
         </div>
-
       </div>
     </>
   );
