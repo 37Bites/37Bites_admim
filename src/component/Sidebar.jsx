@@ -92,7 +92,7 @@ export default function Sidebar() {
               <ClipboardList size={16} /> Orders
             </NavLink>
 
-            <NavLink to="/stores" className={linkClass}>
+            <NavLink to="/dashboard/stores" className={linkClass}>
               <Store size={16} /> Stores
             </NavLink>
 
@@ -162,84 +162,120 @@ export default function Sidebar() {
           </div>
 
           {/* ================= SETTINGS ================= */}
-          <div>
-            <h2 className="text-xs uppercase text-orange-200 mb-3 font-semibold">
-              Settings
-            </h2>
+<div>
+  <h2 className="text-xs uppercase text-orange-200 mb-3 font-semibold">
+    Settings
+  </h2>
 
-            <NavLink to="/profile" className={linkClass}>
-              <User size={16} /> Profile
-            </NavLink>
+  <NavLink to="/profile" className={linkClass}>
+    <User size={16} /> Profile
+  </NavLink>
 
-            <NavLink to="/security" className={linkClass}>
-              <Shield size={16} /> Security
-            </NavLink>
+  {/* Accounting Security */}
+  <NavLink to="/accounting-security" className={linkClass}>
+    <Shield size={16} /> Accounting Security
+  </NavLink>
 
-            {/* Styling Dropdown */}
-            <button
-              onClick={() => toggle("styling")}
-              className="flex items-center justify-between w-full px-4 py-2.5 rounded-lg hover:bg-orange-600/80"
-            >
-              <span className="flex items-center gap-3">
-                <Layers size={16} /> Styling
-              </span>
-              {dropdown === "styling" ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-            </button>
+  {/* Customize */}
+  <NavLink to="/customize" className={linkClass}>
+    <Sliders size={16} /> Customize
+  </NavLink>
 
-            {dropdown === "styling" && (
-              <>
-                <NavLink to="/app-styling" className={subLinkClass}>
-                  • App Styling
-                </NavLink>
-                <NavLink to="/web-styling" className={subLinkClass}>
-                  • Web Styling
-                </NavLink>
-              </>
-            )}
+  {/* Catalog */}
+  <NavLink to="/catalog" className={linkClass}>
+    <Package size={16} /> Catalog
+  </NavLink>
 
-            {/* CMS Dropdown */}
-            <button
-              onClick={() => toggle("cms")}
-              className="flex items-center justify-between w-full px-4 py-2.5 rounded-lg hover:bg-orange-600/80"
-            >
-              <span className="flex items-center gap-3">
-                <FileText size={16} /> CMS
-              </span>
-              {dropdown === "cms" ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-            </button>
+  {/* Configurations */}
+  <NavLink to="/configurations" className={linkClass}>
+    <Layers size={16} /> Configurations
+  </NavLink>
 
-            {dropdown === "cms" && (
-              <>
-                <NavLink to="/pages" className={subLinkClass}>• Pages</NavLink>
-                <NavLink to="/emails" className={subLinkClass}>• Emails</NavLink>
-                <NavLink to="/notifications" className={subLinkClass}>• Notifications</NavLink>
-                <NavLink to="/sms" className={subLinkClass}>• SMS</NavLink>
-                <NavLink to="/reasons" className={subLinkClass}>• Reasons</NavLink>
-              </>
-            )}
+  {/* Tax */}
+  <NavLink to="/tax" className={linkClass}>
+    <Percent size={16} /> Tax
+  </NavLink>
 
-            {/* Manage Delivery Dropdown */}
-            <button
-              onClick={() => toggle("delivery")}
-              className="flex items-center justify-between w-full px-4 py-2.5 rounded-lg hover:bg-orange-600/80"
-            >
-              <span className="flex items-center gap-3">
-                <Truck size={16} /> Manage Delivery
-              </span>
-              {dropdown === "delivery" ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-            </button>
+  {/* Payment Options */}
+  <NavLink to="/payment-options" className={linkClass}>
+    <CreditCard size={16} /> Payment Options
+  </NavLink>
 
-            {dropdown === "delivery" && (
-              <>
-                <NavLink to="/delivery-options" className={subLinkClass}>
-                  • Delivery Options
-                </NavLink>
-                <NavLink to="/delivery-slot" className={subLinkClass}>
-                  • Delivery Slot
-                </NavLink>
-              </>
-            )}
-          </div>
+  {/* Manage Roles */}
+  <NavLink to="/manage-roles" className={linkClass}>
+    <UserCog size={16} /> Manage Roles
+  </NavLink>
+
+  {/* Cache Control */}
+  <NavLink to="/cache-control" className={linkClass}>
+    <Database size={16} /> Cache Control
+  </NavLink>
+
+  {/* Existing Styling Dropdown */}
+  <button
+    onClick={() => toggle("styling")}
+    className="flex items-center justify-between w-full px-4 py-2.5 rounded-lg hover:bg-orange-600/80"
+  >
+    <span className="flex items-center gap-3">
+      <Layers size={16} /> Styling
+    </span>
+    {dropdown === "styling" ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+  </button>
+
+  {dropdown === "styling" && (
+    <>
+      <NavLink to="/app-styling" className={subLinkClass}>
+        • App Styling
+      </NavLink>
+      <NavLink to="/web-styling" className={subLinkClass}>
+        • Web Styling
+      </NavLink>
+    </>
+  )}
+
+  {/* CMS Dropdown */}
+  <button
+    onClick={() => toggle("cms")}
+    className="flex items-center justify-between w-full px-4 py-2.5 rounded-lg hover:bg-orange-600/80"
+  >
+    <span className="flex items-center gap-3">
+      <FileText size={16} /> CMS
+    </span>
+    {dropdown === "cms" ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+  </button>
+
+  {dropdown === "cms" && (
+    <>
+      <NavLink to="/pages" className={subLinkClass}>• Pages</NavLink>
+      <NavLink to="/emails" className={subLinkClass}>• Emails</NavLink>
+      <NavLink to="/notifications" className={subLinkClass}>• Notifications</NavLink>
+      <NavLink to="/sms" className={subLinkClass}>• SMS</NavLink>
+      <NavLink to="/reasons" className={subLinkClass}>• Reasons</NavLink>
+    </>
+  )}
+
+  {/* Manage Delivery Dropdown */}
+  <button
+    onClick={() => toggle("delivery")}
+    className="flex items-center justify-between w-full px-4 py-2.5 rounded-lg hover:bg-orange-600/80"
+  >
+    <span className="flex items-center gap-3">
+      <Truck size={16} /> Manage Delivery
+    </span>
+    {dropdown === "delivery" ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+  </button>
+
+  {dropdown === "delivery" && (
+    <>
+      <NavLink to="/delivery-options" className={subLinkClass}>
+        • Delivery Options
+      </NavLink>
+      <NavLink to="/delivery-slot" className={subLinkClass}>
+        • Delivery Slot
+      </NavLink>
+    </>
+  )}
+</div>
 
           {/* ================= MARKETING ================= */}
           <div>
