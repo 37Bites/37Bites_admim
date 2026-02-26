@@ -30,7 +30,7 @@ export default function AdminLogin() {
         // localStorage.setItem("admin", JSON.stringify(res.data.admin));
 
         // Redirect to admin dashboard
-        navigate("/admin");
+        navigate("/dashboard");
       }
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong");
