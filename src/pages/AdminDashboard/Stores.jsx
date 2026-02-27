@@ -183,14 +183,14 @@ export default function Stores() {
             </thead>
             <tbody>
               {filtered.map((r) => (
-                <tr key={r._id} className="border-t hover:bg-gray-50">
+                <tr key={r.id} className="border-t hover:bg-gray-50">
                   <td className="p-3 font-medium">{r.name}</td>
 
                   <td className="p-3">
                     <select
                       value={r.status}
                       onChange={(e) =>
-                        handleStatusChange(r._id, e.target.value)
+                        handleStatusChange(r.id, e.target.value)
                       }
                       className="border rounded px-2 py-1 text-xs"
                     >
