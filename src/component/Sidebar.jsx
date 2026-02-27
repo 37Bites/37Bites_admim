@@ -88,19 +88,19 @@ export default function Sidebar() {
               <LayoutDashboard size={16} /> Dashboard
             </NavLink>
 
-            <NavLink to="/orders" className={linkClass}>
+            <NavLink to="/Admindashboard/orders" className={linkClass}>
               <ClipboardList size={16} /> Orders
             </NavLink>
 
-            <NavLink to="/dashboard/stores" className={linkClass}>
+            <NavLink to="/Admindashboard/stores" className={linkClass}>
               <Store size={16} /> Stores
             </NavLink>
 
-            <NavLink to="/accounting" className={linkClass}>
+            <NavLink to="/Admindashboard/accounting" className={linkClass}>
               <Calculator size={16} /> Accounting
             </NavLink>
 
-            <NavLink to="/customers" className={linkClass}>
+            <NavLink to="/Admindashboard/customers" className={linkClass}>
               <Users size={16} /> Customers
             </NavLink>
 
@@ -121,16 +121,16 @@ export default function Sidebar() {
 
             {dropdown === "reports" && (
               <>
-                <NavLink to="/product-reviews" className={subLinkClass}>
+                <NavLink to="/Admindashboard/product-reviews" className={subLinkClass}>
                   • Product Reviews
                 </NavLink>
-                <NavLink to="/product-performance" className={subLinkClass}>
+                <NavLink to="/Admindashboard/product-performance" className={subLinkClass}>
                   • Product Performance Reports
                 </NavLink>
               </>
             )}
 
-            <NavLink to="/admin-service-area" className={linkClass}>
+            <NavLink to="/Admindashboard/admin-service-area" className={linkClass}>
               <Map size={16} /> Admin Service Area
             </NavLink>
 
@@ -151,10 +151,10 @@ export default function Sidebar() {
 
             {dropdown === "chat" && (
               <>
-                <NavLink to="/chat-user-vendor" className={subLinkClass}>
+                <NavLink to="/Admindashboard/chat-user-vendor" className={subLinkClass}>
                   • User / Vendor
                 </NavLink>
-                <NavLink to="/chat-user-driver" className={subLinkClass}>
+                <NavLink to="/Admindashboard/chat-user-driver" className={subLinkClass}>
                   • User / Driver
                 </NavLink>
               </>
