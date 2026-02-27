@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: "http://localhost:5000/api/v1",
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
@@ -22,9 +22,11 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+
 // ================= RESPONSE INTERCEPTOR =================
 api.interceptors.response.use(
   (response) => response,
+
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem("auth");
