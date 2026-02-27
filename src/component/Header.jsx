@@ -8,15 +8,17 @@ import {
 } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { logout } from "../features/auth/authSlice";
+import { useNavigate } from "react-router-dom";
 
 export default function AdminHeader({ title = "Dashboard" }) {
   const [profileOpen, setProfileOpen] = useState(false);
   const [online, setOnline] = useState(true);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const profileRef = useRef(null);
 
-  /* Close on outside click */
+  /* Close dropdown on outside click */
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (profileRef.current && !profileRef.current.contains(e.target)) {
@@ -28,6 +30,13 @@ export default function AdminHeader({ title = "Dashboard" }) {
     return () =>
       document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  /* Proper Logout */
+  const handleLogout = () => {
+    dispatch(logout());
+    localStorage.removeItem("auth"); // safety cleanup
+    navigate("/"); // redirect to login
+  };
 
   return (
     <div className="fixed top-0 left-72 right-0 bg-white shadow-sm px-6 py-4 flex items-center justify-between z-40">
@@ -65,7 +74,9 @@ export default function AdminHeader({ title = "Dashboard" }) {
           <Globe size={16} />
           <span>37Bites.com</span>
           <a
-            href="#"
+            href="/"
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-blue-500 hover:underline"
           >
             View Website
@@ -104,7 +115,7 @@ export default function AdminHeader({ title = "Dashboard" }) {
               </button>
 
               <button
-                onClick={() => dispatch(logout())}
+                onClick={handleLogout}
                 className="flex items-center gap-2 px-4 py-2 hover:bg-red-50 w-full text-sm text-red-500"
               >
                 <LogOut size={16} /> Logout

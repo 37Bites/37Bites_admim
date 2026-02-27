@@ -1,41 +1,43 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL : "http://localhost:5000/api/v1",
-    withCredentials: true,
-    headers: {
-        "Content-Type": "application/json"
-    },
+  baseURL: "http://localhost:5000/api/v1",
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
-
-
-//  Request intersepter
-
+// ================= REQUEST INTERCEPTOR =================
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token"); // ya jahan bhi aap token store karte ho
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    const storedAuth = JSON.parse(localStorage.getItem("auth"));
+
+    if (storedAuth?.accessToken) {
+      config.headers.Authorization = `Bearer ${storedAuth.accessToken}`;
     }
+
     return config;
   },
+  (error) => Promise.reject(error)
+);
+
+
+// ================= RESPONSE INTERCEPTOR =================
+api.interceptors.response.use(
+  (response) => response,
+
   (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("auth");
+
+      if (window.location.pathname !== "/") {
+        window.location.href = "/";
+      }
+    }
+
     return Promise.reject(error);
   }
 );
 
-
-api.interceptors.response.use(
-    (response)=>{
-        return response;
-    },
-    (error) => {
-        if (error.response?.status === 401){
-            window.location.href = "/login";
-        }
-
-        return Promise.reject(error);
-    }
-)
 export default api;

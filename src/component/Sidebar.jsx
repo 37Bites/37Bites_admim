@@ -76,7 +76,7 @@ export default function Sidebar() {
           <p className="text-xs opacity-80">Restaurant Admin</p>
         </div>
 
-        <div className="px-4 py-4 space-y-6 overflow-y-auto h-[calc(100vh-80px)]">
+      <div className="px-4 py-4 space-y-6 overflow-y-auto no-scrollbar h-[calc(100vh-80px)]">
 
           {/* ================= ORDERS ================= */}
           <div>
@@ -91,6 +91,8 @@ export default function Sidebar() {
             <NavLink to="/Admindashboard/orders" className={linkClass}>
               <ClipboardList size={16} /> Orders
             </NavLink>
+
+            
 
             <NavLink to="/Admindashboard/stores" className={linkClass}>
               <Store size={16} /> Stores
