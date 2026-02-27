@@ -4,6 +4,7 @@ import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
 import AdminHome from "./pages/AdminDashboard/AdminHome";
 import AdminLogin from "./pages/AdminLogin";
 import Stores from "./pages/AdminDashboard/Stores";
+import AllUsers from "./pages/AdminDashboard/Customers";
 
 function App() {
   return (
@@ -16,7 +17,8 @@ function App() {
         {/* Admin Routing */}
         <Route path="/Admindashboard" element={<AdminDashboard />}>
           <Route index element={<AdminHome />} />
-            <Route path="stores" element={<Stores/>}/>
+          <Route path="stores" element={<Stores />} />
+          <Route path="customers" element={<AllUsers />} />
         </Route>
 
       </Routes>
