@@ -97,6 +97,7 @@ export default function Sidebar() {
             <NavLink to="/Admindashboard/stores" className={linkClass}>
               <Store size={16} /> Stores
             </NavLink>
+            
 
             <NavLink to="/Admindashboard/accounting" className={linkClass}>
               <Calculator size={16} /> Accounting
