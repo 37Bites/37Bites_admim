@@ -1,27 +1,26 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../../api/axios";
 import {
   MapPin,
-  Eye,
   Trash2,
-  CheckCircle,
   Clock,
   Store,
   Package,
   ShoppingCart,
+  Plus,
 } from "lucide-react";
 
 export default function Stores() {
   const [stores, setStores] = useState([]);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   // ================= FETCH RESTAURANTS =================
   const fetchStores = async () => {
     try {
       setLoading(true);
       const res = await api.get("/restaurants");
-
-      // API returns { success, count, data: [] }
       setStores(Array.isArray(res.data.data) ? res.data.data : []);
     } catch (error) {
       console.error("Error fetching restaurants:", error);
@@ -46,15 +45,13 @@ export default function Stores() {
     }
   };
 
-  // ================= APPROVE =================
-  const handleApprove = async (id) => {
+  // ================= STATUS CHANGE =================
+  const handleStatusChange = async (id, status) => {
     try {
-      await api.patch(`/restaurants/${id}/status`, {
-        status: "active", // your enum is active/awaiting_approval/blocked
-      });
+      await api.patch(`/restaurants/${id}/status`, { status });
       fetchStores();
     } catch (error) {
-      console.error("Approval error:", error);
+      console.error("Status update error:", error);
     }
   };
 
@@ -86,6 +83,14 @@ export default function Stores() {
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-xl font-semibold text-gray-800">STORES</h1>
+
+          {/* ✅ Create Restaurant Button (Added Back) */}
+          <button
+            onClick={() => navigate("/admin/restaurants/create")}
+            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700"
+          >
+            <Plus size={16} /> Create Restaurant
+          </button>
         </div>
 
         {/* Stats */}
@@ -164,6 +169,22 @@ export default function Stores() {
                     <span className="px-3 py-1 text-xs rounded-full bg-purple-100 text-purple-600">
                       Commission: {store.commissionPercentage || 0}%
                     </span>
+
+                    <span
+                      className={`px-3 py-1 text-xs rounded-full font-medium ${
+                        store.status === "active"
+                          ? "bg-green-100 text-green-600"
+                          : store.status === "blocked"
+                          ? "bg-red-100 text-red-600"
+                          : "bg-yellow-100 text-yellow-600"
+                      }`}
+                    >
+                      {store.status === "active"
+                        ? "Active"
+                        : store.status === "blocked"
+                        ? "Blocked"
+                        : "Awaiting Approval"}
+                    </span>
                   </div>
                 </div>
 
@@ -172,19 +193,29 @@ export default function Stores() {
                   <div className="flex gap-3">
                     <button
                       onClick={() => handleToggleOpen(storeId)}
-                      className="flex items-center gap-1 text-gray-600 hover:text-blue-600 text-sm"
+                      disabled={store.status === "blocked"}
+                      className={`flex items-center gap-1 text-sm ${
+                        store.status === "blocked"
+                          ? "text-gray-400 cursor-not-allowed"
+                          : "text-gray-600 hover:text-blue-600"
+                      }`}
                     >
                       <Clock size={16} /> Toggle
                     </button>
                   </div>
 
                   <div className="flex gap-3">
-                    <button
-                      onClick={() => handleApprove(storeId)}
-                      className="flex items-center gap-1 bg-green-500 text-white px-3 py-1.5 rounded-lg hover:bg-green-600 text-sm"
+                    <select
+                      value={store.status}
+                      onChange={(e) =>
+                        handleStatusChange(storeId, e.target.value)
+                      }
+                      className="text-sm border rounded-lg px-2 py-1"
                     >
-                      <CheckCircle size={16} /> Approve
-                    </button>
+                      <option value="awaiting_approval">Awaiting</option>
+                      <option value="active">Active</option>
+                      <option value="blocked">Blocked</option>
+                    </select>
 
                     <button
                       onClick={() => handleDelete(storeId)}
