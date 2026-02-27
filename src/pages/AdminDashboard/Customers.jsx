@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Trash2, Bell } from "lucide-react";
-import api from "../../api/axios"; // 👈 apna axios file path sahi karo
+import api from "../../api/axios";
 
 export default function AllUser() {
   const [users, setUsers] = useState([]);
