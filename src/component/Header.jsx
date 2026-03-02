@@ -4,7 +4,11 @@ import {
   User,
   LogOut,
   Settings,
-  ChevronDown
+  ChevronDown,
+  Shield,
+  Bell,
+  Moon,
+  Sun
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../features/auth/authSlice";
@@ -13,15 +17,15 @@ import { useNavigate } from "react-router-dom";
 export default function AdminHeader({ title = "Dashboard" }) {
   const [profileOpen, setProfileOpen] = useState(false);
   const [online, setOnline] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
+  const [notifications] = useState(3); // dummy unread count
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const profileRef = useRef(null);
 
-  // ✅ Redux se user data lo
   const { user, lastLogin } = useSelector((state) => state.auth);
 
-  /* Close dropdown on outside click */
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (profileRef.current && !profileRef.current.contains(e.target)) {
@@ -34,113 +38,157 @@ export default function AdminHeader({ title = "Dashboard" }) {
       document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  /* Proper Logout */
   const handleLogout = () => {
     dispatch(logout());
     navigate("/");
   };
 
+  const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : "A";
+
   return (
-    <div className="fixed top-0 left-72 right-0 bg-white shadow-sm px-6 py-4 flex items-center justify-between z-40">
+    <div className="fixed top-0 left-72 right-0 bg-white/90 backdrop-blur border-b px-8 py-4 flex items-center justify-between z-40">
 
       {/* LEFT SIDE */}
-      <h1 className="text-xl font-semibold text-gray-700 uppercase tracking-wide">
-        {title}
-      </h1>
+      <div>
+        <h1 className="text-2xl font-semibold text-gray-800">
+          {title}
+        </h1>
+        <p className="text-xs text-gray-400">
+          {new Date().toDateString()}
+        </p>
+      </div>
 
       {/* RIGHT SIDE */}
       <div className="flex items-center gap-6">
 
-        {/* Online Toggle */}
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-500">
-            {online ? "Online" : "Offline"}
-          </span>
+        {/* 🌙 Dark Mode Toggle */}
+        <button
+          onClick={() => setDarkMode(!darkMode)}
+          className="p-2 rounded-lg hover:bg-gray-100 transition"
+        >
+          {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+        </button>
 
-          <button
-            onClick={() => setOnline(!online)}
-            className={`w-10 h-5 flex items-center rounded-full p-1 transition duration-300 ${
-              online ? "bg-green-500" : "bg-gray-300"
-            }`}
-          >
-            <div
-              className={`bg-white w-4 h-4 rounded-full shadow-md transform transition duration-300 ${
-                online ? "translate-x-5" : "translate-x-0"
-              }`}
-            />
-          </button>
+        {/* 🔔 Notifications */}
+        <div className="relative cursor-pointer p-2 rounded-lg hover:bg-gray-100 transition">
+          <Bell size={18} />
+          {notifications > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+              {notifications}
+            </span>
+          )}
         </div>
 
-        {/* Website */}
+        {/* 🌍 Website */}
         <div className="hidden md:flex items-center gap-2 text-sm text-gray-600">
           <Globe size={16} />
-          <span>37Bites.com</span>
           <a
-            href="/"
+            href="https://37-bites-frontend.vercel.app/"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-500 hover:underline"
+            className="hover:text-orange-500 transition"
           >
             View Website
           </a>
         </div>
 
-        {/* Language */}
-        <select className="text-sm border border-gray-300 rounded-md px-2 py-1 outline-none focus:ring-2 focus:ring-blue-400">
-          <option>English</option>
-        </select>
-
-        {/* Profile Dropdown */}
+        {/* PROFILE */}
         <div className="relative" ref={profileRef}>
           <button
             onClick={() => setProfileOpen(!profileOpen)}
-            className="flex items-center gap-2 text-sm text-gray-700 hover:text-black"
+            className="flex items-center gap-3"
           >
-            <User size={18} />
-            <span className="hidden md:block font-medium">
-              {user?.name || "Admin"}
-            </span>
+            {/* Avatar with online dot */}
+            <div className="relative">
+              <div className="w-10 h-10 rounded-full bg-orange-500 text-white flex items-center justify-center font-semibold">
+                {userInitial}
+              </div>
+
+              <span
+                className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${
+                  online ? "bg-green-500" : "bg-gray-400"
+                }`}
+              />
+            </div>
+
+            <div className="hidden md:block text-left">
+              <p className="text-sm font-medium text-gray-800">
+                {user?.name || "Admin"}
+              </p>
+              <span className="text-xs bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full capitalize">
+                {user?.role || "Administrator"}
+              </span>
+            </div>
+
             <ChevronDown
               size={16}
-              className={`transition-transform duration-200 ${
+              className={`transition-transform ${
                 profileOpen ? "rotate-180" : ""
               }`}
             />
           </button>
 
           {profileOpen && (
-            <div className="absolute right-0 mt-3 w-56 bg-white border rounded-lg shadow-lg py-3 z-50">
+            <div className="absolute right-0 mt-4 w-80 bg-white rounded-2xl shadow-2xl border py-4 z-50 animate-fadeIn">
 
-              {/* User Info */}
-              <div className="px-4 pb-3 border-b">
-                <p className="text-sm font-semibold text-gray-800">
-                  {user?.name}
-                </p>
-                <p className="text-xs text-gray-500">
-                  {user?.mobile}
-                </p>
-                <p className="text-xs text-gray-400 mt-1">
-                  Last Login:{" "}
-                  {lastLogin
-                    ? new Date(lastLogin).toLocaleString()
-                    : "First Login"}
-                </p>
+              {/* USER INFO */}
+              <div className="px-6 pb-4 border-b">
+
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-14 h-14 rounded-full bg-orange-500 text-white flex items-center justify-center text-lg font-bold">
+                    {userInitial}
+                  </div>
+
+                  <div>
+                    <p className="font-semibold text-gray-800 text-lg">
+                      {user?.name}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {user?.email || "No Email"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="text-sm text-gray-600 space-y-1">
+                  <p>📱 {user?.mobile || "Not Available"}</p>
+                  <p>
+                    🕒 Last Login:{" "}
+                    {lastLogin
+                      ? new Date(lastLogin).toLocaleString()
+                      : "First Login"}
+                  </p>
+                  <p className="flex items-center gap-1">
+                    <Shield size={14} />
+                    Role: {user?.role}
+                  </p>
+                  <p>
+                    Status:{" "}
+                    <span className="text-green-600 font-medium">
+                      Active
+                    </span>
+                  </p>
+                </div>
               </div>
 
-              <button className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 w-full text-sm">
-                <User size={16} /> Profile
-              </button>
+              {/* ACTIONS */}
+              <div className="mt-3">
 
-              <button className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 w-full text-sm">
-                <Settings size={16} /> Change Password
-              </button>
+                <button className="flex items-center gap-3 px-6 py-3 hover:bg-gray-50 w-full text-sm transition">
+                  <User size={16} /> Profile Settings
+                </button>
 
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 px-4 py-2 hover:bg-red-50 w-full text-sm text-red-500"
-              >
-                <LogOut size={16} /> Logout
-              </button>
+                <button className="flex items-center gap-3 px-6 py-3 hover:bg-gray-50 w-full text-sm transition">
+                  <Settings size={16} /> Account Settings
+                </button>
+
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-3 px-6 py-3 hover:bg-red-50 w-full text-sm text-red-500 transition"
+                >
+                  <LogOut size={16} /> Logout
+                </button>
+
+              </div>
 
             </div>
           )}
