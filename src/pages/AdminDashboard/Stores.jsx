@@ -86,7 +86,7 @@ export default function Stores() {
           <h1 className="text-xl font-semibold text-gray-800">STORES</h1>
 
           <button
-            onClick={() => navigate("/admin/restaurants/create")}
+            onClick={() => navigate("/Admindashboard/create")}
             className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700"
           >
             <Plus size={16} /> Create Restaurant
