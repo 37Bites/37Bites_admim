@@ -6,7 +6,7 @@ import {
   Settings,
   ChevronDown
 } from "lucide-react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
 
@@ -17,6 +17,9 @@ export default function AdminHeader({ title = "Dashboard" }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const profileRef = useRef(null);
+
+  // ✅ Redux se user data lo
+  const { user, lastLogin } = useSelector((state) => state.auth);
 
   /* Close dropdown on outside click */
   useEffect(() => {
@@ -34,8 +37,7 @@ export default function AdminHeader({ title = "Dashboard" }) {
   /* Proper Logout */
   const handleLogout = () => {
     dispatch(logout());
-    localStorage.removeItem("auth"); // safety cleanup
-    navigate("/"); // redirect to login
+    navigate("/");
   };
 
   return (
@@ -95,6 +97,9 @@ export default function AdminHeader({ title = "Dashboard" }) {
             className="flex items-center gap-2 text-sm text-gray-700 hover:text-black"
           >
             <User size={18} />
+            <span className="hidden md:block font-medium">
+              {user?.name || "Admin"}
+            </span>
             <ChevronDown
               size={16}
               className={`transition-transform duration-200 ${
@@ -104,7 +109,23 @@ export default function AdminHeader({ title = "Dashboard" }) {
           </button>
 
           {profileOpen && (
-            <div className="absolute right-0 mt-3 w-44 bg-white border rounded-lg shadow-lg py-2 z-50">
+            <div className="absolute right-0 mt-3 w-56 bg-white border rounded-lg shadow-lg py-3 z-50">
+
+              {/* User Info */}
+              <div className="px-4 pb-3 border-b">
+                <p className="text-sm font-semibold text-gray-800">
+                  {user?.name}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {user?.mobile}
+                </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  Last Login:{" "}
+                  {lastLogin
+                    ? new Date(lastLogin).toLocaleString()
+                    : "First Login"}
+                </p>
+              </div>
 
               <button className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 w-full text-sm">
                 <User size={16} /> Profile
