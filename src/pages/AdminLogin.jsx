@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/axios"; // path to your axios instance
+import api from "../api/axios";
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -26,10 +26,6 @@ export default function AdminLogin() {
       const res = await api.post("/admin/login", form);
 
       if (res.data.success) {
-        // Optional: store user info if needed
-        // localStorage.setItem("admin", JSON.stringify(res.data.admin));
-
-        // Redirect to admin dashboard
         navigate("/Admindashboard");
       }
     } catch (err) {
@@ -40,22 +36,36 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-10 rounded-2xl shadow-lg w-full max-w-md">
-        <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
-          Admin Login
-        </h2>
+    <div className="min-h-screen flex items-center justify-center bg-white px-4">
+      <div className="bg-white w-full max-w-md p-8 rounded-3xl shadow-xl border border-gray-100">
+
+        {/* Logo Section */}
+        <div className="flex flex-col items-center mb-6">
+          <img
+            src="/logo.jpeg"
+            alt="Admin Logo"
+            className="w-20 h-20 mb-3"
+          />
+          <h2 className="text-3xl font-bold text-gray-800">
+            Admin Login
+          </h2>
+          <p className="text-gray-500 text-sm mt-1">
+            Welcome back! Please login to continue
+          </p>
+        </div>
 
         {error && (
-          <div className="bg-red-100 text-red-700 p-2 rounded mb-4 text-center">
+          <div className="bg-red-100 text-red-600 text-sm p-3 rounded-lg mb-4 text-center">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+
+          {/* Email */}
           <div>
-            <label className="block text-gray-700 font-semibold mb-1">
-              Email
+            <label className="text-gray-700 font-medium text-sm">
+              Email Address
             </label>
             <input
               type="email"
@@ -63,12 +73,13 @@ export default function AdminLogin() {
               value={form.email}
               onChange={handleChange}
               placeholder="admin@example.com"
-              className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+              className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-400 transition"
             />
           </div>
 
+          {/* Password */}
           <div>
-            <label className="block text-gray-700 font-semibold mb-1">
+            <label className="text-gray-700 font-medium text-sm">
               Password
             </label>
             <input
@@ -76,18 +87,20 @@ export default function AdminLogin() {
               name="password"
               value={form.password}
               onChange={handleChange}
-              placeholder="********"
-              className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+              placeholder="Enter your password"
+              className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-400 transition"
             />
           </div>
 
+          {/* Button */}
           <button
             type="submit"
             disabled={loading}
-            className="mt-4 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 rounded-lg transition disabled:opacity-50"
+            className="mt-4 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
+
         </form>
       </div>
     </div>
