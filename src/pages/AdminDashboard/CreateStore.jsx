@@ -125,49 +125,106 @@ export default function CreateStore() {
 
   const prev = () => setStep((prev) => prev - 1);
 
-  const handleSubmit = () => {
-    if (validateStep()) {
-      const formPayload = new FormData();
-      formPayload.append("name", formData.restaurantName);
-      formPayload.append("email", formData.email);
-      formPayload.append("restaurantType", formData.restaurantType);
-      formPayload.append("cuisine", formData.cuisine);
-      formPayload.append("description", formData.description);
-      formPayload.append("phone", formData.phone);
+  const handleSubmit = async () => {
+  if (!validateStep()) return;
 
-      // Address with coordinates
-      formPayload.append(
-        "address",
-        JSON.stringify({
-          fullAddress: formData.address,
-          city: formData.city,
-          state: formData.state,
-          country: formData.country,
-          pincode: formData.pincode,
-          location: {
-            type: "Point",
-            coordinates: [
-              Number(formData.longitude),
-              Number(formData.latitude),
-            ],
-          },
-        })
-      );
+  try {
+    const formPayload = new FormData();
 
-      // Multiple payment methods
-      formData.paymentMethods.forEach((method) =>
-        formPayload.append("paymentMethods[]", method)
-      );
+    // 🔹 BASIC
+    formPayload.append("name", formData.restaurantName);
+    formPayload.append("description", formData.description);
+    formPayload.append("restaurantType", formData.restaurantType);
+    formPayload.append("cuisines", JSON.stringify([formData.cuisine]));
+    formPayload.append("serviceType", "all");
+    formPayload.append("averageCostForTwo", formData.amov);
 
-      // Gallery images
-      formData.galleryImages.forEach((file, idx) =>
-        formPayload.append(`gallery[${idx}]`, file)
-      );
+    // 🔹 OWNER (VERY IMPORTANT)
+    formPayload.append("ownerMobile", formData.phone);
+    formPayload.append("ownerName", formData.managerName);
 
-      console.log("Submitting:", formData);
-      alert("Restaurant Created Successfully 🧡");
-    }
-  };
+    // 🔹 ADDRESS
+    formPayload.append(
+  "address",
+  JSON.stringify({
+    fullAddress: formData.address,
+    state: formData.state,
+    country: formData.country,
+    pincode: formData.pincode,
+    location: {
+      type: "Point",
+      coordinates: [
+        Number(formData.latitude),
+        Number(formData.longitude),
+        
+      ],
+    },
+  })
+);
+    // 🔹 TIMINGS (convert from open/close time)
+    formPayload.append(
+      "timings",
+      JSON.stringify([
+        {
+          day: "Monday",
+          openTime: formData.openTime,
+          closeTime: formData.closeTime,
+          isClosed: false,
+        },
+      ])
+    );
+
+    // 🔹 BUSINESS
+    formPayload.append("minimumOrderAmount", formData.amov);
+    formPayload.append("deliveryRadiusInKm", formData.deliveryRadius);
+    formPayload.append("commissionPercentage", formData.commissionPercent);
+
+    // 🔹 PAYMENT METHODS
+    formPayload.append(
+      "paymentMethods",
+      JSON.stringify({
+        onlinePayment: formData.paymentMethods.includes("UPI"),
+      })
+    );
+
+    // 🔹 SOCIAL
+    formPayload.append(
+      "socialLinks",
+      JSON.stringify({
+        website: formData.website,
+        facebook: formData.facebook,
+        instagram: formData.instagram,
+      })
+    );
+
+    // 🔹 IMAGES
+    formData.galleryImages.forEach((file) => {
+      formPayload.append("galleryImages", file);
+    });
+
+    // 🔥🔥🔥 ACTUAL API CALL
+    const response = await api.post(
+      "/restaurants/create",
+      formPayload,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        withCredentials: true, // if token is in cookies
+      }
+    );
+
+    console.log("API Response:", response.data);
+
+    alert("Restaurant Created Successfully 🧡");
+
+  } catch (error) {
+    console.error("Create Restaurant Error:", error.response?.data || error);
+    alert(
+      error.response?.data?.message || "Something went wrong"
+    );
+  }
+};
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -322,7 +379,7 @@ const Step1 = ({ formData, handleChange, errors }) => (
     <Grid>
       <Input label="Restaurant Name" name="restaurantName" value={formData.restaurantName} onChange={handleChange} error={errors.restaurantName} />
       <Input label="Email" name="email" value={formData.email} onChange={handleChange} error={errors.email} />
-      <Select label="Restaurant Type" name="restaurantType" value={formData.restaurantType} onChange={handleChange} options={["Veg","Non-Veg","Both"]} />
+      <Select label="Restaurant Type" name="restaurantType" value={formData.restaurantType} onChange={handleChange} options={["veg", "non-veg", "pure-veg", "both"]} />
       <Input label="Cuisine Type" name="cuisine" value={formData.cuisine} onChange={handleChange} />
       <Input type="time" label="Opening Time" name="openTime" value={formData.openTime} onChange={handleChange} />
       <Input type="time" label="Closing Time" name="closeTime" value={formData.closeTime} onChange={handleChange} />
