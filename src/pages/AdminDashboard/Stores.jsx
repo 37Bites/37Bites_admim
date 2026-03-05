@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { MapPin, Eye, Trash2, Phone, Clock } from "lucide-react";
 import api from "../../api/axios";
+import { NavLink } from "react-router-dom";
 
 export default function Stores() {
 
@@ -33,7 +34,46 @@ export default function Stores() {
   };
 
   return (
-    <div className="p-6 min-h-screen space-y-4">
+    <div className="p-6 min-h-screen space-y-6">
+
+      {/* HEADER */}
+      <div className="flex justify-between items-center">
+        <h1 className="text-lg font-semibold text-gray-700">STORES</h1>
+        <NavLink to="/Admindashboard/create">
+        <button className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800">
+          + Add Store
+        </button>
+        </NavLink>
+      </div>
+
+      {/* STATS */}
+      <div className="grid grid-cols-4 gap-6">
+
+        <div className="bg-white rounded-xl shadow-sm p-6 text-center">
+          <h2 className="text-2xl font-bold">{stores.length}</h2>
+          <p className="text-gray-500 text-sm">Total Stores</p>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm p-6 text-center">
+          <h2 className="text-2xl font-bold">
+            {stores.filter(s=>s.isOpen).length}
+          </h2>
+          <p className="text-gray-500 text-sm">Open Stores</p>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm p-6 text-center">
+          <h2 className="text-2xl font-bold">0</h2>
+          <p className="text-gray-500 text-sm">Total Products</p>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm p-6 text-center">
+          <h2 className="text-2xl font-bold">0</h2>
+          <p className="text-gray-500 text-sm">Active Orders</p>
+        </div>
+
+      </div>
+
+      {/* STORES LIST */}
 
       {stores.map((store)=>(
         <div
