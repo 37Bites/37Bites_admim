@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
 
-export default function AdminHeader({ title = "Dashboard" }) {
+export default function AdminHeader() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [online, setOnline] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
@@ -32,7 +32,6 @@ export default function AdminHeader({ title = "Dashboard" }) {
         setProfileOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () =>
       document.removeEventListener("mousedown", handleClickOutside);
@@ -45,13 +44,25 @@ export default function AdminHeader({ title = "Dashboard" }) {
 
   const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : "A";
 
+  // Format last login
+  const formattedLastLogin = lastLogin
+    ? new Date(lastLogin).toLocaleString("en-US", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true
+      })
+    : "First Login";
+
   return (
     <div className="fixed top-0 left-72 right-0 bg-white/90 backdrop-blur border-b px-8 py-4 flex items-center justify-between z-40">
 
       {/* LEFT SIDE */}
       <div>
         <h1 className="text-2xl font-semibold text-gray-800">
-          {title}
+          Welcome,{user?.name || "Admin"}
         </h1>
         <p className="text-xs text-gray-400">
           {new Date().toDateString()}
@@ -61,7 +72,7 @@ export default function AdminHeader({ title = "Dashboard" }) {
       {/* RIGHT SIDE */}
       <div className="flex items-center gap-6">
 
-        {/* 🌙 Dark Mode Toggle */}
+        {/* Dark Mode Toggle */}
         <button
           onClick={() => setDarkMode(!darkMode)}
           className="p-2 rounded-lg hover:bg-gray-100 transition"
@@ -69,7 +80,7 @@ export default function AdminHeader({ title = "Dashboard" }) {
           {darkMode ? <Sun size={18} /> : <Moon size={18} />}
         </button>
 
-        {/* 🔔 Notifications */}
+        {/* Notifications */}
         <div className="relative cursor-pointer p-2 rounded-lg hover:bg-gray-100 transition">
           <Bell size={18} />
           {notifications > 0 && (
@@ -79,7 +90,7 @@ export default function AdminHeader({ title = "Dashboard" }) {
           )}
         </div>
 
-        {/* 🌍 Website */}
+        {/* Website link */}
         <div className="hidden md:flex items-center gap-2 text-sm text-gray-600">
           <Globe size={16} />
           <a
@@ -92,7 +103,7 @@ export default function AdminHeader({ title = "Dashboard" }) {
           </a>
         </div>
 
-        {/* PROFILE */}
+        {/* Profile Dropdown */}
         <div className="relative" ref={profileRef}>
           <button
             onClick={() => setProfileOpen(!profileOpen)}
@@ -122,16 +133,14 @@ export default function AdminHeader({ title = "Dashboard" }) {
 
             <ChevronDown
               size={16}
-              className={`transition-transform ${
-                profileOpen ? "rotate-180" : ""
-              }`}
+              className={`transition-transform ${profileOpen ? "rotate-180" : ""}`}
             />
           </button>
 
           {profileOpen && (
             <div className="absolute right-0 mt-4 w-80 bg-white rounded-2xl shadow-2xl border py-4 z-50 animate-fadeIn">
 
-              {/* USER INFO */}
+              {/* User Info */}
               <div className="px-6 pb-4 border-b">
 
                 <div className="flex items-center gap-4 mb-4">
@@ -151,28 +160,17 @@ export default function AdminHeader({ title = "Dashboard" }) {
 
                 <div className="text-sm text-gray-600 space-y-1">
                   <p>📱 {user?.mobile || "Not Available"}</p>
-                  <p>
-                    🕒 Last Login:{" "}
-                    {lastLogin
-                      ? new Date(lastLogin).toLocaleString()
-                      : "First Login"}
-                  </p>
+                  <p>🕒 Last Login: {formattedLastLogin}</p>
                   <p className="flex items-center gap-1">
                     <Shield size={14} />
-                    Role: {user?.role}
+                    Role: {user?.role || "Administrator"}
                   </p>
-                  <p>
-                    Status:{" "}
-                    <span className="text-green-600 font-medium">
-                      Active
-                    </span>
-                  </p>
+                  <p>Status: <span className="text-green-600 font-medium">Active</span></p>
                 </div>
               </div>
 
-              {/* ACTIONS */}
+              {/* Actions */}
               <div className="mt-3">
-
                 <button className="flex items-center gap-3 px-6 py-3 hover:bg-gray-50 w-full text-sm transition">
                   <User size={16} /> Profile Settings
                 </button>
@@ -187,7 +185,6 @@ export default function AdminHeader({ title = "Dashboard" }) {
                 >
                   <LogOut size={16} /> Logout
                 </button>
-
               </div>
 
             </div>

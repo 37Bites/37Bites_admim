@@ -71,10 +71,14 @@ export default function Sidebar() {
         ${open ? "translate-x-0" : "-translate-x-full"}
         lg:translate-x-0`}
       >
-        <div className="px-6 py-5 border-b border-orange-400">
-          <h1 className="text-xl font-bold">37BITES</h1>
-          <p className="text-xs opacity-80">Restaurant Admin</p>
-        </div>
+  <div className="flex flex-col items-center justify-center py-6">
+  <img
+    src="/logo.jpeg"       // your logo path
+    alt="37BITES Logo"
+    className="w-10 h-10 object-contain rounded-xl"
+  />
+  {/* <p className="mt-2 text-sm font-semibold text-gray-700">Restaurant Admin</p> */}
+</div>
 
       <div className="px-4 py-4 space-y-6 overflow-y-auto no-scrollbar h-[calc(100vh-80px)]">
 
@@ -84,7 +88,7 @@ export default function Sidebar() {
               Orders
             </h2>
 
-            <NavLink to="/dashboard" className={linkClass}>
+            <NavLink to="/Admindashboard" className={linkClass}>
               <LayoutDashboard size={16} /> Dashboard
             </NavLink>
 
