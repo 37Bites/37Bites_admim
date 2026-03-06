@@ -6,13 +6,12 @@ import AdminLogin from "./pages/AdminLogin";
 import Stores from "./pages/AdminDashboard/Stores";
 import AllUsers from "./pages/AdminDashboard/Customers";
 import CreateStore from "./pages/AdminDashboard/CreateStore";
-
+import StoreView from "./pages/AdminDashboard/StoreView";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-
         {/* Login Route */}
         <Route path="/" element={<AdminLogin />} />
 
@@ -21,11 +20,9 @@ function App() {
           <Route index element={<AdminHome />} />
           <Route path="stores" element={<Stores />} />
           <Route path="customers" element={<AllUsers />} />
-            <Route path="stores" element={<Stores/>}/>
-             <Route path="create" element={<CreateStore/>}/>
-           
+          <Route path="create" element={<CreateStore />} />
+          <Route path="stores/view/:id" element={<StoreView />} />
         </Route>
-
       </Routes>
     </BrowserRouter>
   );

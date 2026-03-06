@@ -14,7 +14,9 @@ import {
   Loader2,
   Flame,
   Pencil,
-  X,
+  Search,
+  Filter,
+  ChevronRight,
 } from "lucide-react";
 import api from "../../api/axios";
 import { NavLink } from "react-router-dom";
@@ -25,7 +27,6 @@ export default function Stores() {
   const [actionLoadingId, setActionLoadingId] = useState("");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [selectedStore, setSelectedStore] = useState(null);
 
   const fetchStores = async () => {
     try {
@@ -55,7 +56,6 @@ export default function Stores() {
 
       if (res.data?.success) {
         setStores((prev) => prev.filter((store) => store._id !== id));
-        if (selectedStore?._id === id) setSelectedStore(null);
       } else {
         alert(res.data?.message || "Failed to delete restaurant");
       }
@@ -83,7 +83,6 @@ export default function Stores() {
 
     try {
       setActionLoadingId(id);
-
       const res = await api.patch(`/restaurants/${id}/toggle-open`);
 
       if (res.data?.success) {
@@ -93,7 +92,6 @@ export default function Stores() {
           setStores((prev) =>
             prev.map((store) => (store._id === id ? updatedStore : store))
           );
-          if (selectedStore?._id === id) setSelectedStore(updatedStore);
         } else {
           setStores((prev) =>
             prev.map((store) =>
@@ -123,7 +121,6 @@ export default function Stores() {
 
     try {
       setActionLoadingId(id);
-
       const res = await api.patch(`/restaurants/${id}/toggle-busy`);
 
       if (res.data?.success) {
@@ -133,7 +130,6 @@ export default function Stores() {
           setStores((prev) =>
             prev.map((store) => (store._id === id ? updatedStore : store))
           );
-          if (selectedStore?._id === id) setSelectedStore(updatedStore);
         } else {
           setStores((prev) =>
             prev.map((store) =>
@@ -170,7 +166,6 @@ export default function Stores() {
           setStores((prev) =>
             prev.map((store) => (store._id === id ? updatedStore : store))
           );
-          if (selectedStore?._id === id) setSelectedStore(updatedStore);
         } else {
           setStores((prev) =>
             prev.map((store) =>
@@ -198,6 +193,7 @@ export default function Stores() {
         store.name?.toLowerCase().includes(searchText) ||
         store.slug?.toLowerCase().includes(searchText) ||
         store.restaurantType?.toLowerCase().includes(searchText) ||
+        store.address?.city?.toLowerCase().includes(searchText) ||
         store.address?.state?.toLowerCase().includes(searchText) ||
         store.address?.country?.toLowerCase().includes(searchText) ||
         store.cuisines?.join(", ")?.toLowerCase().includes(searchText);
@@ -234,369 +230,279 @@ export default function Stores() {
   };
 
   return (
-    <>
-      <div className="min-h-screen bg-slate-50 p-4 md:p-6">
-        <div className="mx-auto max-w-7xl space-y-6">
-          <div className="rounded-3xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-6 py-6 md:px-8 md:py-7 text-white shadow-lg">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <div>
-                <p className="text-sm text-slate-300">Restaurant Management</p>
-                <h1 className="mt-1 text-2xl md:text-3xl font-bold tracking-tight">
-                  Stores Dashboard
-                </h1>
-                <p className="mt-2 text-sm text-slate-300">
-                  All controls in one place.
-                </p>
-              </div>
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 p-4 md:p-6">
+      <div className="mx-auto max-w-7xl space-y-6">
+        {/* HERO */}
+        <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-r from-slate-950 via-slate-900 to-slate-800 px-6 py-7 text-white shadow-xl md:px-8">
+          <div className="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-orange-500/10 to-transparent" />
+          <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-sm text-slate-300">Restaurant Management</p>
+              <h1 className="mt-1 text-3xl font-bold tracking-tight md:text-4xl">
+                Stores Dashboard
+              </h1>
+              <p className="mt-2 max-w-2xl text-sm text-slate-300">
+                Manage all restaurants, update status, control visibility, and
+                handle operations from one premium dashboard.
+              </p>
+            </div>
 
-              <div className="flex flex-wrap gap-3">
-                <button
-                  onClick={fetchStores}
-                  className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20"
-                >
-                  <RefreshCw size={18} />
-                  Refresh
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={fetchStores}
+                className="inline-flex items-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm font-semibold text-white backdrop-blur-md transition hover:bg-white/20"
+              >
+                <RefreshCw size={18} />
+                Refresh
+              </button>
+
+              <NavLink to="/Admindashboard/create">
+                <button className="inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-900 shadow-md transition hover:scale-[1.02] hover:bg-slate-100">
+                  <Plus size={18} />
+                  Add Store
                 </button>
-
-                <NavLink to="/Admindashboard/create">
-                  <button className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-slate-900 shadow-md transition hover:scale-[1.02] hover:bg-slate-100">
-                    <Plus size={18} />
-                    Add Store
-                  </button>
-                </NavLink>
-              </div>
+              </NavLink>
             </div>
           </div>
+        </div>
 
-          <div className="grid grid-cols-1 gap-4 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm md:grid-cols-3">
-            <input
-              type="text"
-              placeholder="Search by name, slug, cuisine, state..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
-            />
+        {/* FILTER BAR */}
+        <div className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_0.8fr_0.8fr]">
+            <div className="relative">
+              <Search
+                size={18}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+              <input
+                type="text"
+                placeholder="Search by name, slug, cuisine, city, state..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-4 text-sm outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+              />
+            </div>
 
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
-            >
-              <option value="all">All Status</option>
-              <option value="pending">Pending</option>
-              <option value="active">Active</option>
-              <option value="suspended">Suspended</option>
-              <option value="rejected">Rejected</option>
-            </select>
+            <div className="relative">
+              <Filter
+                size={17}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="w-full appearance-none rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-4 text-sm outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+              >
+                <option value="all">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="active">Active</option>
+                <option value="suspended">Suspended</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
 
-            <div className="flex items-center rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+            <div className="flex items-center rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-600">
               Showing {filteredStores.length} of {stores.length} stores
             </div>
           </div>
+        </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <StatCard
-              title="Total Stores"
-              value={stats.totalStores}
-              icon={<Store size={20} />}
-              iconBg="bg-slate-100"
-              iconColor="text-slate-700"
-            />
-            <StatCard
-              title="Open Stores"
-              value={stats.openStores}
-              icon={<CheckCircle2 size={20} />}
-              iconBg="bg-green-100"
-              iconColor="text-green-600"
-            />
-            <StatCard
-              title="Active Stores"
-              value={stats.activeStores}
-              icon={<ShoppingBag size={20} />}
-              iconBg="bg-blue-100"
-              iconColor="text-blue-600"
-            />
-            <StatCard
-              title="Suspended Stores"
-              value={stats.suspendedStores}
-              icon={<AlertCircle size={20} />}
-              iconBg="bg-red-100"
-              iconColor="text-red-600"
-            />
-          </div>
+        {/* STATS */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <StatCard
+            title="Total Stores"
+            value={stats.totalStores}
+            icon={<Store size={20} />}
+            iconBg="bg-slate-100"
+            iconColor="text-slate-700"
+          />
+          <StatCard
+            title="Open Stores"
+            value={stats.openStores}
+            icon={<CheckCircle2 size={20} />}
+            iconBg="bg-green-100"
+            iconColor="text-green-600"
+          />
+          <StatCard
+            title="Active Stores"
+            value={stats.activeStores}
+            icon={<ShoppingBag size={20} />}
+            iconBg="bg-blue-100"
+            iconColor="text-blue-600"
+          />
+          <StatCard
+            title="Suspended Stores"
+            value={stats.suspendedStores}
+            icon={<AlertCircle size={20} />}
+            iconBg="bg-red-100"
+            iconColor="text-red-600"
+          />
+        </div>
 
-          <div className="space-y-5">
-            {loading ? (
-              <div className="rounded-3xl border border-slate-200 bg-white py-16 text-center shadow-sm">
-                <Loader2 className="mx-auto mb-3 animate-spin text-slate-500" size={28} />
-                <p className="text-slate-500">Loading stores...</p>
+        {/* STORE LIST */}
+        <div className="space-y-5">
+          {loading ? (
+            <div className="rounded-[28px] border border-slate-200 bg-white py-20 text-center shadow-sm">
+              <Loader2
+                className="mx-auto mb-3 animate-spin text-slate-500"
+                size={30}
+              />
+              <p className="text-slate-500">Loading stores...</p>
+            </div>
+          ) : filteredStores.length === 0 ? (
+            <div className="rounded-[28px] border border-dashed border-slate-300 bg-white px-6 py-20 text-center shadow-sm">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100">
+                <Store className="text-slate-500" size={28} />
               </div>
-            ) : filteredStores.length === 0 ? (
-              <div className="rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center shadow-sm">
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100">
-                  <Store className="text-slate-500" size={28} />
-                </div>
-                <h2 className="mt-4 text-xl font-semibold text-slate-800">
-                  No stores found
-                </h2>
-              </div>
-            ) : (
-              filteredStores.map((store) => {
-                const isProcessing = actionLoadingId === store._id;
-                const isToggleDisabled =
-                  isProcessing || store.isDeleted || store.isBlocked;
+              <h2 className="mt-4 text-xl font-semibold text-slate-800">
+                No stores found
+              </h2>
+              <p className="mt-2 text-sm text-slate-500">
+                Try changing the search or filter.
+              </p>
+            </div>
+          ) : (
+            filteredStores.map((store) => {
+              const isProcessing = actionLoadingId === store._id;
+              const isToggleDisabled =
+                isProcessing || store.isDeleted || store.isBlocked;
 
-                return (
-                  <div
-                    key={store._id}
-                    className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:shadow-lg"
-                  >
-                    {/* MAIN GRID */}
-                    <div className="grid grid-cols-1 gap-5 p-5 xl:grid-cols-[280px_minmax(0,1fr)_340px]">
-                      {/* IMAGE */}
-                      <div className="relative h-56 w-full overflow-hidden rounded-2xl bg-slate-100">
-                        <img
-                          src={
-                            store.galleryImages?.length
-                              ? store.galleryImages[0]
-                              : "https://via.placeholder.com/600x400?text=Restaurant"
-                          }
-                          alt={store.name}
-                          className="h-full w-full object-cover"
-                        />
+              return (
+                <div
+                  key={store._id}
+                  className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-xl"
+                >
+                  <div className="grid grid-cols-1 gap-5 p-5 xl:grid-cols-[290px_minmax(0,1fr)_350px]">
+                    {/* IMAGE */}
+                    <div className="relative h-60 w-full overflow-hidden rounded-[22px] bg-slate-100">
+                      <img
+                        src={
+                          store.bannerImage ||
+                          store.galleryImages?.[0] ||
+                          "https://via.placeholder.com/600x400?text=Restaurant"
+                        }
+                        alt={store.name}
+                        className="h-full w-full object-cover transition duration-500 hover:scale-105"
+                      />
 
-                        <div className="absolute left-3 top-3 flex flex-wrap gap-2">
-                          <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-700">
-                            {store.restaurantType || "Restaurant"}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+
+                      <div className="absolute left-3 top-3 flex flex-wrap gap-2">
+                        <span className="rounded-full bg-white/95 px-3 py-1 text-xs font-semibold text-slate-700 shadow">
+                          {store.restaurantType || "Restaurant"}
+                        </span>
+
+                        <span
+                          className={`rounded-full border px-3 py-1 text-xs font-semibold shadow ${getStatusStyle(
+                            store.status
+                          )}`}
+                        >
+                          {store.status || "inactive"}
+                        </span>
+
+                        {store.isBlocked && (
+                          <span className="rounded-full bg-black/80 px-3 py-1 text-xs font-semibold text-white">
+                            Blocked
                           </span>
-
-                          <span
-                            className={`rounded-full border px-3 py-1 text-xs font-semibold ${getStatusStyle(
-                              store.status
-                            )}`}
-                          >
-                            {store.status || "inactive"}
-                          </span>
-
-                          {store.isBlocked && (
-                            <span className="rounded-full bg-black/80 px-3 py-1 text-xs font-semibold text-white">
-                              Blocked
-                            </span>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* CENTER CONTENT */}
-                      <div className="min-w-0">
-                        <h2 className="text-2xl font-bold text-slate-900">
-                          {store.name}
-                        </h2>
-
-                        <div className="mt-3 flex items-center gap-2 text-sm text-slate-500">
-                          <MapPin size={15} />
-                          <span>
-                            {store.address?.city ||
-                              store.address?.state ||
-                              "Unknown Location"}
-                            {store.address?.country
-                              ? `, ${store.address.country}`
-                              : ""}
-                          </span>
-                        </div>
-
-                        <div className="mt-3 text-sm text-slate-600">
-                          {store.cuisines?.length
-                            ? store.cuisines.join(", ")
-                            : "Cuisine not added"}{" "}
-                          • ₹{store.averageCostForTwo || 0} for two
-                        </div>
-
-                        <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-slate-500">
-                          <span className="inline-flex items-center gap-1.5">
-                            <Clock size={15} />
-                            {store.deliveryTimeInMinutes || 0} mins
-                          </span>
-                          <span>Min Order ₹{store.minimumOrderAmount || 0}</span>
-                          <span>⭐ {store.ratings?.averageRating || 0}</span>
-                          <span>Orders {store.totalOrders || 0}</span>
-                        </div>
-
-                        {store.user && (
-                          <div className="mt-4 inline-flex max-w-full items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-600">
-                            <Phone size={14} />
-                            <span className="truncate">User ID: {store.user}</span>
-                          </div>
                         )}
                       </div>
 
-                      {/* RIGHT CONTROL */}
-                      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                        <div className="mb-4 flex items-center justify-between">
-                          <div>
-                            <p className="text-xs text-slate-500">Controls</p>
-                            <h3 className="text-sm font-semibold text-slate-800">
-                              Store Actions
-                            </h3>
-                          </div>
-                          {isProcessing && (
-                            <Loader2 size={16} className="animate-spin text-slate-500" />
-                          )}
+                      {store.logoImage || store.logo ? (
+                        <div className="absolute bottom-3 left-3 h-14 w-14 overflow-hidden rounded-2xl border-2 border-white bg-white shadow-lg">
+                          <img
+                            src={store.logoImage || store.logo}
+                            alt={store.name}
+                            className="h-full w-full object-cover"
+                          />
                         </div>
-
-                        <div className="mb-4">
-                          <p className="mb-2 text-xs font-medium text-slate-600">
-                            Change Status
-                          </p>
-                          <div className="grid grid-cols-2 gap-2">
-                            <button
-                              onClick={() => updateStatus(store._id, "active")}
-                              disabled={isProcessing}
-                              className={`rounded-xl px-3 py-2 text-sm font-medium transition ${
-                                store.status === "active"
-                                  ? "bg-green-600 text-white"
-                                  : "border border-green-200 bg-white text-green-700 hover:bg-green-50"
-                              } ${isProcessing ? "opacity-60 cursor-not-allowed" : ""}`}
-                            >
-                              Active
-                            </button>
-
-                            <button
-                              onClick={() => updateStatus(store._id, "pending")}
-                              disabled={isProcessing}
-                              className={`rounded-xl px-3 py-2 text-sm font-medium transition ${
-                                store.status === "pending"
-                                  ? "bg-yellow-500 text-white"
-                                  : "border border-yellow-200 bg-white text-yellow-700 hover:bg-yellow-50"
-                              } ${isProcessing ? "opacity-60 cursor-not-allowed" : ""}`}
-                            >
-                              Pending
-                            </button>
-
-                            <button
-                              onClick={() => updateStatus(store._id, "suspended")}
-                              disabled={isProcessing}
-                              className={`rounded-xl px-3 py-2 text-sm font-medium transition ${
-                                store.status === "suspended"
-                                  ? "bg-red-600 text-white"
-                                  : "border border-red-200 bg-white text-red-700 hover:bg-red-50"
-                              } ${isProcessing ? "opacity-60 cursor-not-allowed" : ""}`}
-                            >
-                              Suspended
-                            </button>
-
-                            <button
-                              onClick={() => updateStatus(store._id, "rejected")}
-                              disabled={isProcessing}
-                              className={`rounded-xl px-3 py-2 text-sm font-medium transition ${
-                                store.status === "rejected"
-                                  ? "bg-rose-600 text-white"
-                                  : "border border-rose-200 bg-white text-rose-700 hover:bg-rose-50"
-                              } ${isProcessing ? "opacity-60 cursor-not-allowed" : ""}`}
-                            >
-                              Rejected
-                            </button>
-                          </div>
-                        </div>
-
-                        <div className="mb-3 flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-3">
-                          <div>
-                            <p className="text-xs text-slate-500">Open / Close</p>
-                            <p
-                              className={`text-sm font-semibold ${
-                                store.isOpen ? "text-green-600" : "text-red-500"
-                              }`}
-                            >
-                              {store.isOpen ? "Open" : "Closed"}
-                            </p>
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={() => toggleOpen(store._id)}
-                            disabled={isToggleDisabled}
-                            className={`relative h-7 w-14 rounded-full transition ${
-                              store.isOpen ? "bg-green-500" : "bg-slate-300"
-                            } ${
-                              isToggleDisabled ? "cursor-not-allowed opacity-50" : ""
-                            }`}
-                          >
-                            <span
-                              className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition ${
-                                store.isOpen ? "left-8" : "left-1"
-                              }`}
-                            />
-                          </button>
-                        </div>
-
-                        <div className="mb-4 flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-3">
-                          <div>
-                            <p className="text-xs text-slate-500">Busy Mode</p>
-                            <p
-                              className={`text-sm font-semibold ${
-                                store.isBusy ? "text-orange-600" : "text-slate-600"
-                              }`}
-                            >
-                              {store.isBusy ? "Busy" : "Normal"}
-                            </p>
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={() => toggleBusy(store._id)}
-                            disabled={isProcessing || store.isDeleted}
-                            className={`relative h-7 w-14 rounded-full transition ${
-                              store.isBusy ? "bg-orange-500" : "bg-slate-300"
-                            } ${
-                              isProcessing || store.isDeleted
-                                ? "cursor-not-allowed opacity-50"
-                                : ""
-                            }`}
-                          >
-                            <span
-                              className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition ${
-                                store.isBusy ? "left-8" : "left-1"
-                              }`}
-                            />
-                          </button>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-2">
-                          <div className="rounded-xl border border-slate-200 bg-white p-3">
-                            <p className="text-xs text-slate-500">Visibility</p>
-                            <p className="mt-1 text-sm font-semibold text-slate-800">
-                              {store.isOpen ? "Running" : "Stopped"}
-                            </p>
-                          </div>
-
-                          <div className="rounded-xl border border-slate-200 bg-white p-3">
-                            <p className="text-xs text-slate-500">Mode</p>
-                            <p className="mt-1 text-sm font-semibold text-slate-800">
-                              {store.isBusy ? "Busy" : "Available"}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                      ) : null}
                     </div>
 
-                    {/* BOTTOM ACTION BAR */}
-                    <div className="border-t border-slate-100 px-5 py-4">
-                      <div className="flex flex-wrap items-center gap-3">
-                        <button
-                          onClick={() => setSelectedStore(store)}
-                          className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-blue-600"
-                        >
-                          <Eye size={16} />
-                          View
-                        </button>
+                    {/* CONTENT */}
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                          <h2 className="text-2xl font-bold text-slate-900">
+                            {store.name}
+                          </h2>
+                          <p className="mt-1 text-sm text-slate-500">
+                            {store.slug || "No slug available"}
+                          </p>
+                        </div>
+
+                        <div className="rounded-2xl bg-slate-50 px-3 py-2 text-right">
+                          <p className="text-xs text-slate-500">Rating</p>
+                          <p className="text-sm font-bold text-slate-800">
+                            ⭐ {store.ratings?.averageRating || 0}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 flex items-center gap-2 text-sm text-slate-500">
+                        <MapPin size={15} />
+                        <span>
+                          {store.address?.city ||
+                            store.address?.state ||
+                            "Unknown Location"}
+                          {store.address?.country
+                            ? `, ${store.address.country}`
+                            : ""}
+                        </span>
+                      </div>
+
+                      <div className="mt-3 text-sm text-slate-600">
+                        {store.cuisines?.length
+                          ? store.cuisines.join(", ")
+                          : "Cuisine not added"}{" "}
+                        <span className="mx-2 text-slate-300">•</span> ₹
+                        {store.averageCostForTwo || 0} for two
+                      </div>
+
+                      <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
+                        <MiniInfo
+                          label="Delivery"
+                          value={`${store.deliveryTimeInMinutes || 0} mins`}
+                        />
+                        <MiniInfo
+                          label="Min Order"
+                          value={`₹${store.minimumOrderAmount || 0}`}
+                        />
+                        <MiniInfo
+                          label="Orders"
+                          value={store.totalOrders || 0}
+                        />
+                        <MiniInfo
+                          label="Busy"
+                          value={store.isBusy ? "Yes" : "No"}
+                        />
+                      </div>
+
+                      {store.user && (
+                        <div className="mt-4 inline-flex max-w-full items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                          <Phone size={14} />
+                          <span className="truncate">
+                            User ID: {store.user}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* ACTIONS */}
+                      <div className="mt-5 flex flex-wrap items-center gap-3">
+                        <NavLink to={`/Admindashboard/stores/view/${store._id}`}>
+                          <button className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600">
+                            <Eye size={16} />
+                            View
+                          </button>
+                        </NavLink>
 
                         <NavLink to={`/Admindashboard/stores/edit/${store._id}`}>
-                          <button className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
+                          <button className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
                             <Pencil size={16} />
                             Edit
                           </button>
                         </NavLink>
 
-                        <button className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
+                        <button className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
                           <Clock size={16} />
                           History
                         </button>
@@ -604,7 +510,7 @@ export default function Stores() {
                         <button
                           onClick={() => toggleBusy(store._id)}
                           disabled={isProcessing}
-                          className={`inline-flex items-center gap-2 rounded-xl border border-orange-200 px-4 py-2 text-sm font-medium text-orange-600 transition hover:bg-orange-50 ${
+                          className={`inline-flex items-center gap-2 rounded-2xl border border-orange-200 px-4 py-2.5 text-sm font-medium text-orange-600 transition hover:bg-orange-50 ${
                             isProcessing ? "cursor-not-allowed opacity-60" : ""
                           }`}
                         >
@@ -615,7 +521,7 @@ export default function Stores() {
                         <button
                           onClick={() => handleDelete(store._id)}
                           disabled={isProcessing}
-                          className={`inline-flex items-center gap-2 rounded-xl border border-red-200 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 ${
+                          className={`inline-flex items-center gap-2 rounded-2xl border border-red-200 px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50 ${
                             isProcessing ? "cursor-not-allowed opacity-60" : ""
                           }`}
                         >
@@ -624,98 +530,191 @@ export default function Stores() {
                         </button>
                       </div>
                     </div>
+
+                    {/* CONTROLS */}
+                    <div className="rounded-[24px] border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-4">
+                      <div className="mb-4 flex items-center justify-between">
+                        <div>
+                          <p className="text-xs text-slate-500">Controls</p>
+                          <h3 className="text-sm font-semibold text-slate-800">
+                            Store Actions
+                          </h3>
+                        </div>
+                        {isProcessing && (
+                          <Loader2
+                            size={16}
+                            className="animate-spin text-slate-500"
+                          />
+                        )}
+                      </div>
+
+                      <div className="mb-4">
+                        <p className="mb-2 text-xs font-medium text-slate-600">
+                          Change Status
+                        </p>
+                        <div className="grid grid-cols-2 gap-2">
+                          <button
+                            onClick={() => updateStatus(store._id, "active")}
+                            disabled={isProcessing}
+                            className={`rounded-2xl px-3 py-2.5 text-sm font-medium transition ${
+                              store.status === "active"
+                                ? "bg-green-600 text-white"
+                                : "border border-green-200 bg-white text-green-700 hover:bg-green-50"
+                            } ${
+                              isProcessing ? "cursor-not-allowed opacity-60" : ""
+                            }`}
+                          >
+                            Active
+                          </button>
+
+                          <button
+                            onClick={() => updateStatus(store._id, "pending")}
+                            disabled={isProcessing}
+                            className={`rounded-2xl px-3 py-2.5 text-sm font-medium transition ${
+                              store.status === "pending"
+                                ? "bg-yellow-500 text-white"
+                                : "border border-yellow-200 bg-white text-yellow-700 hover:bg-yellow-50"
+                            } ${
+                              isProcessing ? "cursor-not-allowed opacity-60" : ""
+                            }`}
+                          >
+                            Pending
+                          </button>
+
+                          <button
+                            onClick={() => updateStatus(store._id, "suspended")}
+                            disabled={isProcessing}
+                            className={`rounded-2xl px-3 py-2.5 text-sm font-medium transition ${
+                              store.status === "suspended"
+                                ? "bg-red-600 text-white"
+                                : "border border-red-200 bg-white text-red-700 hover:bg-red-50"
+                            } ${
+                              isProcessing ? "cursor-not-allowed opacity-60" : ""
+                            }`}
+                          >
+                            Suspended
+                          </button>
+
+                          <button
+                            onClick={() => updateStatus(store._id, "rejected")}
+                            disabled={isProcessing}
+                            className={`rounded-2xl px-3 py-2.5 text-sm font-medium transition ${
+                              store.status === "rejected"
+                                ? "bg-rose-600 text-white"
+                                : "border border-rose-200 bg-white text-rose-700 hover:bg-rose-50"
+                            } ${
+                              isProcessing ? "cursor-not-allowed opacity-60" : ""
+                            }`}
+                          >
+                            Rejected
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="mb-3 flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3">
+                        <div>
+                          <p className="text-xs text-slate-500">Open / Close</p>
+                          <p
+                            className={`text-sm font-semibold ${
+                              store.isOpen ? "text-green-600" : "text-red-500"
+                            }`}
+                          >
+                            {store.isOpen ? "Open" : "Closed"}
+                          </p>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => toggleOpen(store._id)}
+                          disabled={isToggleDisabled}
+                          className={`relative h-7 w-14 rounded-full transition ${
+                            store.isOpen ? "bg-green-500" : "bg-slate-300"
+                          } ${
+                            isToggleDisabled
+                              ? "cursor-not-allowed opacity-50"
+                              : ""
+                          }`}
+                        >
+                          <span
+                            className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition ${
+                              store.isOpen ? "left-8" : "left-1"
+                            }`}
+                          />
+                        </button>
+                      </div>
+
+                      <div className="mb-4 flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3">
+                        <div>
+                          <p className="text-xs text-slate-500">Busy Mode</p>
+                          <p
+                            className={`text-sm font-semibold ${
+                              store.isBusy
+                                ? "text-orange-600"
+                                : "text-slate-600"
+                            }`}
+                          >
+                            {store.isBusy ? "Busy" : "Normal"}
+                          </p>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => toggleBusy(store._id)}
+                          disabled={isProcessing || store.isDeleted}
+                          className={`relative h-7 w-14 rounded-full transition ${
+                            store.isBusy ? "bg-orange-500" : "bg-slate-300"
+                          } ${
+                            isProcessing || store.isDeleted
+                              ? "cursor-not-allowed opacity-50"
+                              : ""
+                          }`}
+                        >
+                          <span
+                            className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition ${
+                              store.isBusy ? "left-8" : "left-1"
+                            }`}
+                          />
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="rounded-2xl border border-slate-200 bg-white p-3">
+                          <p className="text-xs text-slate-500">Visibility</p>
+                          <p className="mt-1 text-sm font-semibold text-slate-800">
+                            {store.isOpen ? "Running" : "Stopped"}
+                          </p>
+                        </div>
+
+                        <div className="rounded-2xl border border-slate-200 bg-white p-3">
+                          <p className="text-xs text-slate-500">Mode</p>
+                          <p className="mt-1 text-sm font-semibold text-slate-800">
+                            {store.isBusy ? "Busy" : "Available"}
+                          </p>
+                        </div>
+                      </div>
+
+                      <NavLink
+                        to={`/Admindashboard/stores/view/${store._id}`}
+                        className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+                      >
+                        Full Details
+                        <ChevronRight size={16} />
+                      </NavLink>
+                    </div>
                   </div>
-                );
-              })
-            )}
-          </div>
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
-
-      {selectedStore && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-3xl bg-white shadow-2xl">
-            <div className="sticky top-0 flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4">
-              <div>
-                <h2 className="text-xl font-bold text-slate-900">
-                  {selectedStore.name}
-                </h2>
-                <p className="text-sm text-slate-500">Restaurant Details</p>
-              </div>
-
-              <button
-                onClick={() => setSelectedStore(null)}
-                className="rounded-xl border border-slate-200 p-2 text-slate-600 hover:bg-slate-50"
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            <div className="grid gap-6 p-6 md:grid-cols-2">
-              <DetailItem label="Name" value={selectedStore.name} />
-              <DetailItem label="Slug" value={selectedStore.slug} />
-              <DetailItem label="Type" value={selectedStore.restaurantType} />
-              <DetailItem label="Status" value={selectedStore.status} />
-              <DetailItem
-                label="Open Status"
-                value={selectedStore.isOpen ? "Open" : "Closed"}
-              />
-              <DetailItem
-                label="Busy Status"
-                value={selectedStore.isBusy ? "Busy" : "Normal"}
-              />
-              <DetailItem
-                label="Average Cost For Two"
-                value={`₹${selectedStore.averageCostForTwo || 0}`}
-              />
-              <DetailItem
-                label="Minimum Order"
-                value={`₹${selectedStore.minimumOrderAmount || 0}`}
-              />
-              <DetailItem
-                label="Delivery Time"
-                value={`${selectedStore.deliveryTimeInMinutes || 0} mins`}
-              />
-              <DetailItem
-                label="Preparation Time"
-                value={`${selectedStore.preparationTimeInMinutes || 0} mins`}
-              />
-              <DetailItem
-                label="User ID"
-                value={selectedStore.user || "N/A"}
-              />
-              <DetailItem
-                label="Cuisines"
-                value={selectedStore.cuisines?.join(", ") || "N/A"}
-              />
-              <DetailItem
-                label="Country"
-                value={selectedStore.address?.country || "N/A"}
-              />
-              <DetailItem
-                label="State"
-                value={selectedStore.address?.state || "N/A"}
-              />
-              <DetailItem
-                label="Pincode"
-                value={selectedStore.address?.pincode || "N/A"}
-              />
-              <DetailItem
-                label="Address"
-                value={selectedStore.address?.fullAddress || "N/A"}
-                full
-              />
-            </div>
-          </div>
-        </div>
-      )}
-    </>
+    </div>
   );
 }
 
 function StatCard({ title, value, icon, iconBg, iconColor }) {
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md">
       <div className="flex items-start justify-between">
         <div>
           <p className="text-sm font-medium text-slate-500">{title}</p>
@@ -723,7 +722,7 @@ function StatCard({ title, value, icon, iconBg, iconColor }) {
         </div>
 
         <div
-          className={`flex h-11 w-11 items-center justify-center rounded-2xl ${iconBg} ${iconColor}`}
+          className={`flex h-12 w-12 items-center justify-center rounded-2xl ${iconBg} ${iconColor}`}
         >
           {icon}
         </div>
@@ -732,15 +731,11 @@ function StatCard({ title, value, icon, iconBg, iconColor }) {
   );
 }
 
-function DetailItem({ label, value, full = false }) {
+function MiniInfo({ label, value }) {
   return (
-    <div className={full ? "md:col-span-2" : ""}>
-      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-        {label}
-      </p>
-      <p className="mt-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800">
-        {value || "N/A"}
-      </p>
+    <div className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3">
+      <p className="text-xs text-slate-500">{label}</p>
+      <p className="mt-1 text-sm font-semibold text-slate-800">{value}</p>
     </div>
   );
 }
