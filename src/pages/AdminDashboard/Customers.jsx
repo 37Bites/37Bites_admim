@@ -363,10 +363,10 @@ export default function AllUser() {
           </div>
 
           {/* Note */}
-          <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-800">
+          {/* <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-800">
             Yahan role disabled hai kyunki ye sirf <span className="font-semibold">Customers</span> page hai.
             Role change karna ho to uske liye alag <span className="font-semibold">Manage Roles / All Accounts</span> page banana better rahega.
-          </div>
+          </div> */}
 
           {/* Table */}
           <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm">
