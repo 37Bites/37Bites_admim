@@ -10,7 +10,7 @@ export default function AllUser() {
   // ================= FETCH USERS =================
   const fetchUsers = async () => {
     try {
-      const res = await api.get("/users");
+      const res = await api.get("/users/all");
       setUsers(res.data.data);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -20,15 +20,15 @@ export default function AllUser() {
   };
 
   // ================= DELETE USER =================
-  const handleDelete = async (id) => {
+  const handleDelete = async (userId) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
 
     try {
-      setActionLoading(id);
-      await api.delete(`/users/${id}`);
+      setActionLoading(userId);
+      await api.delete(`/users/${userId}`);
 
       // remove from UI instantly
-      setUsers((prev) => prev.filter((user) => user._id !== id));
+      setUsers((prev) => prev.filter((user) => user._id !== userId));
     } catch (error) {
       console.error("Delete failed:", error);
     } finally {
@@ -37,15 +37,15 @@ export default function AllUser() {
   };
 
   // ================= TOGGLE STATUS =================
-  const handleToggleStatus = async (id) => {
+  const handleToggleStatus = async (userId) => {
     try {
-      setActionLoading(id);
+      setActionLoading(userId);
 
-      const res = await api.patch(`/users/${id}/toggle-status`);
+      const res = await api.patch(`/users/${userId}/status`);
 
       setUsers((prev) =>
         prev.map((user) =>
-          user._id === id
+          user._id === userId
             ? { ...user, isActive: res.data.data.isActive }
             : user
         )
