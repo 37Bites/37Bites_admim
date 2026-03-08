@@ -86,17 +86,23 @@ export default function Sidebar() {
             alt="37BITES Logo"
             className="w-12 h-12 object-contain rounded-xl bg-white p-1"
           />
-          {/* <p className="mt-2 text-sm font-semibold text-white">Restaurant Admin</p> */}
         </div>
 
         <div className="px-4 py-4 space-y-6 overflow-y-auto no-scrollbar h-[calc(100vh-88px)]">
+          
           {/* ================= ORDERS ================= */}
           <div>
             <h2 className="text-xs uppercase text-orange-200 mb-3 font-semibold">
               Orders
             </h2>
 
-            <NavLink to="/Admindashboard" className={linkClass} onClick={closeSidebar}>
+            {/* FIXED */}
+            <NavLink
+              end
+              to="/Admindashboard"
+              className={linkClass}
+              onClick={closeSidebar}
+            >
               <LayoutDashboard size={16} /> Dashboard
             </NavLink>
 
@@ -338,41 +344,11 @@ export default function Sidebar() {
 
             {dropdown === "cms" && (
               <>
-                <NavLink
-                  to="/Admindashboard/pages"
-                  className={subLinkClass}
-                  onClick={closeSidebar}
-                >
-                  • Pages
-                </NavLink>
-                <NavLink
-                  to="/Admindashboard/emails"
-                  className={subLinkClass}
-                  onClick={closeSidebar}
-                >
-                  • Emails
-                </NavLink>
-                <NavLink
-                  to="/Admindashboard/notifications"
-                  className={subLinkClass}
-                  onClick={closeSidebar}
-                >
-                  • Notifications
-                </NavLink>
-                <NavLink
-                  to="/Admindashboard/sms"
-                  className={subLinkClass}
-                  onClick={closeSidebar}
-                >
-                  • SMS
-                </NavLink>
-                <NavLink
-                  to="/Admindashboard/reasons"
-                  className={subLinkClass}
-                  onClick={closeSidebar}
-                >
-                  • Reasons
-                </NavLink>
+                <NavLink to="/Admindashboard/pages" className={subLinkClass} onClick={closeSidebar}>• Pages</NavLink>
+                <NavLink to="/Admindashboard/emails" className={subLinkClass} onClick={closeSidebar}>• Emails</NavLink>
+                <NavLink to="/Admindashboard/notifications" className={subLinkClass} onClick={closeSidebar}>• Notifications</NavLink>
+                <NavLink to="/Admindashboard/sms" className={subLinkClass} onClick={closeSidebar}>• SMS</NavLink>
+                <NavLink to="/Admindashboard/reasons" className={subLinkClass} onClick={closeSidebar}>• Reasons</NavLink>
               </>
             )}
 
@@ -393,20 +369,8 @@ export default function Sidebar() {
 
             {dropdown === "delivery" && (
               <>
-                <NavLink
-                  to="/Admindashboard/delivery-options"
-                  className={subLinkClass}
-                  onClick={closeSidebar}
-                >
-                  • Delivery Options
-                </NavLink>
-                <NavLink
-                  to="/Admindashboard/delivery-slot"
-                  className={subLinkClass}
-                  onClick={closeSidebar}
-                >
-                  • Delivery Slot
-                </NavLink>
+                <NavLink to="/Admindashboard/delivery-options" className={subLinkClass} onClick={closeSidebar}>• Delivery Options</NavLink>
+                <NavLink to="/Admindashboard/delivery-slot" className={subLinkClass} onClick={closeSidebar}>• Delivery Slot</NavLink>
               </>
             )}
           </div>
@@ -417,7 +381,6 @@ export default function Sidebar() {
               Marketing
             </h2>
 
-            {/* Banners Dropdown */}
             <button
               onClick={() => toggle("banners")}
               className="flex items-center justify-between w-full px-4 py-2.5 rounded-lg hover:bg-orange-600/80"
@@ -425,53 +388,25 @@ export default function Sidebar() {
               <span className="flex items-center gap-3">
                 <Megaphone size={16} /> Banners
               </span>
-              {dropdown === "banners" ? (
-                <ChevronDown size={16} />
-              ) : (
-                <ChevronRight size={16} />
-              )}
+              {dropdown === "banners" ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
             </button>
 
             {dropdown === "banners" && (
               <>
-                <NavLink
-                  to="/Admindashboard/web-banners"
-                  className={subLinkClass}
-                  onClick={closeSidebar}
-                >
-                  • Web Banners
-                </NavLink>
-                <NavLink
-                  to="/Admindashboard/mobile-banners"
-                  className={subLinkClass}
-                  onClick={closeSidebar}
-                >
-                  • Mobile Banners
-                </NavLink>
+                <NavLink to="/Admindashboard/web-banners" className={subLinkClass} onClick={closeSidebar}>• Web Banners</NavLink>
+                <NavLink to="/Admindashboard/mobile-banners" className={subLinkClass} onClick={closeSidebar}>• Mobile Banners</NavLink>
               </>
             )}
 
-            <NavLink
-              to="/Admindashboard/promocode"
-              className={linkClass}
-              onClick={closeSidebar}
-            >
+            <NavLink to="/Admindashboard/promocode" className={linkClass} onClick={closeSidebar}>
               <Ticket size={16} /> Promocode
             </NavLink>
 
-            <NavLink
-              to="/Admindashboard/loyalty-cards"
-              className={linkClass}
-              onClick={closeSidebar}
-            >
+            <NavLink to="/Admindashboard/loyalty-cards" className={linkClass} onClick={closeSidebar}>
               <Gift size={16} /> Loyalty Cards
             </NavLink>
 
-            <NavLink
-              to="/Admindashboard/campaigns"
-              className={linkClass}
-              onClick={closeSidebar}
-            >
+            <NavLink to="/Admindashboard/campaigns" className={linkClass} onClick={closeSidebar}>
               <BarChart3 size={16} /> Campaigns
             </NavLink>
           </div>
@@ -482,22 +417,15 @@ export default function Sidebar() {
               Extra
             </h2>
 
-            <NavLink
-              to="/Admindashboard/tools"
-              className={linkClass}
-              onClick={closeSidebar}
-            >
+            <NavLink to="/Admindashboard/tools" className={linkClass} onClick={closeSidebar}>
               <Wrench size={16} /> Tools
             </NavLink>
 
-            <NavLink
-              to="/Admindashboard/db-audit-logs"
-              className={linkClass}
-              onClick={closeSidebar}
-            >
+            <NavLink to="/Admindashboard/db-audit-logs" className={linkClass} onClick={closeSidebar}>
               <Database size={16} /> DB Audit Logs
             </NavLink>
           </div>
+
         </div>
       </div>
     </>

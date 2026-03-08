@@ -1,449 +1,516 @@
 import { useState } from "react";
-import { Upload } from "lucide-react";
 import api from "../../api/axios";
 
-export default function CreateStore() {
-  const [step, setStep] = useState(1);
+export default function CreateRestaurant() {
 
-  const [formData, setFormData] = useState({
-    restaurantName: "",
-    email: "",
-    website: "",
-    restaurantType: "",
-    cuisine: "",
-    openTime: "",
-    closeTime: "",
+const [step,setStep] = useState(1)
 
-    address: "",
-    city: "",
-    state: "",
-    country: "Sint Maarten",
-    pincode: "",
-    latitude: "",
-    longitude: "",
-    deliveryRadius: "",
+const steps = [
+"Basic Details",
+"Business Info",
+"Location",
+"Media & SEO",
+"Owner Info"
+]
 
-    commissionPercent: "",
-    commissionFix: "",
-    serviceFeePercent: "",
-    amov: "",
-    slotDuration: "",
-    autoRejectTime: "",
+const [formData,setFormData] = useState({
 
-    delivery: false,
-    pickup: false,
-    selfPickup: false,
-    autoAccept: false,
-    returnRequest: false,
-    showProfile: false,
+name:"",
+description:"",
+restaurantType:"",
+cuisines:"",
+serviceType:"delivery",
+averageCostForTwo:"",
 
-    description: "",
-    facebook: "",
-    instagram: "",
-    metaTitle: "",
-    phone: "",
+address:"",
+latitude:"",
+longitude:"",
 
-    managerName: "",
-    managerEmail: "",
-    password: "",
+openTime:"",
+closeTime:"",
 
-    searchUser: "",
-    newUserName: "",
-    newUserEmail: "",
-    newUserPhone: "",
-    newUserPassword: "",
+autoAcceptOrders:false,
+preparationTimeInMinutes:"",
+deliveryTimeInMinutes:"",
+deliveryRadiusInKm:"",
+minimumOrderAmount:"",
+packagingCharge:"",
 
-    vendorCategory: "",
+paymentMethods:"",
+categories:"",
+offers:"",
 
-    galleryImages: [], // 🔑 always an array
-    paymentMethods: [], // 🔑 array for multiple select
-  });
+website:"",
+facebook:"",
+instagram:"",
 
-  const [errors, setErrors] = useState({});
+seoTitle:"",
+seoDescription:"",
 
-  const steps = [
-    "Basic Information",
-    "Location Details",
-    "Business Setup",
-    "Media & Configuration",
-    "Users & Vendor Setup",
-  ];
+ownerMobile:"",
+ownerName:"",
 
-  const handleChange = (e) => {
-    const { name, value, type, checked, options, multiple } = e.target;
+subscriptionPlan:"basic",
 
-    if (type === "select-multiple" && multiple) {
-      const selected = Array.from(options)
-        .filter((o) => o.selected)
-        .map((o) => o.value);
-      setFormData({ ...formData, [name]: selected });
-    } else {
-      setFormData({
-        ...formData,
-        [name]: type === "checkbox" ? checked : value,
-      });
-    }
-  };
+logo:null,
+banner:null,
+gallery:[]
 
-  const handleFileChange = (field, files) => {
-    setFormData({ ...formData, [field]: Array.from(files) }); // 🔑 always array
-  };
+})
 
-  const validateStep = () => {
-    let newErrors = {};
+const [errors,setErrors] = useState({})
 
-    if (step === 1) {
-      if (!formData.restaurantName) newErrors.restaurantName = "Required";
-      if (!formData.email) newErrors.email = "Required";
-    }
+/* ---------------- CHANGE ---------------- */
 
-    if (step === 2) {
-      if (!formData.address) newErrors.address = "Required";
-      if (!formData.city) newErrors.city = "Required";
-      if (!formData.latitude) newErrors.latitude = "Required";
-      if (!formData.longitude) newErrors.longitude = "Required";
-    }
+const handleChange = (e)=>{
+const {name,value,type,checked} = e.target
 
-    if (step === 3) {
-      if (!formData.commissionPercent) newErrors.commissionPercent = "Required";
-      if (!formData.amov) newErrors.amov = "Required";
-    }
-
-    if (step === 5) {
-      if (!formData.managerName) newErrors.managerName = "Required";
-      if (!formData.managerEmail) newErrors.managerEmail = "Required";
-      if (!formData.password) newErrors.password = "Required";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const next = () => {
-    if (validateStep()) setStep((prev) => prev + 1);
-  };
-
-  const prev = () => setStep((prev) => prev - 1);
-
-  const handleSubmit = async () => {
-  if (!validateStep()) return;
-
-  try {
-    const formPayload = new FormData();
-
-    // 🔹 BASIC
-    formPayload.append("name", formData.restaurantName);
-    formPayload.append("description", formData.description);
-    formPayload.append("restaurantType", formData.restaurantType);
-    formPayload.append("cuisines", JSON.stringify([formData.cuisine]));
-    formPayload.append("serviceType", "all");
-    formPayload.append("averageCostForTwo", formData.amov);
-
-    // 🔹 OWNER (VERY IMPORTANT)
-    formPayload.append("ownerMobile", formData.phone);
-    formPayload.append("ownerName", formData.managerName);
-
-    // 🔹 ADDRESS
-    formPayload.append(
-  "address",
-  JSON.stringify({
-    fullAddress: formData.address,
-    state: formData.state,
-    country: formData.country,
-    pincode: formData.pincode,
-    location: {
-      type: "Point",
-      coordinates: [
-        Number(formData.latitude),
-        Number(formData.longitude),
-        
-      ],
-    },
-  })
-);
-    // 🔹 TIMINGS (convert from open/close time)
-    formPayload.append(
-      "timings",
-      JSON.stringify([
-        {
-          day: "Monday",
-          openTime: formData.openTime,
-          closeTime: formData.closeTime,
-          isClosed: false,
-        },
-      ])
-    );
-
-    // 🔹 BUSINESS
-    formPayload.append("minimumOrderAmount", formData.amov);
-    formPayload.append("deliveryRadiusInKm", formData.deliveryRadius);
-    formPayload.append("commissionPercentage", formData.commissionPercent);
-
-    // 🔹 PAYMENT METHODS
-    formPayload.append(
-      "paymentMethods",
-      JSON.stringify({
-        onlinePayment: formData.paymentMethods.includes("UPI"),
-      })
-    );
-
-    // 🔹 SOCIAL
-    formPayload.append(
-      "socialLinks",
-      JSON.stringify({
-        website: formData.website,
-        facebook: formData.facebook,
-        instagram: formData.instagram,
-      })
-    );
-
-    // 🔹 IMAGES
-    formData.galleryImages.forEach((file) => {
-      formPayload.append("galleryImages", file);
-    });
-
-    // 🔥🔥🔥 ACTUAL API CALL
-    const response = await api.post(
-      "/restaurants/create",
-      formPayload,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        withCredentials: true, // if token is in cookies
-      }
-    );
-
-    console.log("API Response:", response.data);
-
-    alert("Restaurant Created Successfully 🧡");
-
-  } catch (error) {
-    console.error("Create Restaurant Error:", error.response?.data || error);
-    alert(
-      error.response?.data?.message || "Something went wrong"
-    );
-  }
-};
-
-  return (
-    <div className="min-h-screen bg-gray-50 flex">
-
-      {/* LEFT STEPPER */}
-      <div className="w-1/4 bg-white shadow-lg p-10">
-        <h2 className="text-2xl font-semibold mb-12 text-gray-800">
-          Create Restaurant
-        </h2>
-
-        <div className="space-y-10">
-          {steps.map((label, index) => {
-            const stepNumber = index + 1;
-            const active = step === stepNumber;
-            const completed = step > stepNumber;
-
-            return (
-              <div
-                key={index}
-                onClick={() => stepNumber < step && setStep(stepNumber)}
-                className="flex items-center gap-4 cursor-pointer group"
-              >
-                <div
-                  className={`w-10 h-10 flex items-center justify-center rounded-full text-sm font-semibold transition-all
-                  ${
-                    active
-                      ? "bg-orange-500 text-white shadow-md"
-                      : completed
-                      ? "bg-orange-400 text-white"
-                      : "bg-gray-200 text-gray-600"
-                  }`}
-                >
-                  {completed ? "✓" : stepNumber}
-                </div>
-
-                <span
-                  className={`text-sm transition ${
-                    active
-                      ? "text-orange-600 font-semibold"
-                      : completed
-                      ? "text-orange-400"
-                      : "text-gray-500"
-                  }`}
-                >
-                  {label}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* RIGHT CONTENT */}
-      <div className="flex-1 p-14 overflow-y-auto">
-        <div className="bg-white rounded-2xl shadow-xl p-12 max-w-6xl border">
-
-          {/* STEP CONTENT */}
-          {step === 1 && <Step1 formData={formData} handleChange={handleChange} errors={errors} />}
-          {step === 2 && <Step2 formData={formData} handleChange={handleChange} errors={errors} />}
-          {step === 3 && <Step3 formData={formData} handleChange={handleChange} errors={errors} />}
-          {step === 4 && <Step4 formData={formData} handleChange={handleChange} handleFileChange={handleFileChange} />}
-          {step === 5 && <Step5 formData={formData} handleChange={handleChange} errors={errors} />}
-
-          <div className="flex justify-between mt-12">
-            {step > 1 && (
-              <button onClick={prev} className="px-6 py-2 border border-orange-400 text-orange-500 rounded-lg hover:bg-orange-50">
-                Previous
-              </button>
-            )}
-
-            {step < 5 ? (
-              <button onClick={next} className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 shadow">
-                Next
-              </button>
-            ) : (
-              <button onClick={handleSubmit} className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 shadow">
-                Create Restaurant
-              </button>
-            )}
-          </div>
-
-        </div>
-      </div>
-    </div>
-  );
+setFormData({
+...formData,
+[name]:type==="checkbox"?checked:value
+})
 }
 
-/* ---------------- COMPONENTS ---------------- */
-function Title({ title }) {
-  return <h3 className="text-xl font-semibold mb-8 border-b pb-4">{title}</h3>;
+const handleFile = (e)=>{
+const {name,files} = e.target
+
+if(name==="gallery"){
+setFormData({...formData,gallery:Array.from(files)})
+}else{
+setFormData({...formData,[name]:files[0]})
+}
 }
 
-function Grid({ children }) {
-  return <div className="grid grid-cols-2 gap-8">{children}</div>;
+/* ---------------- VALIDATION ---------------- */
+
+const validateStep = ()=>{
+
+let newErrors = {}
+
+if(step===1){
+
+if(!formData.name)
+newErrors.name="Restaurant name required"
+
+if(!formData.restaurantType)
+newErrors.restaurantType="Restaurant type required"
+
+if(!formData.cuisines)
+newErrors.cuisines="Cuisine required"
+
 }
 
-function Input({ label, error, ...props }) {
-  return (
-    <div>
-      <label className="text-sm font-medium text-gray-700">{label}</label>
-      <input
-        {...props}
-        className={`border p-3 rounded-lg w-full mt-1 bg-gray-50 outline-none transition
-        ${
-          error
-            ? "border-red-500"
-            : "focus:ring-2 focus:ring-orange-400 focus:border-orange-400"
-        }`}
-      />
-      {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
-    </div>
-  );
+if(step===2){
+
+if(!formData.averageCostForTwo)
+newErrors.averageCostForTwo="Average cost required"
+
+if(!formData.minimumOrderAmount)
+newErrors.minimumOrderAmount="Minimum order required"
+
 }
 
-function Select({ label, options, ...props }) {
-  return (
-    <div>
-      <label className="text-sm font-medium text-gray-700">{label}</label>
-      <select
-        {...props}
-        multiple={props.multiple || false}
-        className="border p-3 rounded-lg w-full mt-1 bg-gray-50 focus:ring-2 focus:ring-orange-400"
-      >
-        <option value="">Select</option>
-        {options.map((opt) => (
-          <option key={opt} value={opt}>{opt}</option>
-        ))}
-      </select>
-    </div>
-  );
+if(step===3){
+
+if(!formData.address)
+newErrors.address="Address required"
+
 }
 
-function UploadCard({ title, onChange }) {
-  return (
-    <label className="border-2 border-dashed border-orange-300 rounded-xl p-10 text-center cursor-pointer hover:bg-orange-50 transition">
-      <Upload className="mx-auto mb-4 text-orange-400" />
-      <p className="text-sm text-gray-600">{title}</p>
-      <input
-        type="file"
-        multiple
-        className="hidden"
-        onChange={(e) => onChange && onChange(e.target.files)}
-      />
-    </label>
-  );
+if(step===5){
+
+if(!formData.ownerMobile)
+newErrors.ownerMobile="Mobile required"
+
+if(!formData.ownerName)
+newErrors.ownerName="Owner name required"
+
 }
 
-/* ----------------- STEPS ----------------- */
-const Step1 = ({ formData, handleChange, errors }) => (
-  <>
-    <Title title="Basic Information" />
-    <Grid>
-      <Input label="Restaurant Name" name="restaurantName" value={formData.restaurantName} onChange={handleChange} error={errors.restaurantName} />
-      <Input label="Email" name="email" value={formData.email} onChange={handleChange} error={errors.email} />
-      <Select label="Restaurant Type" name="restaurantType" value={formData.restaurantType} onChange={handleChange} options={["veg", "non-veg", "pure-veg", "both"]} />
-      <Input label="Cuisine Type" name="cuisine" value={formData.cuisine} onChange={handleChange} />
-      <Input type="time" label="Opening Time" name="openTime" value={formData.openTime} onChange={handleChange} />
-      <Input type="time" label="Closing Time" name="closeTime" value={formData.closeTime} onChange={handleChange} />
-      <Input label="Website" name="website" value={formData.website} onChange={handleChange} />
-    </Grid>
-  </>
-);
+setErrors(newErrors)
 
-const Step2 = ({ formData, handleChange, errors }) => (
-  <>
-    <Title title="Location Details" />
-    <Grid>
-      <Input label="Full Address" name="address" value={formData.address} onChange={handleChange} error={errors.address} />
-      <Input label="City" name="city" value={formData.city} onChange={handleChange} error={errors.city} />
-      <Input label="State / Province" name="state" value={formData.state} onChange={handleChange} />
-      <Input label="Country" name="country" value={formData.country} onChange={handleChange} />
-      <Input label="Pincode" name="pincode" value={formData.pincode} onChange={handleChange} />
-      <Input label="Latitude" name="latitude" value={formData.latitude} onChange={handleChange} error={errors.latitude} />
-      <Input label="Longitude" name="longitude" value={formData.longitude} onChange={handleChange} error={errors.longitude} />
-      <Input label="Delivery Radius (KM)" name="deliveryRadius" value={formData.deliveryRadius} onChange={handleChange} />
-    </Grid>
-  </>
-);
+return Object.keys(newErrors).length===0
 
-const Step3 = ({ formData, handleChange, errors }) => (
-  <>
-    <Title title="Business Setup" />
-    <Grid>
-      <Input label="Absolute Min Order Value (AMOV)" name="amov" value={formData.amov} onChange={handleChange} error={errors.amov} />
-      <Input label="Commission %" name="commissionPercent" value={formData.commissionPercent} onChange={handleChange} error={errors.commissionPercent} />
-      <Input label="Commission Fix per Order" name="commissionFix" value={formData.commissionFix} onChange={handleChange} />
-      <Input label="Service Fee %" name="serviceFeePercent" value={formData.serviceFeePercent} onChange={handleChange} />
-      <Select label="Slot Duration" name="slotDuration" value={formData.slotDuration} onChange={handleChange} options={["15 min","30 min","45 min","60 min"]} />
-      <Select label="Auto Reject Time" name="autoRejectTime" value={formData.autoRejectTime} onChange={handleChange} options={["5 min","10 min","15 min","20 min"]} />
-    </Grid>
-  </>
-);
+}
 
-const Step4 = ({ formData, handleChange, handleFileChange }) => (
-  <>
-    <Title title="Media & Configuration" />
-    <div className="grid grid-cols-3 gap-6 mb-8">
-      <UploadCard title="Upload Logo" onChange={(files) => handleFileChange("logoImages", files)} />
-      <UploadCard title="Upload Banner" onChange={(files) => handleFileChange("bannerImages", files)} />
-      <UploadCard title="Upload Gallery" onChange={(files) => handleFileChange("galleryImages", files)} />
-    </div>
-    <Grid>
-      <Input label="Mobile Number" name="phone" value={formData.phone} onChange={handleChange} />
-      <Input label="Description" name="description" value={formData.description} onChange={handleChange} />
-      <Input label="Facebook Link" name="facebook" value={formData.facebook} onChange={handleChange} />
-      <Input label="Instagram Link" name="instagram" value={formData.instagram} onChange={handleChange} />
-      <Input label="Meta Title" name="metaTitle" value={formData.metaTitle} onChange={handleChange} />
-      <Select label="Payment Methods" name="paymentMethods" value={formData.paymentMethods} onChange={handleChange} multiple options={["Cash","Card","UPI","Wallet"]} />
-    </Grid>
-  </>
-);
+/* ---------------- NAVIGATION ---------------- */
 
-const Step5 = ({ formData, handleChange, errors }) => (
-  <>
-    <Title title="Users & Vendor Setup" />
-    <Grid>
-      <Input label="Manager Name" name="managerName" value={formData.managerName} onChange={handleChange} error={errors.managerName} />
-      <Input label="Manager Email" name="managerEmail" value={formData.managerEmail} onChange={handleChange} error={errors.managerEmail} />
-      <Input type="password" label="Password" name="password" value={formData.password} onChange={handleChange} error={errors.password} />
-    </Grid>
-  </>
-);
+const next = ()=>{
+if(validateStep()) setStep(step+1)
+}
+
+const prev = ()=> setStep(step-1)
+
+/* ---------------- SUBMIT ---------------- */
+
+const handleSubmit = async()=>{
+
+if(!validateStep()) return
+
+try{
+
+const payload = new FormData()
+
+payload.append("name",formData.name)
+payload.append("description",formData.description)
+payload.append("restaurantType",formData.restaurantType)
+payload.append("cuisines",formData.cuisines)
+payload.append("serviceType",formData.serviceType)
+payload.append("averageCostForTwo",formData.averageCostForTwo)
+
+payload.append("address",JSON.stringify({
+fullAddress:formData.address,
+location:{
+type:"Point",
+coordinates:[
+Number(formData.latitude),
+Number(formData.longitude)
+]
+}
+}))
+
+payload.append("timings",JSON.stringify([{
+day:"Monday",
+openTime:formData.openTime,
+closeTime:formData.closeTime,
+isClosed:false
+}]))
+
+payload.append("autoAcceptOrders",formData.autoAcceptOrders)
+
+payload.append("preparationTimeInMinutes",formData.preparationTimeInMinutes)
+payload.append("deliveryTimeInMinutes",formData.deliveryTimeInMinutes)
+payload.append("deliveryRadiusInKm",formData.deliveryRadiusInKm)
+
+payload.append("minimumOrderAmount",formData.minimumOrderAmount)
+payload.append("packagingCharge",formData.packagingCharge)
+
+payload.append("paymentMethods",formData.paymentMethods)
+
+payload.append("categories",formData.categories)
+payload.append("offers",formData.offers)
+
+payload.append("socialLinks",JSON.stringify({
+website:formData.website,
+facebook:formData.facebook,
+instagram:formData.instagram
+}))
+
+payload.append("seoTitle",formData.seoTitle)
+payload.append("seoDescription",formData.seoDescription)
+
+payload.append("subscriptionPlan",formData.subscriptionPlan)
+
+payload.append("ownerMobile",formData.ownerMobile)
+payload.append("ownerName",formData.ownerName)
+
+if(formData.logo)
+payload.append("logo",formData.logo)
+
+if(formData.banner)
+payload.append("banner",formData.banner)
+
+formData.gallery.forEach(file=>{
+payload.append("gallery",file)
+})
+
+await api.post("/restaurants/create",payload,{
+headers:{ "Content-Type":"multipart/form-data"}
+})
+
+alert("Restaurant Created Successfully")
+
+}catch(err){
+console.log(err)
+}
+
+}
+
+/* ---------------- UI ---------------- */
+
+return(
+
+<div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
+
+{/* STEPPER */}
+
+<div className="md:w-64 bg-white border-r p-6 relative">
+
+<h2 className="text-xl font-semibold mb-8">
+Create Restaurant
+</h2>
+
+<div className="relative">
+
+<div className="absolute left-4 top-2 bottom-2 w-[2px] bg-gray-200"></div>
+
+{steps.map((label,index)=>{
+
+const stepNumber=index+1
+const active=step===stepNumber
+const completed=step>stepNumber
+
+return(
+
+<div
+key={index}
+onClick={()=>stepNumber<step && setStep(stepNumber)}
+className="flex items-center gap-4 mb-8 cursor-pointer relative z-10"
+>
+
+<div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold
+${active?"bg-orange-500 text-white":
+completed?"bg-green-500 text-white":
+"bg-white border border-gray-300"}
+`}>
+
+{completed?"✓":stepNumber}
+
+</div>
+
+<p className={`${active?"text-orange-500 font-semibold":"text-gray-600"}`}>
+{label}
+</p>
+
+</div>
+
+)
+
+})}
+
+</div>
+
+</div>
+
+{/* FORM */}
+
+<div className="flex-1 p-6 md:p-10">
+
+<div className="bg-white p-10 rounded-2xl shadow-lg border max-w-5xl">
+
+{/* STEP 1 */}
+
+{step===1 && (
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+<Input label="Restaurant Name" placeholder="Enter restaurant name" name="name" value={formData.name} onChange={handleChange} error={errors.name}/>
+
+<Select label="Restaurant Type" name="restaurantType" value={formData.restaurantType} onChange={handleChange} options={["veg","non-veg","both"]}/>
+
+<Select label="Cuisines" name="cuisines" value={formData.cuisines} onChange={handleChange} options={["Indian","Chinese","Italian","Fast Food"]}/>
+
+<Input label="Description" placeholder="Enter description" name="description" value={formData.description} onChange={handleChange}/>
+
+</div>
+
+)}
+
+{/* STEP 2 */}
+
+{step===2 && (
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+<Input label="Average Cost For Two" placeholder="₹500" name="averageCostForTwo" value={formData.averageCostForTwo} onChange={handleChange}/>
+
+<Input label="Minimum Order Amount" placeholder="₹200" name="minimumOrderAmount" value={formData.minimumOrderAmount} onChange={handleChange}/>
+
+<Input label="Packaging Charge" placeholder="₹20" name="packagingCharge" value={formData.packagingCharge} onChange={handleChange}/>
+
+<Input label="Delivery Radius (KM)" placeholder="5" name="deliveryRadiusInKm" value={formData.deliveryRadiusInKm} onChange={handleChange}/>
+
+<Select label="Payment Methods" name="paymentMethods" value={formData.paymentMethods} onChange={handleChange} options={["Cash","UPI","Card","Wallet"]}/>
+
+</div>
+
+)}
+
+{/* STEP 3 */}
+
+{step===3 && (
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+<Input label="Address" placeholder="Enter full address" name="address" value={formData.address} onChange={handleChange}/>
+
+<Input label="Latitude" placeholder="28.6139" name="latitude" value={formData.latitude} onChange={handleChange}/>
+
+<Input label="Longitude" placeholder="77.2090" name="longitude" value={formData.longitude} onChange={handleChange}/>
+
+<Input type="time" label="Open Time" name="openTime" value={formData.openTime} onChange={handleChange}/>
+
+<Input type="time" label="Close Time" name="closeTime" value={formData.closeTime} onChange={handleChange}/>
+
+</div>
+
+)}
+
+{/* STEP 4 */}
+
+{step===4 && (
+
+<div className="space-y-6">
+
+<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+<FileUpload label="Restaurant Logo" name="logo" onChange={handleFile}/>
+<FileUpload label="Restaurant Banner" name="banner" onChange={handleFile}/>
+<FileUpload label="Gallery Images" name="gallery" multiple onChange={handleFile}/>
+
+</div>
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+<Input label="Website" placeholder="https://website.com" name="website" value={formData.website} onChange={handleChange}/>
+
+<Input label="Facebook" placeholder="Facebook link" name="facebook" value={formData.facebook} onChange={handleChange}/>
+
+<Input label="Instagram" placeholder="Instagram link" name="instagram" value={formData.instagram} onChange={handleChange}/>
+
+<Input label="SEO Title" placeholder="SEO title" name="seoTitle" value={formData.seoTitle} onChange={handleChange}/>
+
+<Input label="SEO Description" placeholder="SEO description" name="seoDescription" value={formData.seoDescription} onChange={handleChange}/>
+
+</div>
+
+</div>
+
+)}
+
+{/* STEP 5 */}
+
+{step===5 && (
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+<Input label="Owner Name" placeholder="Owner name" name="ownerName" value={formData.ownerName} onChange={handleChange} error={errors.ownerName}/>
+
+<Input label="Owner Mobile" placeholder="Mobile number" name="ownerMobile" value={formData.ownerMobile} onChange={handleChange} error={errors.ownerMobile}/>
+
+<Select label="Subscription Plan" name="subscriptionPlan" value={formData.subscriptionPlan} onChange={handleChange} options={["basic","pro","premium"]}/>
+
+</div>
+
+)}
+
+<div className="flex justify-between mt-10">
+
+{step>1 && (
+<button onClick={prev} className="px-8 py-3 border border-gray-300 rounded-lg hover:bg-gray-100">
+Previous
+</button>
+)}
+
+{step<5 ? (
+<button onClick={next} className="px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg shadow">
+Next
+</button>
+) : (
+<button onClick={handleSubmit} className="px-8 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow">
+Create Restaurant
+</button>
+)}
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+)
+
+}
+
+/* INPUT */
+
+function Input({label,error,...props}){
+
+return(
+
+<div className="flex flex-col">
+
+<label className="text-sm font-medium text-gray-700 mb-1">
+{label}
+</label>
+
+<input
+{...props}
+className={`w-full border px-4 py-3 rounded-lg bg-gray-50 focus:ring-2 focus:ring-orange-400 outline-none
+${error?"border-red-500":"border-gray-300"}
+`}
+/>
+
+{error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+
+</div>
+
+)
+
+}
+
+/* SELECT */
+
+function Select({label,options,...props}){
+
+return(
+
+<div className="flex flex-col">
+
+<label className="text-sm font-medium text-gray-700 mb-1">
+{label}
+</label>
+
+<select
+{...props}
+className="w-full border px-4 py-3 rounded-lg bg-gray-50 focus:ring-2 focus:ring-orange-400 outline-none border-gray-300"
+>
+
+<option value="">Select</option>
+
+{options.map(o=>(
+<option key={o} value={o}>{o}</option>
+))}
+
+</select>
+
+</div>
+
+)
+
+}
+
+/* FILE UPLOAD */
+
+
+
+function FileUpload({label,name,onChange,multiple}){
+
+return(
+
+<div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:bg-gray-50 overflow-hidden">
+
+<p className="text-sm font-medium text-gray-600 mb-3">
+{label}
+</p>
+
+<div className="w-full">
+
+<input
+type="file"
+accept="image/*"
+name={name}
+multiple={multiple}
+onChange={onChange}
+className="w-full text-sm file:mr-3 file:px-4 file:py-2 file:rounded-md file:border-0 file:bg-orange-500 file:text-white hover:file:bg-orange-600 cursor-pointer"
+/>
+
+</div>
+
+</div>
+
+)
+
+}
