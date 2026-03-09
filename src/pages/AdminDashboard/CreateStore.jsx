@@ -22,7 +22,11 @@ cuisines:"",
 serviceType:"delivery",
 averageCostForTwo:"",
 
-address:"",
+street:"",
+area:"",
+city:"",
+state:"",
+pincode:"",
 latitude:"",
 longitude:"",
 
@@ -50,11 +54,11 @@ seoDescription:"",
 ownerMobile:"",
 ownerName:"",
 
-subscriptionPlan:"basic",
+subscriptionPlan:"free",
 
-logo:null,
-banner:null,
-gallery:[]
+profileImage:null,
+coverImage:null,
+galleryImages:[]
 
 })
 
@@ -74,8 +78,8 @@ setFormData({
 const handleFile = (e)=>{
 const {name,files} = e.target
 
-if(name==="gallery"){
-setFormData({...formData,gallery:Array.from(files)})
+if(name==="galleryImages"){
+setFormData({...formData,galleryImages:Array.from(files)})
 }else{
 setFormData({...formData,[name]:files[0]})
 }
@@ -89,7 +93,7 @@ let newErrors = {}
 
 if(step===1){
 
-if(!formData.name)
+if(!formData.name?.trim())
 newErrors.name="Restaurant name required"
 
 if(!formData.restaurantType)
@@ -112,18 +116,36 @@ newErrors.minimumOrderAmount="Minimum order required"
 
 if(step===3){
 
-if(!formData.address)
-newErrors.address="Address required"
+if(!formData.street)
+newErrors.street="Street is required"
+
+if(!formData.area)
+newErrors.area="Area is required"
+
+if(!formData.city)
+newErrors.city="City is required"
+
+if(!formData.state)
+newErrors.state="State is required"
+
+if(!formData.pincode)
+newErrors.pincode="Pincode required"
+
+else if(!/^\d{6}$/.test(formData.pincode))
+newErrors.pincode="Invalid pincode"
 
 }
 
 if(step===5){
 
+if(!formData.ownerName)
+newErrors.ownerName="Owner name required"
+
 if(!formData.ownerMobile)
 newErrors.ownerMobile="Mobile required"
 
-if(!formData.ownerName)
-newErrors.ownerName="Owner name required"
+else if(!/^[6-9]\d{9}$/.test(formData.ownerMobile))
+newErrors.ownerMobile="Invalid mobile number"
 
 }
 
@@ -154,17 +176,21 @@ const payload = new FormData()
 payload.append("name",formData.name)
 payload.append("description",formData.description)
 payload.append("restaurantType",formData.restaurantType)
-payload.append("cuisines",formData.cuisines)
+payload.append("cuisines", JSON.stringify([formData.cuisines]))
 payload.append("serviceType",formData.serviceType)
 payload.append("averageCostForTwo",formData.averageCostForTwo)
 
 payload.append("address",JSON.stringify({
-fullAddress:formData.address,
+street:formData.street,
+area:formData.area,
+city:formData.city,
+state:formData.state,
+pincode:formData.pincode,
 location:{
 type:"Point",
 coordinates:[
-Number(formData.latitude),
-Number(formData.longitude)
+Number(formData.longitude),
+Number(formData.latitude)
 ]
 }
 }))
@@ -185,10 +211,10 @@ payload.append("deliveryRadiusInKm",formData.deliveryRadiusInKm)
 payload.append("minimumOrderAmount",formData.minimumOrderAmount)
 payload.append("packagingCharge",formData.packagingCharge)
 
-payload.append("paymentMethods",formData.paymentMethods)
+payload.append("paymentMethods",JSON.stringify([formData.paymentMethods]))
 
-payload.append("categories",formData.categories)
-payload.append("offers",formData.offers)
+payload.append("categories", JSON.stringify(formData.categories || []))
+payload.append("offers", JSON.stringify(formData.offers || []))
 
 payload.append("socialLinks",JSON.stringify({
 website:formData.website,
@@ -204,19 +230,22 @@ payload.append("subscriptionPlan",formData.subscriptionPlan)
 payload.append("ownerMobile",formData.ownerMobile)
 payload.append("ownerName",formData.ownerName)
 
-if(formData.logo)
-payload.append("logo",formData.logo)
+/* Images */
 
-if(formData.banner)
-payload.append("banner",formData.banner)
+if(formData.profileImage)
+payload.append("profileImage",formData.profileImage)
 
-formData.gallery.forEach(file=>{
-payload.append("gallery",file)
+if(formData.coverImage)
+payload.append("coverImage",formData.coverImage)
+
+formData.galleryImages.forEach(file=>{
+payload.append("galleryImages",file)
 })
 
-await api.post("/restaurants/create",payload,{
-headers:{ "Content-Type":"multipart/form-data"}
-})
+await api.post("/restaurants/create", payload, {
+  headers: { "Content-Type": "multipart/form-data" },
+  withCredentials: true
+});
 
 alert("Restaurant Created Successfully")
 
@@ -294,13 +323,13 @@ completed?"bg-green-500 text-white":
 
 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-<Input label="Restaurant Name" placeholder="Enter restaurant name" name="name" value={formData.name} onChange={handleChange} error={errors.name}/>
+<Input label="Restaurant Name" name="name" value={formData.name} onChange={handleChange} error={errors.name}/>
 
 <Select label="Restaurant Type" name="restaurantType" value={formData.restaurantType} onChange={handleChange} options={["veg","non-veg","both"]}/>
 
 <Select label="Cuisines" name="cuisines" value={formData.cuisines} onChange={handleChange} options={["Indian","Chinese","Italian","Fast Food"]}/>
 
-<Input label="Description" placeholder="Enter description" name="description" value={formData.description} onChange={handleChange}/>
+<Input label="Description" name="description" value={formData.description} onChange={handleChange}/>
 
 </div>
 
@@ -312,13 +341,13 @@ completed?"bg-green-500 text-white":
 
 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-<Input label="Average Cost For Two" placeholder="₹500" name="averageCostForTwo" value={formData.averageCostForTwo} onChange={handleChange}/>
+<Input label="Average Cost For Two" name="averageCostForTwo" value={formData.averageCostForTwo} onChange={handleChange}/>
 
-<Input label="Minimum Order Amount" placeholder="₹200" name="minimumOrderAmount" value={formData.minimumOrderAmount} onChange={handleChange}/>
+<Input label="Minimum Order Amount" name="minimumOrderAmount" value={formData.minimumOrderAmount} onChange={handleChange}/>
 
-<Input label="Packaging Charge" placeholder="₹20" name="packagingCharge" value={formData.packagingCharge} onChange={handleChange}/>
+<Input label="Packaging Charge" name="packagingCharge" value={formData.packagingCharge} onChange={handleChange}/>
 
-<Input label="Delivery Radius (KM)" placeholder="5" name="deliveryRadiusInKm" value={formData.deliveryRadiusInKm} onChange={handleChange}/>
+<Input label="Delivery Radius (KM)" name="deliveryRadiusInKm" value={formData.deliveryRadiusInKm} onChange={handleChange}/>
 
 <Select label="Payment Methods" name="paymentMethods" value={formData.paymentMethods} onChange={handleChange} options={["Cash","UPI","Card","Wallet"]}/>
 
@@ -332,11 +361,19 @@ completed?"bg-green-500 text-white":
 
 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-<Input label="Address" placeholder="Enter full address" name="address" value={formData.address} onChange={handleChange}/>
+<Input label="Street" name="street" value={formData.street} onChange={handleChange} error={errors.street}/>
 
-<Input label="Latitude" placeholder="28.6139" name="latitude" value={formData.latitude} onChange={handleChange}/>
+<Input label="Area" name="area" value={formData.area} onChange={handleChange} error={errors.area}/>
 
-<Input label="Longitude" placeholder="77.2090" name="longitude" value={formData.longitude} onChange={handleChange}/>
+<Input label="City" name="city" value={formData.city} onChange={handleChange} error={errors.city}/>
+
+<Input label="State" name="state" value={formData.state} onChange={handleChange} error={errors.state}/>
+
+<Input label="Pincode" name="pincode" value={formData.pincode} onChange={handleChange} error={errors.pincode}/>
+
+<Input label="Latitude" name="latitude" value={formData.latitude} onChange={handleChange}/>
+
+<Input label="Longitude" name="longitude" value={formData.longitude} onChange={handleChange}/>
 
 <Input type="time" label="Open Time" name="openTime" value={formData.openTime} onChange={handleChange}/>
 
@@ -354,23 +391,9 @@ completed?"bg-green-500 text-white":
 
 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-<FileUpload label="Restaurant Logo" name="logo" onChange={handleFile}/>
-<FileUpload label="Restaurant Banner" name="banner" onChange={handleFile}/>
-<FileUpload label="Gallery Images" name="gallery" multiple onChange={handleFile}/>
-
-</div>
-
-<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-<Input label="Website" placeholder="https://website.com" name="website" value={formData.website} onChange={handleChange}/>
-
-<Input label="Facebook" placeholder="Facebook link" name="facebook" value={formData.facebook} onChange={handleChange}/>
-
-<Input label="Instagram" placeholder="Instagram link" name="instagram" value={formData.instagram} onChange={handleChange}/>
-
-<Input label="SEO Title" placeholder="SEO title" name="seoTitle" value={formData.seoTitle} onChange={handleChange}/>
-
-<Input label="SEO Description" placeholder="SEO description" name="seoDescription" value={formData.seoDescription} onChange={handleChange}/>
+<FileUpload label="Restaurant Logo" name="profileImage" onChange={handleFile}/>
+<FileUpload label="Restaurant Banner" name="coverImage" onChange={handleFile}/>
+<FileUpload label="Gallery Images" name="galleryImages" multiple onChange={handleFile}/>
 
 </div>
 
@@ -384,11 +407,17 @@ completed?"bg-green-500 text-white":
 
 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-<Input label="Owner Name" placeholder="Owner name" name="ownerName" value={formData.ownerName} onChange={handleChange} error={errors.ownerName}/>
+<Input label="Owner Name" name="ownerName" value={formData.ownerName} onChange={handleChange} error={errors.ownerName}/>
 
-<Input label="Owner Mobile" placeholder="Mobile number" name="ownerMobile" value={formData.ownerMobile} onChange={handleChange} error={errors.ownerMobile}/>
+<Input label="Owner Mobile" name="ownerMobile" value={formData.ownerMobile} onChange={handleChange} error={errors.ownerMobile}/>
 
-<Select label="Subscription Plan" name="subscriptionPlan" value={formData.subscriptionPlan} onChange={handleChange} options={["basic","pro","premium"]}/>
+<Select
+  label="Subscription Plan"
+  name="subscriptionPlan"
+  value={formData.subscriptionPlan}
+  onChange={handleChange}
+  options={["free","silver","gold","platinum"]}
+/>
 
 </div>
 
@@ -483,8 +512,6 @@ className="w-full border px-4 py-3 rounded-lg bg-gray-50 focus:ring-2 focus:ring
 }
 
 /* FILE UPLOAD */
-
-
 
 function FileUpload({label,name,onChange,multiple}){
 
