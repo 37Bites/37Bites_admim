@@ -21,11 +21,12 @@ import {
   Pencil,
   Loader2,
 } from "lucide-react";
-import { NavLink, useParams } from "react-router-dom";
+import { NavLink, useParams, useNavigate } from "react-router-dom";
 import api from "../../api/axios";
 
 export default function StoreView() {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [store, setStore] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -130,13 +131,13 @@ export default function StoreView() {
             The requested restaurant details could not be loaded.
           </p>
 
-          <NavLink
-            to="/Admindashboard/stores"
+          <button
+            onClick={() => navigate("/Admindashboard/stores")}
             className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
           >
             <ArrowLeft size={16} />
             Back to Stores
-          </NavLink>
+          </button>
         </div>
       </div>
     );
@@ -145,31 +146,44 @@ export default function StoreView() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100 pb-10">
       <div className="mx-auto max-w-7xl px-4 py-5 md:px-6 md:py-6">
-        {/* TOP BAR */}
-        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm text-slate-500">Restaurant Details</p>
-            <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">
-              View Store
-            </h1>
-          </div>
+        {/* TOP HEADER */}
+        <div className="mb-5 rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm md:p-5">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            {/* Left Side */}
+            <div className="flex items-start gap-3">
+              <button
+                onClick={() => navigate(-1)}
+                className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50"
+              >
+                <ArrowLeft size={18} />
+              </button>
 
-          <div className="flex flex-wrap gap-3">
-            <NavLink
-              to="/Admindashboard/stores"
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"
-            >
-              <ArrowLeft size={16} />
-              Back
-            </NavLink>
+              <div>
+                <p className="text-sm text-slate-500">Restaurant Details</p>
+                <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">
+                  View Store
+                </h1>
+              </div>
+            </div>
 
-            <NavLink
-              to={`/Admindashboard/stores/edit/${store._id}`}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800"
-            >
-              <Pencil size={16} />
-              Edit Store
-            </NavLink>
+            {/* Right Side */}
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={() => navigate("/Admindashboard/stores")}
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"
+              >
+                <ArrowLeft size={16} />
+                Back to Stores
+              </button>
+
+              <NavLink
+                to={`/Admindashboard/stores/edit/${store._id}`}
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800"
+              >
+                <Pencil size={16} />
+                Edit Store
+              </NavLink>
+            </div>
           </div>
         </div>
 
