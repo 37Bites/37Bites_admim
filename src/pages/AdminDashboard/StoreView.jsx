@@ -145,6 +145,17 @@ export default function StoreView() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100 pb-10">
+      {/* Fixed Back To Stores Button */}
+      <div className="fixed bottom-4 right-4 z-50 sm:bottom-5 sm:right-5 md:bottom-auto md:right-6 md:top-20">
+        <button
+          onClick={() => navigate("/Admindashboard/stores")}
+          className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white shadow-xl transition hover:bg-slate-800"
+        >
+          <ArrowLeft size={16} />
+          <span className="hidden sm:inline">Back to Stores</span>
+        </button>
+      </div>
+
       <div className="mx-auto max-w-7xl px-4 py-5 md:px-6 md:py-6">
         {/* TOP HEADER */}
         <div className="mb-5 rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm md:p-5">
@@ -168,14 +179,6 @@ export default function StoreView() {
 
             {/* Right Side */}
             <div className="flex flex-wrap gap-3">
-              <button
-                onClick={() => navigate("/Admindashboard/stores")}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"
-              >
-                <ArrowLeft size={16} />
-                Back to Stores
-              </button>
-
               <NavLink
                 to={`/Admindashboard/stores/edit/${store._id}`}
                 className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800"
@@ -207,7 +210,7 @@ export default function StoreView() {
             <span
               className={`rounded-full border px-3 py-1 text-xs font-semibold capitalize shadow ${
                 statusStyle[store.status] ||
-                "bg-slate-100 text-slate-700 border-slate-200"
+                "border-slate-200 bg-slate-100 text-slate-700"
               }`}
             >
               {store.status || "N/A"}
