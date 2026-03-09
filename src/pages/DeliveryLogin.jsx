@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import { X } from "lucide-react";
+import { Bike, X } from "lucide-react";
+import api from "../api/axios";
 
 export default function DeliveryLogin() {
+
   const [mobile, setMobile] = useState("");
   const [showOtpModal, setShowOtpModal] = useState(false);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -14,57 +16,100 @@ export default function DeliveryLogin() {
     setMobile(value);
   };
 
-  const handleContinue = () => {
+  /* SEND OTP */
+  const handleContinue = async () => {
     if (mobile.length !== 10) {
-      alert("Please enter a valid 10-digit mobile number");
+      alert("Enter valid mobile number");
       return;
     }
-    setShowOtpModal(true);
-    setTimer(116);
-    setOtp(["", "", "", "", "", ""]);
+
+    try {
+      const res = await api.post("/auth/login", {
+        mobile,
+        role: "delivery",
+      });
+
+      if (res.data.success) {
+        setShowOtpModal(true);
+        setTimer(116);
+        setOtp(["", "", "", "", "", ""]);
+      }
+
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to send OTP");
+    }
   };
 
-  const closeModal = () => {
-    setShowOtpModal(false);
+  /* VERIFY OTP */
+  const handleVerify = async () => {
+
+    const enteredOtp = otp.join("");
+
+    if (enteredOtp.length !== 6) {
+      alert("Enter 6 digit OTP");
+      return;
+    }
+
+    try {
+
+      const res = await api.post("/auth/verify-otp", {
+        mobile,
+        otp: enteredOtp,
+        role: "delivery",
+      });
+
+      if (res.data.success) {
+
+        if (res.data.isProfileComplete) {
+          window.location.href = "/delivery-dashboard";
+        } else {
+          window.location.href = "/delivery-profile";
+        }
+
+      }
+
+    } catch (err) {
+      alert(err.response?.data?.message || "OTP verification failed");
+    }
   };
 
   const handleOtpChange = (value, index) => {
+
     const digit = value.replace(/\D/g, "").slice(0, 1);
-    const updatedOtp = [...otp];
-    updatedOtp[index] = digit;
-    setOtp(updatedOtp);
+
+    const updated = [...otp];
+    updated[index] = digit;
+
+    setOtp(updated);
 
     if (digit && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
+
   };
 
-  const handleOtpKeyDown = (e, index) => {
+  const handleKeyDown = (e, index) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
   };
 
-  const handleVerify = () => {
-    const enteredOtp = otp.join("");
-    if (enteredOtp.length !== 6) {
-      alert("Please enter 6-digit OTP");
-      return;
-    }
+  const handleResendOtp = async () => {
 
-    alert(`OTP Verified: ${enteredOtp}`);
-    // navigate("/delivery-dashboard")
-  };
+    if (timer !== 0) return;
 
-  const handleResendOtp = () => {
-    if (timer === 0) {
-      setTimer(116);
-      setOtp(["", "", "", "", "", ""]);
-      inputRefs.current[0]?.focus();
-    }
+    await api.post("/auth/login", {
+      mobile,
+      role: "delivery",
+    });
+
+    setTimer(116);
+    setOtp(["", "", "", "", "", ""]);
+
   };
 
   useEffect(() => {
+
     if (!showOtpModal || timer <= 0) return;
 
     const interval = setInterval(() => {
@@ -72,170 +117,154 @@ export default function DeliveryLogin() {
     }, 1000);
 
     return () => clearInterval(interval);
+
   }, [showOtpModal, timer]);
 
-  useEffect(() => {
-    if (showOtpModal) {
-      setTimeout(() => {
-        inputRefs.current[0]?.focus();
-      }, 100);
-    }
-  }, [showOtpModal]);
-
   return (
-    <div className="min-h-screen bg-[#f4f4f4] flex items-center justify-center px-4 py-8">
-      {/* Main Login Card */}
-      <div className="w-full max-w-[560px] bg-[#f7f7f7] rounded-[22px] shadow-[0_20px_50px_rgba(0,0,0,0.12)] overflow-hidden border border-gray-100">
-        {/* Top */}
-        <div className="px-6 sm:px-10 pt-10 pb-8 text-center">
-          {/* Logo */}
-          <div className="flex justify-center mb-5">
-            <div className="relative w-20 h-20">
-              <div className="absolute inset-0 flex items-center justify-center text-[#ff6f59] font-black text-6xl leading-none">
-               <img src="/logo.png" alt="Logo" className="w-20 h-20 object-contain" />
-              </div>
-              <div className="absolute left-1/2 top-1/2 -translate-x-[60%] -translate-y-[15%] w-9 h-7 border-[5px] border-[#ff6f59] border-b-0 rotate-0 rounded-t-sm" />
-              <div className="absolute left-[23px] top-[38px] w-5 h-5 bg-[#ff6f59] rounded-sm flex items-center justify-center">
-                <div className="w-2.5 h-2.5 border border-white rounded-[2px]" />
-              </div>
-            </div>
-          </div>
 
-          <h1 className="text-[28px] sm:text-[30px] font-extrabold text-[#102a4c]">
-            Delivery / Agent Login
+    <div
+      className="min-h-screen flex items-center justify-center px-4"
+      style={{
+        backgroundImage:
+          "url('https://images.unsplash.com/photo-1504674900247-0877df9cc836')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+
+      {/* Dark overlay */}
+      <div className="absolute inset-0 bg-black/70"></div>
+
+      {/* Login Card */}
+      <div className="relative w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl p-10 text-white">
+
+        {/* Logo */}
+        <div className="text-center">
+
+          <h1 className="text-3xl font-extrabold text-[#ff6b4a]">
+            37 Bites
           </h1>
-          <p className="text-[#5f7188] mt-2 text-base sm:text-lg">
-            Secure access to your dashboard
+
+          <p className="text-white/70 text-sm mt-1">
+            Delivery Partner Portal
           </p>
+
         </div>
 
-        <div className="border-t border-gray-200 px-6 sm:px-10 py-8 sm:py-10">
-          <label className="block text-[#1d3557] font-semibold text-[18px] mb-3">
-            <span className="text-red-500">*</span> Mobile Number
+        {/* Icon */}
+        <div className="flex justify-center mt-6">
+          <div className="bg-white/20 p-4 rounded-full">
+            <Bike size={30}/>
+          </div>
+        </div>
+
+        <h2 className="text-xl font-semibold text-center mt-6">
+          Login to start delivering
+        </h2>
+
+        {/* Mobile Input */}
+        <div className="mt-8">
+
+          <label className="text-sm text-white/70">
+            Mobile Number
           </label>
 
-          <div className="w-full h-[52px] sm:h-[56px] border border-gray-300 rounded-xl bg-white flex items-center px-4 text-[18px] text-gray-700">
-            <span className="text-gray-500 mr-2">+91</span>
+          <div className="flex items-center bg-white/20 rounded-xl px-4 h-12 mt-2">
+            <span className="mr-2">+91</span>
+
             <input
               type="text"
               value={mobile}
               onChange={handleMobileChange}
-              placeholder="Enter 10-digit mobile number"
-              className="w-full bg-transparent outline-none placeholder:text-gray-400"
+              placeholder="Enter mobile number"
+              className="bg-transparent outline-none w-full placeholder-white/60"
             />
           </div>
 
           <button
             onClick={handleContinue}
-            className="w-full mt-8 bg-[#ff5a47] hover:bg-[#f34f3b] text-white font-bold text-lg sm:text-[18px] h-[56px] rounded-xl transition"
+            className="w-full mt-6 bg-gradient-to-r from-[#ff6b4a] to-[#ff3d2f] h-12 rounded-xl font-semibold hover:opacity-90"
           >
-            Continue to Dashboard
+            Continue
           </button>
 
-          <p className="text-center text-[#7b8798] mt-8 text-sm sm:text-base">
-            Only authorized Delivery Partners can access the system
-          </p>
         </div>
+
       </div>
 
-      {/* OTP Modal */}
+      {/* OTP MODAL */}
       {showOtpModal && (
-        <div className="fixed inset-0 z-50 bg-black/35 flex items-center justify-center px-4">
-          <div className="w-full max-w-[760px] bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.22)] relative overflow-hidden">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between px-5 sm:px-8 pt-5 sm:pt-7">
-              <h2 className="text-2xl sm:text-[30px] font-bold text-[#2b2b2b]">
-                Verify OTP
-              </h2>
 
-              <button
-                onClick={closeModal}
-                className="text-gray-400 hover:text-gray-600 transition"
-              >
-                <X size={30} />
-              </button>
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center">
+
+          <div className="bg-white rounded-2xl shadow-xl p-8 w-[420px] text-center relative">
+
+            <button
+              onClick={() => setShowOtpModal(false)}
+              className="absolute right-4 top-4 text-gray-500"
+            >
+              <X />
+            </button>
+
+            <h2 className="text-2xl font-bold">
+              Verify OTP
+            </h2>
+
+            <p className="mt-2 text-gray-600">
+              OTP sent to +91{mobile}
+            </p>
+
+            <div className="flex justify-center gap-3 mt-6">
+
+              {otp.map((digit, index) => (
+
+                <input
+                  key={index}
+                  ref={(el) => (inputRefs.current[index] = el)}
+                  value={digit}
+                  onChange={(e) =>
+                    handleOtpChange(e.target.value, index)
+                  }
+                  onKeyDown={(e) => handleKeyDown(e, index)}
+                  maxLength={1}
+                  className="w-12 h-14 border rounded-lg text-center text-xl font-bold"
+                />
+
+              ))}
+
             </div>
 
-            {/* Modal Body */}
-            <div className="px-5 sm:px-8 pb-7 sm:pb-10 pt-4 text-center">
-              {/* Logo */}
-              <div className="flex flex-col items-center justify-center mt-2">
-                <div className="relative w-24 h-24">
-                  <div className="absolute inset-0 flex items-center justify-center text-[#315b4d] font-black text-6xl leading-none">
-                    B
-                  </div>
-                  <div className="absolute left-1/2 top-1/2 -translate-x-[60%] -translate-y-[15%] w-9 h-7 border-[5px] border-[#ef6b57] border-b-0 rounded-t-sm" />
-                  <div className="absolute left-[27px] top-[43px] w-5 h-5 bg-[#ef6b57] rounded-sm flex items-center justify-center">
-                    <div className="w-2.5 h-2.5 border border-white rounded-[2px]" />
-                  </div>
-                </div>
+            <button
+              onClick={handleVerify}
+              className="w-full mt-6 bg-[#ff4b2b] text-white h-12 rounded-lg font-bold"
+            >
+              Verify OTP
+            </button>
 
-                <div className="-mt-1">
-                  <p className="text-[20px] sm:text-[24px] font-extrabold text-[#315b4d] leading-none">
-                    Basera
-                  </p>
-                  <p className="text-[12px] tracking-[0.25em] font-bold text-[#ef6b57] mt-1">
-                    HUB
-                  </p>
-                </div>
-              </div>
-
-              <p className="mt-8 text-[20px] sm:text-[22px] text-[#333]">
-                Enter the 6-digit OTP sent to
-                <span className="font-bold"> +91{mobile}</span>
-              </p>
-
-              {/* OTP Inputs */}
-              <div className="flex justify-center gap-2 sm:gap-3 mt-6 flex-wrap">
-                {otp.map((digit, index) => (
-                  <input
-                    key={index}
-                    ref={(el) => (inputRefs.current[index] = el)}
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={1}
-                    value={digit}
-                    onChange={(e) => handleOtpChange(e.target.value, index)}
-                    onKeyDown={(e) => handleOtpKeyDown(e, index)}
-                    className={`w-11 h-14 sm:w-14 sm:h-16 rounded-lg border text-center text-2xl font-semibold outline-none transition ${
-                      index === 0 && !digit
-                        ? "border-2 border-[#2f2f2f]"
-                        : "border border-gray-300"
-                    }`}
-                  />
-                ))}
-              </div>
+            <div className="mt-4 text-sm">
 
               <button
-                onClick={handleVerify}
-                className="w-full mt-8 h-[52px] sm:h-[56px] rounded-xl bg-[#ef5b56] hover:bg-[#e44d47] text-white font-bold text-lg transition"
+                onClick={handleResendOtp}
+                disabled={timer !== 0}
+                className={`${timer === 0 ? "text-red-500" : "text-gray-400"}`}
               >
-                Verify
+                Resend OTP
               </button>
 
-              <div className="mt-5 text-left text-base sm:text-lg">
-                <button
-                  onClick={handleResendOtp}
-                  disabled={timer !== 0}
-                  className={`mr-2 ${
-                    timer === 0
-                      ? "text-[#ef5b56] font-medium"
-                      : "text-[#f29b9b] cursor-not-allowed"
-                  }`}
-                >
-                  Resend OTP
-                </button>
+              {timer !== 0 && (
+                <span className="ml-2 text-gray-500">
+                  in {timer}s
+                </span>
+              )}
 
-                {timer !== 0 && (
-                  <span className="text-[#ff5449]">
-                    You can resend in {timer}s
-                  </span>
-                )}
-              </div>
             </div>
+
           </div>
+
         </div>
+
       )}
+
     </div>
   );
 }
