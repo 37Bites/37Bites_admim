@@ -243,8 +243,8 @@ payload.append("galleryImages",file)
 })
 
 await api.post("/restaurants/create", payload, {
-  headers: { "Content-Type": "multipart/form-data" },
-  withCredentials: true
+headers: { "Content-Type": "multipart/form-data" },
+withCredentials: true
 });
 
 alert("Restaurant Created Successfully")
@@ -323,13 +323,13 @@ completed?"bg-green-500 text-white":
 
 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-<Input label="Restaurant Name" name="name" value={formData.name} onChange={handleChange} error={errors.name}/>
+<Input label="Restaurant Name" name="name" placeholder="Enter restaurant name" value={formData.name} onChange={handleChange} error={errors.name}/>
 
 <Select label="Restaurant Type" name="restaurantType" value={formData.restaurantType} onChange={handleChange} options={["veg","non-veg","both"]}/>
 
 <Select label="Cuisines" name="cuisines" value={formData.cuisines} onChange={handleChange} options={["Indian","Chinese","Italian","Fast Food"]}/>
 
-<Input label="Description" name="description" value={formData.description} onChange={handleChange}/>
+<Input label="Description" name="description" placeholder="Short description about restaurant" value={formData.description} onChange={handleChange}/>
 
 </div>
 
@@ -341,13 +341,13 @@ completed?"bg-green-500 text-white":
 
 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-<Input label="Average Cost For Two" name="averageCostForTwo" value={formData.averageCostForTwo} onChange={handleChange}/>
+<Input label="Average Cost For Two" name="averageCostForTwo" placeholder="Eg: 500" value={formData.averageCostForTwo} onChange={handleChange}/>
 
-<Input label="Minimum Order Amount" name="minimumOrderAmount" value={formData.minimumOrderAmount} onChange={handleChange}/>
+<Input label="Minimum Order Amount" name="minimumOrderAmount" placeholder="Eg: 100" value={formData.minimumOrderAmount} onChange={handleChange}/>
 
-<Input label="Packaging Charge" name="packagingCharge" value={formData.packagingCharge} onChange={handleChange}/>
+<Input label="Packaging Charge" name="packagingCharge" placeholder="Eg: 20" value={formData.packagingCharge} onChange={handleChange}/>
 
-<Input label="Delivery Radius (KM)" name="deliveryRadiusInKm" value={formData.deliveryRadiusInKm} onChange={handleChange}/>
+<Input label="Delivery Radius (KM)" name="deliveryRadiusInKm" placeholder="Eg: 5" value={formData.deliveryRadiusInKm} onChange={handleChange}/>
 
 <Select label="Payment Methods" name="paymentMethods" value={formData.paymentMethods} onChange={handleChange} options={["Cash","UPI","Card","Wallet"]}/>
 
@@ -361,19 +361,19 @@ completed?"bg-green-500 text-white":
 
 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-<Input label="Street" name="street" value={formData.street} onChange={handleChange} error={errors.street}/>
+<Input label="Street" name="street" placeholder="Street address" value={formData.street} onChange={handleChange} error={errors.street}/>
 
-<Input label="Area" name="area" value={formData.area} onChange={handleChange} error={errors.area}/>
+<Input label="Area" name="area" placeholder="Area name" value={formData.area} onChange={handleChange} error={errors.area}/>
 
-<Input label="City" name="city" value={formData.city} onChange={handleChange} error={errors.city}/>
+<Input label="City" name="city" placeholder="City name" value={formData.city} onChange={handleChange} error={errors.city}/>
 
-<Input label="State" name="state" value={formData.state} onChange={handleChange} error={errors.state}/>
+<Input label="State" name="state" placeholder="State name" value={formData.state} onChange={handleChange} error={errors.state}/>
 
-<Input label="Pincode" name="pincode" value={formData.pincode} onChange={handleChange} error={errors.pincode}/>
+<Input label="Pincode" name="pincode" placeholder="6 digit pincode" value={formData.pincode} onChange={handleChange} error={errors.pincode}/>
 
-<Input label="Latitude" name="latitude" value={formData.latitude} onChange={handleChange}/>
+<Input label="Latitude" name="latitude" placeholder="Eg: 26.8467" value={formData.latitude} onChange={handleChange}/>
 
-<Input label="Longitude" name="longitude" value={formData.longitude} onChange={handleChange}/>
+<Input label="Longitude" name="longitude" placeholder="Eg: 80.9462" value={formData.longitude} onChange={handleChange}/>
 
 <Input type="time" label="Open Time" name="openTime" value={formData.openTime} onChange={handleChange}/>
 
@@ -397,6 +397,24 @@ completed?"bg-green-500 text-white":
 
 </div>
 
+<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+<Input label="Website" name="website" placeholder="https://yourwebsite.com" value={formData.website} onChange={handleChange}/>
+
+<Input label="Facebook" name="facebook" placeholder="Facebook page link" value={formData.facebook} onChange={handleChange}/>
+
+<Input label="Instagram" name="instagram" placeholder="Instagram profile link" value={formData.instagram} onChange={handleChange}/>
+
+</div>
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+<Input label="SEO Title" name="seoTitle" placeholder="SEO title for Google" value={formData.seoTitle} onChange={handleChange}/>
+
+<Input label="SEO Description" name="seoDescription" placeholder="SEO description for Google" value={formData.seoDescription} onChange={handleChange}/>
+
+</div>
+
 </div>
 
 )}
@@ -407,16 +425,16 @@ completed?"bg-green-500 text-white":
 
 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-<Input label="Owner Name" name="ownerName" value={formData.ownerName} onChange={handleChange} error={errors.ownerName}/>
+<Input label="Owner Name" name="ownerName" placeholder="Owner full name" value={formData.ownerName} onChange={handleChange} error={errors.ownerName}/>
 
-<Input label="Owner Mobile" name="ownerMobile" value={formData.ownerMobile} onChange={handleChange} error={errors.ownerMobile}/>
+<Input label="Owner Mobile" name="ownerMobile" placeholder="10 digit mobile number" value={formData.ownerMobile} onChange={handleChange} error={errors.ownerMobile}/>
 
 <Select
-  label="Subscription Plan"
-  name="subscriptionPlan"
-  value={formData.subscriptionPlan}
-  onChange={handleChange}
-  options={["free","silver","gold","platinum"]}
+label="Subscription Plan"
+name="subscriptionPlan"
+value={formData.subscriptionPlan}
+onChange={handleChange}
+options={["free","silver","gold","platinum"]}
 />
 
 </div>
