@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Globe,
   User,
@@ -7,24 +7,21 @@ import {
   ChevronDown,
   Shield,
   Bell,
-  Moon,
-  Sun
+  Menu,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
 
-export default function AdminHeader() {
+export default function AdminHeader({ onMenuClick }) {
   const [profileOpen, setProfileOpen] = useState(false);
-  const [online, setOnline] = useState(true);
-  const [darkMode, setDarkMode] = useState(false);
-  const [notifications] = useState(3); // dummy unread count
+  const [notifications] = useState(3);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const profileRef = useRef(null);
 
-  const { user, lastLogin } = useSelector((state) => state.auth);
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -32,166 +29,180 @@ export default function AdminHeader() {
         setProfileOpen(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate("/");
+    navigate("/login");
   };
 
-  const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : "A";
+  const userInitial = user?.name?.charAt(0)?.toUpperCase() || "A";
 
-  // Format last login
-  const formattedLastLogin = lastLogin
-    ? new Date(lastLogin).toLocaleString("en-US", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true
-      })
-    : "First Login";
+  const formattedLastLogin =
+    user?.lastLoginAt || user?.lastLogin
+      ? new Date(user.lastLoginAt || user.lastLogin).toLocaleString("en-IN", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        })
+      : "First Login";
 
   return (
-    <div className="fixed top-0 left-72 right-0 bg-white/90 backdrop-blur border-b px-8 py-4 flex items-center justify-between z-40">
-
-      {/* LEFT SIDE */}
-      <div>
-        <h1 className="text-2xl font-semibold text-gray-800">
-          Welcome,{user?.name || "Admin"}
-        </h1>
-        <p className="text-xs text-gray-400">
-          {new Date().toDateString()}
-        </p>
-      </div>
-
-      {/* RIGHT SIDE */}
-      <div className="flex items-center gap-6">
-
-        {/* Dark Mode Toggle */}
-        <button
-          onClick={() => setDarkMode(!darkMode)}
-          className="p-2 rounded-lg hover:bg-gray-100 transition"
-        >
-          {darkMode ? <Sun size={18} /> : <Moon size={18} />}
-        </button>
-
-        {/* Notifications */}
-        <div className="relative cursor-pointer p-2 rounded-lg hover:bg-gray-100 transition">
-          <Bell size={18} />
-          {notifications > 0 && (
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-              {notifications}
-            </span>
-          )}
-        </div>
-
-        {/* Website link */}
-        <div className="hidden md:flex items-center gap-2 text-sm text-gray-600">
-          <Globe size={16} />
-          <a
-            href="https://37-bites-frontend.vercel.app/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-orange-500 transition"
-          >
-            View Website
-          </a>
-        </div>
-
-        {/* Profile Dropdown */}
-        <div className="relative" ref={profileRef}>
+    <header className="fixed left-0 right-0 top-0 z-40 border-b border-gray-200 bg-white/95 backdrop-blur-md md:left-72">
+      <div className="flex min-h-[70px] items-center justify-between gap-3 px-3 py-3 sm:px-4 md:px-6 lg:px-8">
+        {/* LEFT */}
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           <button
-            onClick={() => setProfileOpen(!profileOpen)}
-            className="flex items-center gap-3"
+            onClick={onMenuClick}
+            className="rounded-xl p-2 text-gray-600 transition hover:bg-gray-100 md:hidden"
           >
-            {/* Avatar with online dot */}
-            <div className="relative">
-              <div className="w-10 h-10 rounded-full bg-orange-500 text-white flex items-center justify-center font-semibold">
-                {userInitial}
-              </div>
-
-              <span
-                className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${
-                  online ? "bg-green-500" : "bg-gray-400"
-                }`}
-              />
-            </div>
-
-            <div className="hidden md:block text-left">
-              <p className="text-sm font-medium text-gray-800">
-                {user?.name || "Admin"}
-              </p>
-              <span className="text-xs bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full capitalize">
-                {user?.role || "Administrator"}
-              </span>
-            </div>
-
-            <ChevronDown
-              size={16}
-              className={`transition-transform ${profileOpen ? "rotate-180" : ""}`}
-            />
+            <Menu size={20} />
           </button>
 
-          {profileOpen && (
-            <div className="absolute right-0 mt-4 w-80 bg-white rounded-2xl shadow-2xl border py-4 z-50 animate-fadeIn">
-
-              {/* User Info */}
-              <div className="px-6 pb-4 border-b">
-
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-14 h-14 rounded-full bg-orange-500 text-white flex items-center justify-center text-lg font-bold">
-                    {userInitial}
-                  </div>
-
-                  <div>
-                    <p className="font-semibold text-gray-800 text-lg">
-                      {user?.name}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {user?.email || "No Email"}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="text-sm text-gray-600 space-y-1">
-                  <p>📱 {user?.mobile || "Not Available"}</p>
-                  <p>🕒 Last Login: {formattedLastLogin}</p>
-                  <p className="flex items-center gap-1">
-                    <Shield size={14} />
-                    Role: {user?.role || "Administrator"}
-                  </p>
-                  <p>Status: <span className="text-green-600 font-medium">Active</span></p>
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="mt-3">
-                <button className="flex items-center gap-3 px-6 py-3 hover:bg-gray-50 w-full text-sm transition">
-                  <User size={16} /> Profile Settings
-                </button>
-
-                <button className="flex items-center gap-3 px-6 py-3 hover:bg-gray-50 w-full text-sm transition">
-                  <Settings size={16} /> Account Settings
-                </button>
-
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center gap-3 px-6 py-3 hover:bg-red-50 w-full text-sm text-red-500 transition"
-                >
-                  <LogOut size={16} /> Logout
-                </button>
-              </div>
-
-            </div>
-          )}
+          <div className="min-w-0">
+            <h1 className="truncate text-sm font-semibold text-gray-800 sm:text-base md:text-xl lg:text-2xl">
+              Welcome, {isAuthenticated ? user?.name || "Admin" : "Guest"}
+            </h1>
+            <p className="truncate text-[10px] text-gray-500 sm:text-xs">
+              {new Date().toDateString()}
+            </p>
+          </div>
         </div>
 
+        {/* RIGHT */}
+        <div className="flex shrink-0 items-center gap-1 sm:gap-2 md:gap-3 lg:gap-5">
+          {/* Notifications */}
+          <button className="relative rounded-xl p-2 text-gray-600 transition hover:bg-gray-100">
+            <Bell size={18} />
+            {notifications > 0 && (
+              <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-semibold text-white">
+                {notifications}
+              </span>
+            )}
+          </button>
+
+          {/* Website Link */}
+          <div className="hidden items-center gap-2 text-sm text-gray-600 xl:flex">
+            <Globe size={16} />
+            <a
+              href="https://37-bites-frontend.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition hover:text-orange-500"
+            >
+              View Website
+            </a>
+          </div>
+
+          {/* Profile */}
+          <div className="relative" ref={profileRef}>
+            <button
+              onClick={() => setProfileOpen((prev) => !prev)}
+              className="flex items-center gap-2 rounded-2xl px-1 py-1 transition hover:bg-gray-50 sm:px-2"
+            >
+              <div className="relative">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-orange-500 text-sm font-semibold text-white sm:h-10 sm:w-10">
+                  {userInitial}
+                </div>
+
+                <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-green-500" />
+              </div>
+
+              <div className="hidden text-left lg:block">
+                <p className="max-w-[140px] truncate text-sm font-medium text-gray-800">
+                  {user?.name || "Admin"}
+                </p>
+                <span className="rounded-full bg-orange-100 px-2 py-0.5 text-xs capitalize text-orange-600">
+                  {user?.role || "Administrator"}
+                </span>
+              </div>
+
+              <ChevronDown
+                size={16}
+                className={`hidden text-gray-600 transition-transform sm:block ${
+                  profileOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            {profileOpen && (
+              <div className="absolute right-0 mt-3 w-[290px] max-w-[calc(100vw-20px)] overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl sm:w-80">
+                {/* User Info */}
+                <div className="border-b border-gray-200 px-4 py-4 sm:px-5">
+                  <div className="mb-4 flex items-center gap-3">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-500 text-base font-bold text-white sm:h-14 sm:w-14 sm:text-lg">
+                      {userInitial}
+                    </div>
+
+                    <div className="min-w-0">
+                      <p className="truncate text-base font-semibold text-gray-800">
+                        {user?.name || "Admin"}
+                      </p>
+                      <p className="truncate text-xs text-gray-500">
+                        {user?.email || "No Email"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 text-sm text-gray-600">
+                    <p className="break-words">📱 {user?.mobile || "Not Available"}</p>
+                    <p className="break-words">🕒 Last Login: {formattedLastLogin}</p>
+                    <p className="flex items-center gap-2 break-words">
+                      <Shield size={14} />
+                      Role: {user?.role || "Administrator"}
+                    </p>
+                    <p>
+                      Status:{" "}
+                      <span className="font-medium text-green-600">
+                        {isAuthenticated ? "Active" : "Logged Out"}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="py-2">
+                  <button
+                    onClick={() => {
+                      setProfileOpen(false);
+                      navigate("/admin/profile");
+                    }}
+                    className="flex w-full items-center gap-3 px-4 py-3 text-sm text-gray-700 transition hover:bg-gray-50 sm:px-5"
+                  >
+                    <User size={16} />
+                    Profile Settings
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setProfileOpen(false);
+                      navigate("/admin/settings");
+                    }}
+                    className="flex w-full items-center gap-3 px-4 py-3 text-sm text-gray-700 transition hover:bg-gray-50 sm:px-5"
+                  >
+                    <Settings size={16} />
+                    Account Settings
+                  </button>
+
+                  <button
+                    onClick={handleLogout}
+                    className="flex w-full items-center gap-3 px-4 py-3 text-sm text-red-500 transition hover:bg-red-50 sm:px-5"
+                  >
+                    <LogOut size={16} />
+                    Logout
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
+    </header>
   );
 }

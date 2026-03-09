@@ -136,10 +136,13 @@ export default function AdminHome() {
   }, []);
 
   const filteredOrders = orders.filter((order) => {
+    const searchText = search.toLowerCase();
+
     const matchSearch =
-      order.restaurant.toLowerCase().includes(search.toLowerCase()) ||
-      order.customer.toLowerCase().includes(search.toLowerCase()) ||
-      order.deliveryBoy.toLowerCase().includes(search.toLowerCase());
+      order.restaurant.toLowerCase().includes(searchText) ||
+      order.customer.toLowerCase().includes(searchText) ||
+      order.deliveryBoy.toLowerCase().includes(searchText) ||
+      order.id.toLowerCase().includes(searchText);
 
     const matchStatus = statusFilter === "all" || order.status === statusFilter;
 
@@ -151,25 +154,25 @@ export default function AdminHome() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100 p-4 md:p-6 xl:p-8">
-      <div className="mx-auto max-w-7xl space-y-8">
+      <div className="mx-auto max-w-7xl space-y-6 md:space-y-8">
         {/* HERO HEADER */}
-        <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-r from-slate-950 via-slate-900 to-slate-800 p-6 text-white shadow-2xl md:p-8">
+        <div className="relative overflow-hidden rounded-[24px] bg-gradient-to-r from-slate-950 via-slate-900 to-slate-800 p-5 text-white shadow-2xl md:rounded-[32px] md:p-8">
           <div className="absolute -right-10 -top-10 h-44 w-44 rounded-full bg-orange-500/20 blur-3xl" />
           <div className="absolute bottom-0 right-20 h-32 w-32 rounded-full bg-indigo-500/20 blur-3xl" />
 
           <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div>
+            <div className="max-w-2xl">
               <p className="text-sm text-slate-300">Admin Overview</p>
-              <h1 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">
+              <h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl">
                 Platform Dashboard
               </h1>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300">
+              <p className="mt-3 text-sm leading-6 text-slate-300">
                 Monitor restaurants, orders, live delivery flow, platform
                 performance, and revenue in one premium control center.
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:w-auto">
               <HeroMiniCard
                 label="Growth"
                 value="+14%"
@@ -241,20 +244,20 @@ export default function AdminHome() {
 
         {/* CHARTS */}
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-          <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-lg">
-            <div className="mb-5 flex items-center justify-between">
+          <div className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-lg md:rounded-[28px] md:p-5">
+            <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-slate-500">Weekly Trend</p>
                 <h3 className="text-lg font-bold text-slate-900">
                   Orders Analytics
                 </h3>
               </div>
-              <div className="rounded-2xl bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-600">
+              <div className="w-fit rounded-2xl bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-600">
                 Live Data
               </div>
             </div>
 
-            <ResponsiveContainer width="100%" height={280}>
+            <ResponsiveContainer width="100%" height={260}>
               <LineChart data={ordersChart}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
                 <XAxis dataKey="day" />
@@ -272,51 +275,55 @@ export default function AdminHome() {
             </ResponsiveContainer>
           </div>
 
-          <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-lg">
-            <div className="mb-5 flex items-center justify-between">
+          <div className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-lg md:rounded-[28px] md:p-5">
+            <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-slate-500">Platform Expansion</p>
                 <h3 className="text-lg font-bold text-slate-900">
                   Restaurant Growth
                 </h3>
               </div>
-              <div className="rounded-2xl bg-indigo-50 px-3 py-2 text-sm font-semibold text-indigo-600">
+              <div className="w-fit rounded-2xl bg-indigo-50 px-3 py-2 text-sm font-semibold text-indigo-600">
                 6 Months
               </div>
             </div>
 
-            <ResponsiveContainer width="100%" height={280}>
+            <ResponsiveContainer width="100%" height={260}>
               <BarChart data={growthChart}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
                 <XAxis dataKey="month" />
                 <YAxis />
                 <Tooltip />
-                <Bar dataKey="restaurants" fill="#6366f1" radius={[10, 10, 0, 0]} />
+                <Bar
+                  dataKey="restaurants"
+                  fill="#6366f1"
+                  radius={[10, 10, 0, 0]}
+                />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* TOP RESTAURANTS */}
-        <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-lg">
-          <div className="mb-5 flex items-center justify-between">
+        <div className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-lg md:rounded-[28px] md:p-5">
+          <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-slate-500">Leaderboard</p>
               <h3 className="text-xl font-bold text-slate-900">
                 Top Selling Restaurants
               </h3>
             </div>
-            <button className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
+            <button className="inline-flex w-fit items-center gap-2 rounded-2xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
               View All
               <ArrowUpRight size={16} />
             </button>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {topRestaurants.map((r, i) => (
               <div
                 key={i}
-                className="rounded-[24px] border border-slate-200 bg-gradient-to-b from-white to-slate-50 p-4 transition hover:-translate-y-1 hover:shadow-md"
+                className="rounded-[22px] border border-slate-200 bg-gradient-to-b from-white to-slate-50 p-4 transition hover:-translate-y-1 hover:shadow-md md:rounded-[24px]"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-100 text-orange-600">
@@ -334,7 +341,9 @@ export default function AdminHome() {
                 <div className="mt-4 space-y-2">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-slate-500">Orders</span>
-                    <span className="font-semibold text-slate-800">{r.orders}</span>
+                    <span className="font-semibold text-slate-800">
+                      {r.orders}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-slate-500">Revenue</span>
@@ -355,17 +364,23 @@ export default function AdminHome() {
             icon={<AlertCircle className="h-5 w-5 text-orange-500" />}
           >
             <div className="space-y-3">
-              {pendingRestaurants.map((item) => (
-                <div
-                  key={item._id}
-                  className="flex items-center justify-between rounded-2xl border border-orange-100 bg-orange-50 px-4 py-3"
-                >
-                  <span className="font-medium text-slate-800">{item.name}</span>
-                  <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-600">
-                    Pending
-                  </span>
-                </div>
-              ))}
+              {pendingRestaurants.length > 0 ? (
+                pendingRestaurants.map((item) => (
+                  <div
+                    key={item._id}
+                    className="flex items-center justify-between gap-3 rounded-2xl border border-orange-100 bg-orange-50 px-4 py-3"
+                  >
+                    <span className="font-medium text-slate-800">
+                      {item.name}
+                    </span>
+                    <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-600">
+                      Pending
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <ActivityRow text="No pending approvals" />
+              )}
             </div>
           </InfoPanel>
 
@@ -374,21 +389,27 @@ export default function AdminHome() {
             icon={<Utensils className="h-5 w-5 text-emerald-600" />}
           >
             <div className="space-y-3">
-              {activeRestaurants.map((res) => (
-                <div
-                  key={res._id}
-                  className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
-                >
-                  <span className="font-medium text-slate-800">{res.name}</span>
-                  <span
-                    className={`text-sm font-semibold ${
-                      res.isOpen ? "text-green-600" : "text-slate-500"
-                    }`}
+              {activeRestaurants.length > 0 ? (
+                activeRestaurants.map((res) => (
+                  <div
+                    key={res._id}
+                    className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
                   >
-                    ● {res.isOpen ? "Open" : "Closed"}
-                  </span>
-                </div>
-              ))}
+                    <span className="font-medium text-slate-800">
+                      {res.name}
+                    </span>
+                    <span
+                      className={`text-sm font-semibold ${
+                        res.isOpen ? "text-green-600" : "text-slate-500"
+                      }`}
+                    >
+                      ● {res.isOpen ? "Open" : "Closed"}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <ActivityRow text="No active restaurants" />
+              )}
             </div>
           </InfoPanel>
 
@@ -406,7 +427,7 @@ export default function AdminHome() {
         </div>
 
         {/* LIVE ORDERS */}
-        <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-lg">
+        <div className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-lg md:rounded-[28px] md:p-5">
           <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="text-sm text-slate-500">Real-time operations</p>
@@ -448,7 +469,8 @@ export default function AdminHome() {
             </div>
           </div>
 
-          <div className="overflow-x-auto">
+          {/* Desktop Table */}
+          <div className="hidden overflow-x-auto lg:block">
             <table className="w-full min-w-[900px] border-separate border-spacing-y-3 text-sm">
               <thead>
                 <tr className="text-left text-slate-500">
@@ -488,19 +510,68 @@ export default function AdminHome() {
                       ₹{o.amount}
                     </td>
                     <td className="rounded-r-2xl px-3 py-4">
-                      <span
-                        className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold
-                        ${o.status === "Delivered" ? "bg-green-100 text-green-700" : ""}
-                        ${o.status === "Preparing" ? "bg-yellow-100 text-yellow-700" : ""}
-                        ${o.status === "Out for Delivery" ? "bg-blue-100 text-blue-700" : ""}`}
-                      >
-                        {o.status}
-                      </span>
+                      <OrderStatusBadge status={o.status} />
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile Cards */}
+          <div className="space-y-4 lg:hidden">
+            {filteredOrders.map((o) => (
+              <div
+                key={o.id}
+                className="rounded-[22px] border border-slate-200 bg-slate-50 p-4"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm text-slate-500">Order ID</p>
+                    <h4 className="font-bold text-slate-900">{o.id}</h4>
+                  </div>
+                  <OrderStatusBadge status={o.status} />
+                </div>
+
+                <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <OrderInfo
+                    icon={<Utensils size={15} className="text-slate-500" />}
+                    label="Restaurant"
+                    value={o.restaurant}
+                  />
+                  <OrderInfo
+                    icon={<User size={15} className="text-slate-500" />}
+                    label="Customer"
+                    value={o.customer}
+                  />
+                  <OrderInfo
+                    icon={<Bike size={15} className="text-slate-500" />}
+                    label="Delivery Boy"
+                    value={o.deliveryBoy}
+                  />
+                  <OrderInfo
+                    icon={<MapPin size={15} className="text-slate-500" />}
+                    label="Location"
+                    value={o.location}
+                  />
+                </div>
+
+                <div className="mt-4 rounded-2xl border border-slate-200 bg-white px-4 py-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-slate-500">Amount</span>
+                    <span className="font-semibold text-slate-900">
+                      ₹{o.amount}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {filteredOrders.length === 0 && (
+              <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-12 text-center text-slate-500">
+                No orders found
+              </div>
+            )}
           </div>
         </div>
 
@@ -511,7 +582,7 @@ export default function AdminHome() {
             <h3 className="text-xl font-bold text-slate-900">Quick Actions</h3>
           </div>
 
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
             <ActionCard
               icon={<PlusCircle className="h-6 w-6 text-white" />}
               title="Add Restaurant"
@@ -544,21 +615,25 @@ function HeroMiniCard({ label, value, icon }) {
         <span className="text-sm">{label}</span>
         {icon}
       </div>
-      <p className="text-xl font-bold text-white">{value}</p>
+      <p className="text-lg font-bold text-white sm:text-xl">{value}</p>
     </div>
   );
 }
 
 function StatCard({ title, value, sub, icon, iconBg }) {
   return (
-    <div className="rounded-[26px] border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg">
+    <div className="rounded-[22px] border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg md:rounded-[26px] md:p-5">
       <div className="flex items-start justify-between gap-4">
-        <div>
+        <div className="min-w-0">
           <p className="text-sm font-medium text-slate-500">{title}</p>
-          <p className="mt-2 text-3xl font-bold text-slate-900">{value}</p>
+          <p className="mt-2 break-words text-2xl font-bold text-slate-900 md:text-3xl">
+            {value}
+          </p>
           <p className="mt-2 text-xs text-slate-400">{sub}</p>
         </div>
-        <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${iconBg}`}>
+        <div
+          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${iconBg}`}
+        >
           {icon}
         </div>
       </div>
@@ -569,15 +644,17 @@ function StatCard({ title, value, sub, icon, iconBg }) {
 function HighlightCard({ title, value, subtitle, gradient, icon }) {
   return (
     <div
-      className={`overflow-hidden rounded-[28px] bg-gradient-to-r ${gradient} p-6 text-white shadow-lg transition hover:shadow-2xl`}
+      className={`overflow-hidden rounded-[24px] bg-gradient-to-r ${gradient} p-5 text-white shadow-lg transition hover:shadow-2xl md:rounded-[28px] md:p-6`}
     >
-      <div className="flex items-start justify-between">
-        <div>
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
           <p className="text-sm text-white/80">{title}</p>
-          <h2 className="mt-2 text-4xl font-bold">{value}</h2>
+          <h2 className="mt-2 break-words text-3xl font-bold md:text-4xl">
+            {value}
+          </h2>
           <p className="mt-3 max-w-md text-sm text-white/85">{subtitle}</p>
         </div>
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/15">
           {icon}
         </div>
       </div>
@@ -587,7 +664,7 @@ function HighlightCard({ title, value, subtitle, gradient, icon }) {
 
 function InfoPanel({ title, icon, children }) {
   return (
-    <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-lg">
+    <div className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-lg md:rounded-[28px] md:p-5">
       <h3 className="mb-4 flex items-center gap-2 text-lg font-bold text-slate-900">
         {icon}
         {title}
@@ -608,17 +685,42 @@ function ActivityRow({ text }) {
 function ActionCard({ icon, title, subtitle, color }) {
   return (
     <div
-      className={`bg-gradient-to-r ${color} cursor-pointer rounded-[28px] p-6 text-white shadow-md transition duration-300 hover:-translate-y-1 hover:shadow-xl`}
+      className={`cursor-pointer rounded-[24px] bg-gradient-to-r ${color} p-5 text-white shadow-md transition duration-300 hover:-translate-y-1 hover:shadow-xl md:rounded-[28px] md:p-6`}
     >
       <div className="flex items-start gap-4">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/15">
           {icon}
         </div>
-        <div>
+        <div className="min-w-0">
           <h4 className="text-lg font-semibold">{title}</h4>
           <p className="mt-1 text-sm text-white/85">{subtitle}</p>
         </div>
       </div>
+    </div>
+  );
+}
+
+function OrderStatusBadge({ status }) {
+  return (
+    <span
+      className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold
+      ${status === "Delivered" ? "bg-green-100 text-green-700" : ""}
+      ${status === "Preparing" ? "bg-yellow-100 text-yellow-700" : ""}
+      ${status === "Out for Delivery" ? "bg-blue-100 text-blue-700" : ""}`}
+    >
+      {status}
+    </span>
+  );
+}
+
+function OrderInfo({ icon, label, value }) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
+      <div className="mb-1 flex items-center gap-2 text-xs text-slate-500">
+        {icon}
+        {label}
+      </div>
+      <p className="text-sm font-semibold text-slate-800">{value}</p>
     </div>
   );
 }
