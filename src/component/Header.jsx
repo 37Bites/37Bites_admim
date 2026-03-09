@@ -36,7 +36,7 @@ export default function AdminHeader({ onMenuClick }) {
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate("/");
+    navigate("/secure-admin-login");
   };
 
   const userInitial = user?.name?.charAt(0)?.toUpperCase() || "A";
