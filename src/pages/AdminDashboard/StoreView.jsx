@@ -8,7 +8,6 @@ import {
   BadgeIndianRupee,
   ShoppingBag,
   CheckCircle2,
-  AlertCircle,
   Flame,
   Globe,
   User,
@@ -102,7 +101,7 @@ export default function StoreView() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 p-4 md:p-6">
-        <div className="mx-auto max-w-7xl rounded-[32px] border border-slate-200 bg-white p-10 text-center shadow-sm">
+        <div className="mx-auto max-w-7xl rounded-[28px] border border-slate-200 bg-white p-8 text-center shadow-sm md:p-10">
           <div className="flex flex-col items-center justify-center">
             <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-slate-100">
               <Loader2 className="animate-spin text-slate-600" size={28} />
@@ -122,7 +121,7 @@ export default function StoreView() {
   if (!store) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 p-4 md:p-6">
-        <div className="mx-auto max-w-7xl rounded-[32px] border border-slate-200 bg-white p-10 text-center shadow-sm">
+        <div className="mx-auto max-w-7xl rounded-[28px] border border-slate-200 bg-white p-8 text-center shadow-sm md:p-10">
           <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-3xl bg-slate-100">
             <Store className="text-slate-500" size={34} />
           </div>
@@ -145,9 +144,9 @@ export default function StoreView() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100 pb-10">
-      <div className="mx-auto max-w-7xl px-4 py-6 md:px-6">
-        {/* Top bar */}
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+      <div className="mx-auto max-w-7xl px-4 py-5 md:px-6 md:py-6">
+        {/* TOP BAR */}
+        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm text-slate-500">Restaurant Details</p>
             <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">
@@ -158,7 +157,7 @@ export default function StoreView() {
           <div className="flex flex-wrap gap-3">
             <NavLink
               to="/Admindashboard/stores"
-              className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"
             >
               <ArrowLeft size={16} />
               Back
@@ -166,7 +165,7 @@ export default function StoreView() {
 
             <NavLink
               to={`/Admindashboard/stores/edit/${store._id}`}
-              className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800"
             >
               <Pencil size={16} />
               Edit Store
@@ -174,9 +173,9 @@ export default function StoreView() {
           </div>
         </div>
 
-        {/* Hero Banner */}
-        <div className="relative overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-sm">
-          <div className="h-[260px] w-full md:h-[340px] lg:h-[420px]">
+        {/* HERO */}
+        <div className="relative overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm md:rounded-[32px]">
+          <div className="h-[220px] w-full sm:h-[260px] md:h-[320px] lg:h-[380px]">
             <img
               src={bannerImage}
               alt={store.name}
@@ -186,13 +185,13 @@ export default function StoreView() {
 
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-          <div className="absolute left-5 top-5 flex flex-wrap gap-2 md:left-6 md:top-6">
+          <div className="absolute left-4 top-4 flex flex-wrap gap-2 md:left-6 md:top-6">
             <span className="rounded-full bg-white/95 px-3 py-1 text-xs font-semibold text-slate-800 shadow">
               {store.restaurantType || "Restaurant"}
             </span>
 
             <span
-              className={`rounded-full border px-3 py-1 text-xs font-semibold shadow ${
+              className={`rounded-full border px-3 py-1 text-xs font-semibold capitalize shadow ${
                 statusStyle[store.status] ||
                 "bg-slate-100 text-slate-700 border-slate-200"
               }`}
@@ -213,18 +212,11 @@ export default function StoreView() {
                 Busy
               </span>
             )}
-
-            {store.isFeatured && (
-              <span className="rounded-full bg-indigo-500 px-3 py-1 text-xs font-semibold text-white shadow">
-                Featured
-              </span>
-            )}
           </div>
 
-          {/* Bottom hero info */}
-          <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6">
-            <div className="flex flex-col gap-4 md:flex-row md:items-end">
-              <div className="h-24 w-24 overflow-hidden rounded-[28px] border-4 border-white bg-white shadow-2xl md:h-28 md:w-28">
+          <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+              <div className="h-20 w-20 overflow-hidden rounded-[24px] border-4 border-white bg-white shadow-2xl sm:h-24 sm:w-24 md:h-28 md:w-28 md:rounded-[28px]">
                 <img
                   src={logoImage}
                   alt={store.name}
@@ -233,12 +225,14 @@ export default function StoreView() {
               </div>
 
               <div className="min-w-0 text-white">
-                <h2 className="truncate text-2xl font-bold md:text-4xl">
+                <h2 className="truncate text-xl font-bold sm:text-2xl md:text-4xl">
                   {store.name}
                 </h2>
 
                 <p className="mt-1 text-sm text-white/90">
-                  {store.address?.city || store.address?.state || "Unknown Location"}
+                  {store.address?.city ||
+                    store.address?.state ||
+                    "Unknown Location"}
                   {store.address?.country ? `, ${store.address.country}` : ""}
                 </p>
 
@@ -250,10 +244,6 @@ export default function StoreView() {
                   <span className="inline-flex items-center gap-1.5">
                     <ShoppingBag size={14} />
                     Orders {store.totalOrders || 0}
-                  </span>
-                  <span className="inline-flex items-center gap-1.5">
-                    <BadgeIndianRupee size={14} />
-                    {store.averageCostForTwo || 0} for two
                   </span>
                 </div>
 
@@ -278,8 +268,8 @@ export default function StoreView() {
           </div>
         </div>
 
-        {/* Quick Status Cards */}
-        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {/* TOP METRICS */}
+        <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <TopMetricCard
             title="Open Status"
             value={store.isOpen ? "Open" : "Closed"}
@@ -310,10 +300,10 @@ export default function StoreView() {
           />
         </div>
 
-        {/* Main Content */}
-        <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-[1.45fr_0.95fr]">
-          {/* Left */}
-          <div className="space-y-6">
+        {/* MAIN GRID */}
+        <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-[1.1fr_0.9fr]">
+          {/* LEFT SIDE */}
+          <div className="space-y-5">
             <SectionCard title="Basic Information">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <DetailItem
@@ -321,7 +311,11 @@ export default function StoreView() {
                   value={store.name}
                   icon={<Store size={16} />}
                 />
-                <DetailItem label="Slug" value={store.slug} icon={<Tag size={16} />} />
+                <DetailItem
+                  label="Slug"
+                  value={store.slug}
+                  icon={<Tag size={16} />}
+                />
                 <DetailItem
                   label="Restaurant Type"
                   value={store.restaurantType}
@@ -335,7 +329,7 @@ export default function StoreView() {
                 <DetailItem
                   label="Status"
                   value={store.status}
-                  icon={<AlertCircle size={16} />}
+                  icon={<CheckCircle2 size={16} />}
                 />
                 <DetailItem
                   label="User ID"
@@ -424,73 +418,10 @@ export default function StoreView() {
                 />
               </div>
             </SectionCard>
-
-            <SectionCard title="Description">
-              <div className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-7 text-slate-700">
-                {store.description || "No description added"}
-              </div>
-            </SectionCard>
-
-            <SectionCard title="Gallery Images">
-              {store.galleryImages?.length ? (
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {store.galleryImages.map((img, index) => (
-                    <div
-                      key={index}
-                      className="group overflow-hidden rounded-3xl border border-slate-200 bg-slate-100 shadow-sm"
-                    >
-                      <div className="relative h-56 overflow-hidden">
-                        <img
-                          src={img}
-                          alt={`gallery-${index}`}
-                          className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent opacity-0 transition group-hover:opacity-100" />
-                        <div className="absolute bottom-3 left-3 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-800 opacity-0 transition group-hover:opacity-100">
-                          Image {index + 1}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <EmptyState
-                  icon={<ImageIcon size={20} />}
-                  text="No gallery images available"
-                />
-              )}
-            </SectionCard>
           </div>
 
-          {/* Right */}
-          <div className="space-y-6">
-            <SectionCard title="Store Status">
-              <div className="grid grid-cols-1 gap-3">
-                <StatusBox
-                  icon={<CheckCircle2 size={18} />}
-                  label="Open Status"
-                  value={store.isOpen ? "Open" : "Closed"}
-                  valueClass={store.isOpen ? "text-green-600" : "text-red-500"}
-                />
-                <StatusBox
-                  icon={<Flame size={18} />}
-                  label="Busy Mode"
-                  value={store.isBusy ? "Busy" : "Normal"}
-                  valueClass={store.isBusy ? "text-orange-600" : "text-slate-700"}
-                />
-                <StatusBox
-                  icon={<ShoppingBag size={18} />}
-                  label="Total Orders"
-                  value={store.totalOrders || 0}
-                />
-                <StatusBox
-                  icon={<AlertCircle size={18} />}
-                  label="Featured"
-                  value={store.isFeatured ? "Yes" : "No"}
-                />
-              </div>
-            </SectionCard>
-
+          {/* RIGHT SIDE */}
+          <div className="space-y-5">
             <SectionCard title="Contact & Online">
               <div className="grid grid-cols-1 gap-4">
                 <DetailItem
@@ -537,7 +468,7 @@ export default function StoreView() {
                   {store.timings.map((item, index) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
+                      className="flex flex-col gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
                     >
                       <div className="flex items-center gap-2 text-sm font-medium text-slate-700">
                         <Clock size={15} />
@@ -546,7 +477,9 @@ export default function StoreView() {
                       <div className="text-sm text-slate-600">
                         {item.isClosed
                           ? "Closed"
-                          : `${item.openTime || "--:--"} - ${item.closeTime || "--:--"}`}
+                          : `${item.openTime || "--:--"} - ${
+                              item.closeTime || "--:--"
+                            }`}
                       </div>
                     </div>
                   ))}
@@ -555,6 +488,42 @@ export default function StoreView() {
                 <EmptyState
                   icon={<Clock size={20} />}
                   text="No timings available"
+                />
+              )}
+            </SectionCard>
+
+            <SectionCard title="Description">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-7 text-slate-700">
+                {store.description || "No description added"}
+              </div>
+            </SectionCard>
+
+            <SectionCard title="Gallery Images">
+              {store.galleryImages?.length ? (
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  {store.galleryImages.map((img, index) => (
+                    <div
+                      key={index}
+                      className="group overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 shadow-sm"
+                    >
+                      <div className="relative h-44 overflow-hidden sm:h-48">
+                        <img
+                          src={img}
+                          alt={`gallery-${index}`}
+                          className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent opacity-0 transition group-hover:opacity-100" />
+                        <div className="absolute bottom-3 left-3 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-800 opacity-0 transition group-hover:opacity-100">
+                          Image {index + 1}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <EmptyState
+                  icon={<ImageIcon size={20} />}
+                  text="No gallery images available"
                 />
               )}
             </SectionCard>
@@ -567,8 +536,10 @@ export default function StoreView() {
 
 function SectionCard({ title, children }) {
   return (
-    <div className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md">
-      <h3 className="mb-4 text-lg font-bold text-slate-900">{title}</h3>
+    <div className="rounded-[22px] border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md sm:rounded-[24px] md:rounded-[28px] md:p-5">
+      <h3 className="mb-4 text-base font-bold text-slate-900 md:text-lg">
+        {title}
+      </h3>
       {children}
     </div>
   );
@@ -577,10 +548,10 @@ function SectionCard({ title, children }) {
 function DetailItem({ label, value, full = false, icon }) {
   return (
     <div className={full ? "md:col-span-2" : ""}>
-      <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
+      <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate-500 sm:text-xs">
         {label}
       </p>
-      <div className="flex min-h-[54px] items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800">
+      <div className="flex min-h-[50px] items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800">
         {icon && <span className="shrink-0 text-slate-500">{icon}</span>}
         <span className="break-words">{value || "N/A"}</span>
       </div>
@@ -588,31 +559,19 @@ function DetailItem({ label, value, full = false, icon }) {
   );
 }
 
-function StatusBox({ icon, label, value, valueClass = "text-slate-800" }) {
-  return (
-    <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
-      <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-slate-700 shadow-sm">
-          {icon}
-        </div>
-        <p className="text-sm font-medium text-slate-600">{label}</p>
-      </div>
-      <p className={`text-sm font-bold ${valueClass}`}>{value}</p>
-    </div>
-  );
-}
-
 function TopMetricCard({ title, value, icon, iconBg, iconColor }) {
   return (
-    <div className="rounded-[26px] border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-      <div className="flex items-start justify-between">
-        <div>
+    <div className="rounded-[20px] border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:rounded-[22px] md:rounded-[24px]">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
           <p className="text-sm font-medium text-slate-500">{title}</p>
-          <h3 className="mt-2 text-2xl font-bold text-slate-900">{value}</h3>
+          <h3 className="mt-2 break-words text-xl font-bold text-slate-900 md:text-2xl">
+            {value}
+          </h3>
         </div>
 
         <div
-          className={`flex h-12 w-12 items-center justify-center rounded-2xl ${iconBg} ${iconColor}`}
+          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${iconBg} ${iconColor}`}
         >
           {icon}
         </div>
@@ -624,7 +583,7 @@ function TopMetricCard({ title, value, icon, iconBg, iconColor }) {
 function EmptyState({ icon, text }) {
   return (
     <div className="flex items-center gap-3 rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-4 text-sm text-slate-500">
-      <span className="text-slate-400">{icon}</span>
+      <span className="shrink-0 text-slate-400">{icon}</span>
       <span>{text}</span>
     </div>
   );

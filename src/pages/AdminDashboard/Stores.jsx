@@ -12,7 +12,6 @@ import {
   Plus,
   RefreshCw,
   Loader2,
-  Flame,
   Pencil,
   Search,
   Filter,
@@ -233,12 +232,12 @@ export default function Stores() {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 p-4 md:p-6">
       <div className="mx-auto max-w-7xl space-y-6">
         {/* HERO */}
-        <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-r from-slate-950 via-slate-900 to-slate-800 px-6 py-7 text-white shadow-xl md:px-8">
+        <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-r from-slate-950 via-slate-900 to-slate-800 px-5 py-6 text-white shadow-xl md:px-8 md:py-7">
           <div className="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-orange-500/10 to-transparent" />
           <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="text-sm text-slate-300">Restaurant Management</p>
-              <h1 className="mt-1 text-3xl font-bold tracking-tight md:text-4xl">
+              <h1 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl">
                 Stores Dashboard
               </h1>
               <p className="mt-2 max-w-2xl text-sm text-slate-300">
@@ -372,9 +371,9 @@ export default function Stores() {
                   key={store._id}
                   className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-xl"
                 >
-                  <div className="grid grid-cols-1 gap-5 p-5 xl:grid-cols-[290px_minmax(0,1fr)_350px]">
+                 <div className="grid grid-cols-1 gap-4 p-3 sm:p-4 xl:grid-cols-[240px_minmax(0,1fr)_300px] 2xl:grid-cols-[260px_minmax(0,1fr)_320px]">
                     {/* IMAGE */}
-                    <div className="relative h-60 w-full overflow-hidden rounded-[22px] bg-slate-100">
+                    <div className="relative h-40 w-full overflow-hidden rounded-[20px] bg-slate-100 sm:h-44">
                       <img
                         src={
                           store.bannerImage ||
@@ -393,7 +392,7 @@ export default function Stores() {
                         </span>
 
                         <span
-                          className={`rounded-full border px-3 py-1 text-xs font-semibold shadow ${getStatusStyle(
+                          className={`rounded-full border px-3 py-1 text-xs font-semibold capitalize shadow ${getStatusStyle(
                             store.status
                           )}`}
                         >
@@ -407,7 +406,7 @@ export default function Stores() {
                         )}
                       </div>
 
-                      {store.logoImage || store.logo ? (
+                      {(store.logoImage || store.logo) && (
                         <div className="absolute bottom-3 left-3 h-14 w-14 overflow-hidden rounded-2xl border-2 border-white bg-white shadow-lg">
                           <img
                             src={store.logoImage || store.logo}
@@ -415,17 +414,17 @@ export default function Stores() {
                             className="h-full w-full object-cover"
                           />
                         </div>
-                      ) : null}
+                      )}
                     </div>
 
                     {/* CONTENT */}
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-start justify-between gap-3">
-                        <div>
-                          <h2 className="text-2xl font-bold text-slate-900">
+                        <div className="min-w-0">
+                          <h2 className="truncate text-xl font-bold text-slate-900 sm:text-2xl">
                             {store.name}
                           </h2>
-                          <p className="mt-1 text-sm text-slate-500">
+                          <p className="mt-1 truncate text-sm text-slate-500">
                             {store.slug || "No slug available"}
                           </p>
                         </div>
@@ -440,7 +439,7 @@ export default function Stores() {
 
                       <div className="mt-4 flex items-center gap-2 text-sm text-slate-500">
                         <MapPin size={15} />
-                        <span>
+                        <span className="break-words">
                           {store.address?.city ||
                             store.address?.state ||
                             "Unknown Location"}
@@ -450,12 +449,11 @@ export default function Stores() {
                         </span>
                       </div>
 
-                      <div className="mt-3 text-sm text-slate-600">
+                      {/* ₹500 for two removed */}
+                      <div className="mt-3 text-sm text-slate-600 break-words">
                         {store.cuisines?.length
                           ? store.cuisines.join(", ")
-                          : "Cuisine not added"}{" "}
-                        <span className="mx-2 text-slate-300">•</span> ₹
-                        {store.averageCostForTwo || 0} for two
+                          : "Cuisine not added"}
                       </div>
 
                       <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
@@ -472,22 +470,21 @@ export default function Stores() {
                           value={store.totalOrders || 0}
                         />
                         <MiniInfo
-                          label="Busy"
-                          value={store.isBusy ? "Yes" : "No"}
+                          label="Status"
+                          value={store.status || "N/A"}
+                          capitalize
                         />
                       </div>
 
                       {store.user && (
                         <div className="mt-4 inline-flex max-w-full items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
                           <Phone size={14} />
-                          <span className="truncate">
-                            User ID: {store.user}
-                          </span>
+                          <span className="truncate">User ID: {store.user}</span>
                         </div>
                       )}
 
                       {/* ACTIONS */}
-                      <div className="mt-5 flex flex-wrap items-center gap-3">
+                     <div className="mt-4 flex flex-wrap items-center gap-2">
                         <NavLink to={`/Admindashboard/stores/view/${store._id}`}>
                           <button className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600">
                             <Eye size={16} />
@@ -508,17 +505,6 @@ export default function Stores() {
                         </button>
 
                         <button
-                          onClick={() => toggleBusy(store._id)}
-                          disabled={isProcessing}
-                          className={`inline-flex items-center gap-2 rounded-2xl border border-orange-200 px-4 py-2.5 text-sm font-medium text-orange-600 transition hover:bg-orange-50 ${
-                            isProcessing ? "cursor-not-allowed opacity-60" : ""
-                          }`}
-                        >
-                          <Flame size={16} />
-                          {store.isBusy ? "Normal Mode" : "Busy Mode"}
-                        </button>
-
-                        <button
                           onClick={() => handleDelete(store._id)}
                           disabled={isProcessing}
                           className={`inline-flex items-center gap-2 rounded-2xl border border-red-200 px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50 ${
@@ -532,7 +518,7 @@ export default function Stores() {
                     </div>
 
                     {/* CONTROLS */}
-                    <div className="rounded-[24px] border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-4">
+                 <div className="rounded-[20px] border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-3">
                       <div className="mb-4 flex items-center justify-between">
                         <div>
                           <p className="text-xs text-slate-500">Controls</p>
@@ -686,9 +672,9 @@ export default function Stores() {
                         </div>
 
                         <div className="rounded-2xl border border-slate-200 bg-white p-3">
-                          <p className="text-xs text-slate-500">Mode</p>
-                          <p className="mt-1 text-sm font-semibold text-slate-800">
-                            {store.isBusy ? "Busy" : "Available"}
+                          <p className="text-xs text-slate-500">Status</p>
+                          <p className="mt-1 text-sm font-semibold capitalize text-slate-800">
+                            {store.status || "N/A"}
                           </p>
                         </div>
                       </div>
@@ -731,11 +717,17 @@ function StatCard({ title, value, icon, iconBg, iconColor }) {
   );
 }
 
-function MiniInfo({ label, value }) {
+function MiniInfo({ label, value, capitalize = false }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3">
+   <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
       <p className="text-xs text-slate-500">{label}</p>
-      <p className="mt-1 text-sm font-semibold text-slate-800">{value}</p>
+      <p
+        className={`mt-1 text-sm font-semibold text-slate-800 ${
+          capitalize ? "capitalize" : ""
+        }`}
+      >
+        {value}
+      </p>
     </div>
   );
 }

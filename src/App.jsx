@@ -7,14 +7,20 @@ import Stores from "./pages/AdminDashboard/Stores";
 import AllUsers from "./pages/AdminDashboard/Customers";
 import CreateStore from "./pages/AdminDashboard/CreateStore";
 import StoreView from "./pages/AdminDashboard/StoreView";
+import DeliveryLogin from "./pages/DeliveryLogin";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Login Route */}
-        <Route path="/" element={<AdminLogin />} />
 
+        {/* Login Route */}
+           
+       
+
+           
+        <Route path="/" element={<DeliveryLogin />} />
+         <Route path="/secure-admin-login" element={<AdminLogin/>} />
         {/* Admin Routing */}
         <Route path="/Admindashboard" element={<AdminDashboard />}>
           <Route index element={<AdminHome />} />
