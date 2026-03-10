@@ -190,7 +190,7 @@ export default function AdminHeader({ onMenuClick }) {
                     type="button"
                     onClick={() => {
                       setProfileOpen(false);
-                      navigate("/admin/profile");
+                      navigate("/Admindashboard/profile");
                     }}
                     className="flex w-full items-center gap-3 px-4 py-3 text-sm text-gray-700 transition hover:bg-gray-50 sm:px-5"
                   >

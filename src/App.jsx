@@ -10,6 +10,7 @@ import StoreView from "./pages/AdminDashboard/StoreView";
 import DeliveryLogin from "./pages/DeliveryLogin";
 import DeliveryPartners from "./pages/AdminDashboard/DeliveryPartners";
 import RestaurantUsers from "./pages/AdminDashboard/RestaurantUsers";
+import ProfilePage from "./pages/AdminDashboard/ProfilePage";
 
 
 
@@ -37,6 +38,7 @@ function App() {
           <Route path="stores/view/:id" element={<StoreView />} />
           <Route path="delivery-partners" element={<DeliveryPartners />} />
           <Route path="restaurant-users" element={<RestaurantUsers />} />
+           <Route path="/Admindashboard/profile" element={<ProfilePage />} />
         </Route>
 
 
