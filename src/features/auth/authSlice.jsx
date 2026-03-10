@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-// ✅ Safe localStorage parse
 let storedAuth = null;
 try {
   storedAuth = JSON.parse(localStorage.getItem("auth"));
@@ -21,22 +20,24 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     loginSuccess: (state, action) => {
-      const { user, accessToken, refreshToken } = action.payload;
-
+      const payload = action.payload || {};
+      const user = payload.user || null;
+      const accessToken = payload.accessToken || null;
+      const refreshToken = payload.refreshToken || null;
       const lastLogin = new Date().toISOString();
 
       state.user = user;
-      state.accessToken = accessToken || null;
-      state.refreshToken = refreshToken || null;
+      state.accessToken = accessToken;
+      state.refreshToken = refreshToken;
       state.lastLogin = lastLogin;
-      state.isAuthenticated = true;
+      state.isAuthenticated = !!user;
 
       localStorage.setItem(
         "auth",
         JSON.stringify({
           user,
-          accessToken: accessToken || null,
-          refreshToken: refreshToken || null,
+          accessToken,
+          refreshToken,
           lastLogin,
         })
       );
@@ -54,9 +55,11 @@ const authSlice = createSlice({
 
     updateUser: (state, action) => {
       state.user = {
-        ...state.user,
-        ...action.payload,
+        ...(state.user || {}),
+        ...(action.payload || {}),
       };
+
+      state.isAuthenticated = !!state.user;
 
       localStorage.setItem(
         "auth",
