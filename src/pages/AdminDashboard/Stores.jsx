@@ -46,6 +46,24 @@ export default function Stores() {
     fetchStores();
   }, []);
 
+  const getStoreCoverImage = (store) => {
+    return (
+      store?.coverImage?.url ||
+      store?.galleryImages?.[0]?.url ||
+      store?.profileImage?.url ||
+      "https://via.placeholder.com/600x400?text=Restaurant"
+    );
+  };
+
+  const getStoreProfileImage = (store) => {
+    return (
+      store?.profileImage?.url ||
+      store?.coverImage?.url ||
+      store?.galleryImages?.[0]?.url ||
+      "https://via.placeholder.com/100x100?text=Store"
+    );
+  };
+
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this restaurant?")) return;
 
@@ -185,16 +203,18 @@ export default function Stores() {
 
   const filteredStores = useMemo(() => {
     return stores.filter((store) => {
-      const searchText = search.toLowerCase();
+      const searchText = search.toLowerCase().trim();
 
       const matchesSearch =
-        !search ||
+        !searchText ||
         store.name?.toLowerCase().includes(searchText) ||
         store.slug?.toLowerCase().includes(searchText) ||
         store.restaurantType?.toLowerCase().includes(searchText) ||
-        store.address?.city?.toLowerCase().includes(searchText) ||
         store.address?.state?.toLowerCase().includes(searchText) ||
         store.address?.country?.toLowerCase().includes(searchText) ||
+        store.address?.pincode?.toLowerCase().includes(searchText) ||
+        store.address?.landmark?.toLowerCase().includes(searchText) ||
+        store.ownerMobile?.toLowerCase().includes(searchText) ||
         store.cuisines?.join(", ")?.toLowerCase().includes(searchText);
 
       const matchesStatus =
@@ -231,7 +251,6 @@ export default function Stores() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 p-4 md:p-6">
       <div className="mx-auto max-w-7xl space-y-6">
-        {/* HERO */}
         <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-r from-slate-950 via-slate-900 to-slate-800 px-5 py-6 text-white shadow-xl md:px-8 md:py-7">
           <div className="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-orange-500/10 to-transparent" />
           <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
@@ -265,7 +284,6 @@ export default function Stores() {
           </div>
         </div>
 
-        {/* FILTER BAR */}
         <div className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm">
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_0.8fr_0.8fr]">
             <div className="relative">
@@ -275,7 +293,7 @@ export default function Stores() {
               />
               <input
                 type="text"
-                placeholder="Search by name, slug, cuisine, city, state..."
+                placeholder="Search by name, slug, cuisine, state, pincode..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-4 text-sm outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
@@ -306,7 +324,6 @@ export default function Stores() {
           </div>
         </div>
 
-        {/* STATS */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard
             title="Total Stores"
@@ -338,7 +355,6 @@ export default function Stores() {
           />
         </div>
 
-        {/* STORE LIST */}
         <div className="space-y-5">
           {loading ? (
             <div className="rounded-[28px] border border-slate-200 bg-white py-20 text-center shadow-sm">
@@ -371,17 +387,16 @@ export default function Stores() {
                   key={store._id}
                   className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-xl"
                 >
-                 <div className="grid grid-cols-1 gap-4 p-3 sm:p-4 xl:grid-cols-[240px_minmax(0,1fr)_300px] 2xl:grid-cols-[260px_minmax(0,1fr)_320px]">
-                    {/* IMAGE */}
+                  <div className="grid grid-cols-1 gap-4 p-3 sm:p-4 xl:grid-cols-[240px_minmax(0,1fr)_300px] 2xl:grid-cols-[260px_minmax(0,1fr)_320px]">
                     <div className="relative h-40 w-full overflow-hidden rounded-[20px] bg-slate-100 sm:h-44">
                       <img
-                        src={
-                          store.bannerImage ||
-                          store.galleryImages?.[0] ||
-                          "https://via.placeholder.com/600x400?text=Restaurant"
-                        }
+                        src={getStoreCoverImage(store)}
                         alt={store.name}
                         className="h-full w-full object-cover transition duration-500 hover:scale-105"
+                        onError={(e) => {
+                          e.currentTarget.src =
+                            "https://via.placeholder.com/600x400?text=Restaurant";
+                        }}
                       />
 
                       <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
@@ -406,18 +421,19 @@ export default function Stores() {
                         )}
                       </div>
 
-                      {(store.logoImage || store.logo) && (
-                        <div className="absolute bottom-3 left-3 h-14 w-14 overflow-hidden rounded-2xl border-2 border-white bg-white shadow-lg">
-                          <img
-                            src={store.logoImage || store.logo}
-                            alt={store.name}
-                            className="h-full w-full object-cover"
-                          />
-                        </div>
-                      )}
+                      {/* <div className="absolute bottom-3 left-3 h-14 w-14 overflow-hidden rounded-2xl border-2 border-white bg-white shadow-lg">
+                        <img
+                          src={getStoreProfileImage(store)}
+                          alt={store.name}
+                          className="h-full w-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src =
+                              "https://via.placeholder.com/100x100?text=Store";
+                          }}
+                        />
+                      </div> */}
                     </div>
 
-                    {/* CONTENT */}
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div className="min-w-0">
@@ -440,7 +456,7 @@ export default function Stores() {
                       <div className="mt-4 flex items-center gap-2 text-sm text-slate-500">
                         <MapPin size={15} />
                         <span className="break-words">
-                          {store.address?.city ||
+                          {store.address?.landmark ||
                             store.address?.state ||
                             "Unknown Location"}
                           {store.address?.country
@@ -449,7 +465,6 @@ export default function Stores() {
                         </span>
                       </div>
 
-                      {/* ₹500 for two removed */}
                       <div className="mt-3 text-sm text-slate-600 break-words">
                         {store.cuisines?.length
                           ? store.cuisines.join(", ")
@@ -476,15 +491,24 @@ export default function Stores() {
                         />
                       </div>
 
-                      {store.user && (
-                        <div className="mt-4 inline-flex max-w-full items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-                          <Phone size={14} />
-                          <span className="truncate">User ID: {store.user}</span>
-                        </div>
-                      )}
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {store.ownerMobile && (
+                          <div className="inline-flex max-w-full items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                            <Phone size={14} />
+                            <span className="truncate">
+                              Owner: {store.ownerMobile}
+                            </span>
+                          </div>
+                        )}
 
-                      {/* ACTIONS */}
-                     <div className="mt-4 flex flex-wrap items-center gap-2">
+                        {store.user && (
+                          <div className="inline-flex max-w-full items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                            <span className="truncate">User ID: {store.user}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="mt-4 flex flex-wrap items-center gap-2">
                         <NavLink to={`/Admindashboard/stores/view/${store._id}`}>
                           <button className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600">
                             <Eye size={16} />
@@ -511,14 +535,17 @@ export default function Stores() {
                             isProcessing ? "cursor-not-allowed opacity-60" : ""
                           }`}
                         >
-                          <Trash2 size={16} />
+                          {isProcessing ? (
+                            <Loader2 size={16} className="animate-spin" />
+                          ) : (
+                            <Trash2 size={16} />
+                          )}
                           Delete
                         </button>
                       </div>
                     </div>
 
-                    {/* CONTROLS */}
-                 <div className="rounded-[20px] border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-3">
+                    <div className="rounded-[20px] border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-3">
                       <div className="mb-4 flex items-center justify-between">
                         <div>
                           <p className="text-xs text-slate-500">Controls</p>
@@ -719,7 +746,7 @@ function StatCard({ title, value, icon, iconBg, iconColor }) {
 
 function MiniInfo({ label, value, capitalize = false }) {
   return (
-   <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+    <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
       <p className="text-xs text-slate-500">{label}</p>
       <p
         className={`mt-1 text-sm font-semibold text-slate-800 ${

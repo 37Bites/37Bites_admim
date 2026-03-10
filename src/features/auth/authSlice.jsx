@@ -1,16 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-<<<<<<< HEAD
 // Load saved auth
 const storedAuth = JSON.parse(localStorage.getItem("auth"));
-=======
-let storedAuth = null;
-try {
-  storedAuth = JSON.parse(localStorage.getItem("auth"));
-} catch (error) {
-  storedAuth = null;
-}
->>>>>>> 96546799e8b54ba2af9a2d707a8575da8f447bd2
 
 const initialState = {
   user: storedAuth?.user || null,
@@ -79,9 +70,5 @@ const authSlice = createSlice({
   },
 });
 
-<<<<<<< HEAD
 export const { loginSuccess, logout } = authSlice.actions;
-=======
-export const { loginSuccess, logout, updateUser } = authSlice.actions;
->>>>>>> 96546799e8b54ba2af9a2d707a8575da8f447bd2
 export default authSlice.reducer;

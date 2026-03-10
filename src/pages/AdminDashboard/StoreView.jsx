@@ -66,18 +66,41 @@ export default function StoreView() {
     fetchStore();
   }, [id]);
 
-  const bannerImage =
-    store?.bannerImage ||
-    store?.banner ||
-    store?.coverImage ||
-    store?.galleryImages?.[0] ||
-    "https://via.placeholder.com/1400x500?text=Restaurant+Banner";
+  const getBannerImage = (storeData) => {
+    return (
+      storeData?.coverImage?.url ||
+      storeData?.bannerImage?.url ||
+      storeData?.bannerImage ||
+      storeData?.banner?.url ||
+      storeData?.banner ||
+      storeData?.galleryImages?.[0]?.url ||
+      storeData?.profileImage?.url ||
+      "https://via.placeholder.com/1400x500?text=Restaurant+Banner"
+    );
+  };
 
-  const logoImage =
-    store?.logo ||
-    store?.logoImage ||
-    store?.image ||
-    "https://via.placeholder.com/200x200?text=Logo";
+  const getLogoImage = (storeData) => {
+    return (
+      storeData?.profileImage?.url ||
+      storeData?.logo?.url ||
+      storeData?.logo ||
+      storeData?.logoImage?.url ||
+      storeData?.logoImage ||
+      storeData?.image?.url ||
+      storeData?.image ||
+      storeData?.coverImage?.url ||
+      "https://via.placeholder.com/200x200?text=Logo"
+    );
+  };
+
+  const getGalleryImage = (img) => {
+    if (!img) return "https://via.placeholder.com/600x400?text=Gallery+Image";
+    if (typeof img === "string") return img;
+    return img?.url || "https://via.placeholder.com/600x400?text=Gallery+Image";
+  };
+
+  const bannerImage = getBannerImage(store);
+  const logoImage = getLogoImage(store);
 
   const statusStyle = {
     active: "bg-green-100 text-green-700 border-green-200",
@@ -170,7 +193,6 @@ export default function StoreView() {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 py-5 md:px-6 md:py-6">
-        {/* TOP HEADER */}
         <div className="mb-5 rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm md:p-5">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="flex items-start gap-3">
@@ -201,13 +223,16 @@ export default function StoreView() {
           </div>
         </div>
 
-        {/* HERO */}
         <div className="relative overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm md:rounded-[32px]">
           <div className="h-[220px] w-full sm:h-[260px] md:h-[320px] lg:h-[380px]">
             <img
               src={bannerImage}
               alt={store.name}
               className="h-full w-full object-cover"
+              onError={(e) => {
+                e.currentTarget.src =
+                  "https://via.placeholder.com/1400x500?text=Restaurant+Banner";
+              }}
             />
           </div>
 
@@ -249,6 +274,10 @@ export default function StoreView() {
                   src={logoImage}
                   alt={store.name}
                   className="h-full w-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src =
+                      "https://via.placeholder.com/200x200?text=Logo";
+                  }}
                 />
               </div>
 
@@ -293,7 +322,6 @@ export default function StoreView() {
           </div>
         </div>
 
-        {/* TOP METRICS */}
         <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <TopMetricCard
             title="Open Status"
@@ -325,9 +353,7 @@ export default function StoreView() {
           />
         </div>
 
-        {/* MAIN GRID */}
         <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-[1.1fr_0.9fr]">
-          {/* LEFT SIDE */}
           <div className="space-y-5">
             <SectionCard title="Basic Information">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -372,6 +398,7 @@ export default function StoreView() {
                     store.address?.fullAddress ||
                     store.address?.addressLine1 ||
                     store.address?.street ||
+                    store.address?.landmark ||
                     "N/A"
                   }
                   full
@@ -445,7 +472,6 @@ export default function StoreView() {
             </SectionCard>
           </div>
 
-          {/* RIGHT SIDE */}
           <div className="space-y-5">
             <SectionCard title="Contact & Online">
               <div className="grid grid-cols-1 gap-4">
@@ -533,9 +559,13 @@ export default function StoreView() {
                     >
                       <div className="relative h-44 overflow-hidden sm:h-48">
                         <img
-                          src={img}
+                          src={getGalleryImage(img)}
                           alt={`gallery-${index}`}
                           className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
+                          onError={(e) => {
+                            e.currentTarget.src =
+                              "https://via.placeholder.com/600x400?text=Gallery+Image";
+                          }}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent opacity-0 transition group-hover:opacity-100" />
                         <div className="absolute bottom-3 left-3 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-800 opacity-0 transition group-hover:opacity-100">

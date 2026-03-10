@@ -8,6 +8,9 @@ import AllUsers from "./pages/AdminDashboard/Customers";
 import CreateStore from "./pages/AdminDashboard/CreateStore";
 import StoreView from "./pages/AdminDashboard/StoreView";
 import DeliveryLogin from "./pages/DeliveryLogin";
+import DeliveryPartners from "./pages/AdminDashboard/DeliveryPartners";
+import RestaurantUsers from "./pages/AdminDashboard/RestaurantUsers";
+
 
 
 import DeliveryDashboars from "./pages/DeliveryDashboard/DeliveryDashboars";
@@ -32,6 +35,8 @@ function App() {
           <Route path="customers" element={<AllUsers />} />
           <Route path="create" element={<CreateStore />} />
           <Route path="stores/view/:id" element={<StoreView />} />
+          <Route path="delivery-partners" element={<DeliveryPartners />} />
+          <Route path="restaurant-users" element={<RestaurantUsers />} />
         </Route>
 
 

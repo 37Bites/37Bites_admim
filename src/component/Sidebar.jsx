@@ -149,7 +149,7 @@ export default function Sidebar() {
 
 {/* NEW FIELD */}
 <NavLink
-  to="/Admindashboard/all-restaurants"
+  to="/Admindashboard/restaurant-users"
   className={linkClass}
   onClick={closeSidebar}
 >
