@@ -67,9 +67,9 @@ export default function DeliveryLogin() {
       if (res.data.success) {
 
         if (res.data.isProfileComplete) {
-          window.location.href = "/delivery-dashboard";
+          window.location.href = "/DeliveryDashboars";
         } else {
-          window.location.href = "/delivery-profile";
+          window.location.href = "/DeliveryDashboars";
         }
 
       }

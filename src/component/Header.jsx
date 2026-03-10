@@ -21,7 +21,9 @@ export default function AdminHeader({ onMenuClick }) {
   const navigate = useNavigate();
   const profileRef = useRef(null);
 
-  const { user, isAuthenticated } = useSelector((state) => state.auth);
+  const { user, isAuthenticated, lastLogin } = useSelector(
+    (state) => state.auth
+  );
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -41,17 +43,16 @@ export default function AdminHeader({ onMenuClick }) {
 
   const userInitial = user?.name?.charAt(0)?.toUpperCase() || "A";
 
-  const formattedLastLogin =
-    user?.lastLoginAt || user?.lastLogin
-      ? new Date(user.lastLoginAt || user.lastLogin).toLocaleString("en-IN", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true,
-        })
-      : "First Login";
+  const formattedLastLogin = lastLogin
+    ? new Date(lastLogin).toLocaleString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      })
+    : "First Login";
 
   return (
     <header className="fixed left-0 right-0 top-0 z-40 border-b border-gray-200 bg-white/95 backdrop-blur-md md:left-72">
@@ -59,6 +60,7 @@ export default function AdminHeader({ onMenuClick }) {
         {/* LEFT */}
         <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           <button
+            type="button"
             onClick={onMenuClick}
             className="rounded-xl p-2 text-gray-600 transition hover:bg-gray-100 md:hidden"
           >
@@ -70,7 +72,7 @@ export default function AdminHeader({ onMenuClick }) {
               Welcome, {isAuthenticated ? user?.name || "Admin" : "Guest"}
             </h1>
             <p className="truncate text-[10px] text-gray-500 sm:text-xs">
-              {new Date().toDateString()}
+              Last Login: {formattedLastLogin}
             </p>
           </div>
         </div>
@@ -78,7 +80,10 @@ export default function AdminHeader({ onMenuClick }) {
         {/* RIGHT */}
         <div className="flex shrink-0 items-center gap-1 sm:gap-2 md:gap-3 lg:gap-5">
           {/* Notifications */}
-          <button className="relative rounded-xl p-2 text-gray-600 transition hover:bg-gray-100">
+          <button
+            type="button"
+            className="relative rounded-xl p-2 text-gray-600 transition hover:bg-gray-100"
+          >
             <Bell size={18} />
             {notifications > 0 && (
               <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-semibold text-white">
@@ -103,6 +108,7 @@ export default function AdminHeader({ onMenuClick }) {
           {/* Profile */}
           <div className="relative" ref={profileRef}>
             <button
+              type="button"
               onClick={() => setProfileOpen((prev) => !prev)}
               className="flex items-center gap-2 rounded-2xl px-1 py-1 transition hover:bg-gray-50 sm:px-2"
             >
@@ -111,7 +117,11 @@ export default function AdminHeader({ onMenuClick }) {
                   {userInitial}
                 </div>
 
-                <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-green-500" />
+                <span
+                  className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white ${
+                    isAuthenticated ? "bg-green-500" : "bg-gray-400"
+                  }`}
+                />
               </div>
 
               <div className="hidden text-left lg:block">
@@ -151,15 +161,23 @@ export default function AdminHeader({ onMenuClick }) {
                   </div>
 
                   <div className="space-y-2 text-sm text-gray-600">
-                    <p className="break-words">📱 {user?.mobile || "Not Available"}</p>
-                    <p className="break-words">🕒 Last Login: {formattedLastLogin}</p>
+                    <p className="break-words">
+                      📱 {user?.mobile || "Not Available"}
+                    </p>
+                    <p className="break-words">
+                      🕒 Last Login: {formattedLastLogin}
+                    </p>
                     <p className="flex items-center gap-2 break-words">
                       <Shield size={14} />
                       Role: {user?.role || "Administrator"}
                     </p>
                     <p>
                       Status:{" "}
-                      <span className="font-medium text-green-600">
+                      <span
+                        className={`font-medium ${
+                          isAuthenticated ? "text-green-600" : "text-red-500"
+                        }`}
+                      >
                         {isAuthenticated ? "Active" : "Logged Out"}
                       </span>
                     </p>
@@ -169,6 +187,7 @@ export default function AdminHeader({ onMenuClick }) {
                 {/* Actions */}
                 <div className="py-2">
                   <button
+                    type="button"
                     onClick={() => {
                       setProfileOpen(false);
                       navigate("/admin/profile");
@@ -180,6 +199,7 @@ export default function AdminHeader({ onMenuClick }) {
                   </button>
 
                   <button
+                    type="button"
                     onClick={() => {
                       setProfileOpen(false);
                       navigate("/admin/settings");
@@ -191,6 +211,7 @@ export default function AdminHeader({ onMenuClick }) {
                   </button>
 
                   <button
+                    type="button"
                     onClick={handleLogout}
                     className="flex w-full items-center gap-3 px-4 py-3 text-sm text-red-500 transition hover:bg-red-50 sm:px-5"
                   >

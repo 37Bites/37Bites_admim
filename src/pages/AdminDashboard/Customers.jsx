@@ -7,7 +7,6 @@ import {
   Users,
   UserCheck,
   UserX,
-  Shield,
   X,
   Loader2,
   Save,
@@ -15,6 +14,8 @@ import {
   CalendarDays,
   Plus,
   UserPlus,
+  ShoppingBag,
+  IndianRupee,
 } from "lucide-react";
 import api from "../../api/axios";
 
@@ -47,6 +48,27 @@ export default function AllUser() {
   });
 
   const isValidIndianMobile = (mobile) => /^[6-9]\d{9}$/.test(mobile);
+
+  const formatDateTimeParts = (date) => {
+    if (!date) {
+      return { date: "N/A", time: "" };
+    }
+
+    const d = new Date(date);
+
+    return {
+      date: d.toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }),
+      time: d.toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      }),
+    };
+  };
 
   const fetchUsers = async () => {
     try {
@@ -266,8 +288,7 @@ export default function AllUser() {
       return (
         !search ||
         user.mobile?.toLowerCase().includes(text) ||
-        user.name?.toLowerCase().includes(text) ||
-        user.role?.toLowerCase().includes(text)
+        user.name?.toLowerCase().includes(text)
       );
     });
   }, [users, search]);
@@ -277,7 +298,18 @@ export default function AllUser() {
       total: users.length,
       active: users.filter((u) => u.isActive).length,
       inactive: users.filter((u) => !u.isActive).length,
-      verified: users.filter((u) => u.isVerified).length,
+      totalOrders: users.reduce(
+        (sum, u) =>
+          sum +
+          Number(
+            u.totalOrders ??
+              u.ordersCount ??
+              u.orderCount ??
+              u.orders?.length ??
+              0
+          ),
+        0
+      ),
     };
   }, [users]);
 
@@ -307,7 +339,7 @@ export default function AllUser() {
                   All Customers
                 </h2>
                 <p className="mt-2 text-sm text-slate-300">
-                  Manage customer records, status, verification and profile updates.
+                  Manage customer records, status, profile updates and order activity.
                 </p>
               </div>
 
@@ -337,7 +369,7 @@ export default function AllUser() {
                 />
                 <input
                   type="text"
-                  placeholder="Search by name, mobile or role..."
+                  placeholder="Search by name or mobile..."
                   className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-4 text-sm outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
@@ -374,11 +406,11 @@ export default function AllUser() {
               iconColor="text-red-600"
             />
             <StatCard
-              title="Verified Customers"
-              value={stats.verified}
-              icon={<Shield size={20} />}
-              iconBg="bg-blue-100"
-              iconColor="text-blue-600"
+              title="Total Orders"
+              value={stats.totalOrders}
+              icon={<ShoppingBag size={20} />}
+              iconBg="bg-orange-100"
+              iconColor="text-orange-600"
             />
           </div>
 
@@ -399,8 +431,8 @@ export default function AllUser() {
                   <thead className="bg-slate-50">
                     <tr className="text-left text-sm font-semibold text-slate-600">
                       <th className="px-5 py-4">Customer</th>
-                      <th className="px-5 py-4">Role</th>
-                      <th className="px-5 py-4">Verified</th>
+                      <th className="px-5 py-4">Total Orders</th>
+                      <th className="px-5 py-4">Total Spent</th>
                       <th className="px-5 py-4">Status</th>
                       <th className="px-5 py-4">Joined</th>
                       <th className="px-5 py-4 text-right">Actions</th>
@@ -408,65 +440,84 @@ export default function AllUser() {
                   </thead>
 
                   <tbody>
-                    {filteredUsers.map((user) => (
-                      <tr
-                        key={user._id}
-                        className="border-t border-slate-100 transition hover:bg-slate-50/70"
-                      >
-                        <td className="px-5 py-4">
-                          <UserIdentity user={user} />
-                        </td>
+                    {filteredUsers.map((user) => {
+                      const joined = formatDateTimeParts(user.createdAt);
 
-                        <td className="px-5 py-4">
-                          <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold capitalize text-blue-600">
-                            {user.role || "user"}
-                          </span>
-                        </td>
+                      return (
+                        <tr
+                          key={user._id}
+                          className="border-t border-slate-100 transition hover:bg-slate-50/70"
+                        >
+                          <td className="px-5 py-4">
+                            <UserIdentity user={user} />
+                          </td>
 
-                        <td className="px-5 py-4">
-                          <BadgeVerified isVerified={user.isVerified} />
-                        </td>
+                          <td className="px-5 py-4">
+                            <OrderBadge
+                              count={
+                                user.totalOrders ??
+                                user.ordersCount ??
+                                user.orderCount ??
+                                user.orders?.length ??
+                                0
+                              }
+                            />
+                          </td>
 
-                        <td className="px-5 py-4">
-                          <StatusButton
-                            user={user}
-                            actionLoading={actionLoading}
-                            onToggle={handleToggleStatus}
-                          />
-                        </td>
+                          <td className="px-5 py-4">
+                            <SpentBadge
+                              amount={
+                                user.totalSpent ??
+                                user.totalAmountSpent ??
+                                user.totalOrderAmount ??
+                                user.spentAmount ??
+                                0
+                              }
+                            />
+                          </td>
 
-                        <td className="px-5 py-4 text-sm text-slate-600">
-                          {user.createdAt
-                            ? new Date(user.createdAt).toLocaleDateString()
-                            : "N/A"}
-                        </td>
+                          <td className="px-5 py-4">
+                            <StatusButton
+                              user={user}
+                              actionLoading={actionLoading}
+                              onToggle={handleToggleStatus}
+                            />
+                          </td>
 
-                        <td className="px-5 py-4">
-                          <div className="flex justify-end gap-2">
-                            <button
-                              onClick={() => openEditModal(user)}
-                              className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
-                            >
-                              <Pencil size={15} />
-                              Edit
-                            </button>
+                          <td className="px-5 py-4 text-sm text-slate-600">
+                            <div className="flex flex-col leading-5">
+                              <span className="font-medium text-slate-700">{joined.date}</span>
+                              <span className="text-xs text-slate-500">{joined.time}</span>
+                            </div>
+                          </td>
 
-                            <button
-                              onClick={() => handleDelete(user._id)}
-                              disabled={actionLoading === user._id}
-                              className={`inline-flex items-center gap-2 rounded-xl border border-red-200 px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 ${
-                                actionLoading === user._id
-                                  ? "cursor-not-allowed opacity-60"
-                                  : ""
-                              }`}
-                            >
-                              <Trash2 size={15} />
-                              Delete
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
+                          <td className="px-5 py-4">
+                            <div className="flex justify-end gap-2">
+                              <button
+                                onClick={() => openEditModal(user)}
+                                className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                              >
+                                <Pencil size={15} />
+                                Edit
+                              </button>
+
+                              <button
+                                onClick={() => handleDelete(user._id)}
+                                disabled={actionLoading === user._id}
+                                className={`inline-flex items-center gap-2 rounded-xl border border-red-200 px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 ${
+                                  actionLoading === user._id
+                                    ? "cursor-not-allowed opacity-60"
+                                    : ""
+                                }`}
+                              >
+                                <Trash2 size={15} />
+                                Delete
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -486,66 +537,83 @@ export default function AllUser() {
                 <EmptyUsers />
               </div>
             ) : (
-              filteredUsers.map((user) => (
-                <div
-                  key={user._id}
-                  className="rounded-[22px] border border-slate-200 bg-white p-4 shadow-sm"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <UserIdentity user={user} />
-                    <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold capitalize text-blue-600">
-                      {user.role || "user"}
-                    </span>
-                  </div>
+              filteredUsers.map((user) => {
+                const joined = formatDateTimeParts(user.createdAt);
 
-                  <div className="mt-4 grid grid-cols-2 gap-3">
-                    <MiniInfo
-                      label="Verified"
-                      value={user.isVerified ? "Verified" : "Not Verified"}
-                    />
-                    <MiniInfo
-                      label="Joined"
-                      value={
-                        user.createdAt
-                          ? new Date(user.createdAt).toLocaleDateString()
-                          : "N/A"
-                      }
-                    />
-                  </div>
+                return (
+                  <div
+                    key={user._id}
+                    className="rounded-[22px] border border-slate-200 bg-white p-4 shadow-sm"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <UserIdentity user={user} />
+                      <div className="rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-600">
+                        {user.totalOrders ??
+                          user.ordersCount ??
+                          user.orderCount ??
+                          user.orders?.length ??
+                          0}{" "}
+                        Orders
+                      </div>
+                    </div>
 
-                  <div className="mt-4">
-                    <StatusButton
-                      user={user}
-                      actionLoading={actionLoading}
-                      onToggle={handleToggleStatus}
-                      fullWidth
-                    />
-                  </div>
+                    <div className="mt-4 grid grid-cols-2 gap-3">
+                      <MiniInfo
+                        label="Total Spent"
+                        value={`₹${
+                          user.totalSpent ??
+                          user.totalAmountSpent ??
+                          user.totalOrderAmount ??
+                          user.spentAmount ??
+                          0
+                        }`}
+                      />
 
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    <button
-                      onClick={() => openEditModal(user)}
-                      className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
-                    >
-                      <Pencil size={15} />
-                      Edit
-                    </button>
+                      <MiniInfo
+                        label="Joined"
+                        value={
+                          <div className="leading-5">
+                            <div className="font-semibold text-slate-800">{joined.date}</div>
+                            <div className="text-xs text-slate-500">{joined.time}</div>
+                          </div>
+                        }
+                      />
+                    </div>
 
-                    <button
-                      onClick={() => handleDelete(user._id)}
-                      disabled={actionLoading === user._id}
-                      className={`inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-red-200 px-3 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50 ${
-                        actionLoading === user._id
-                          ? "cursor-not-allowed opacity-60"
-                          : ""
-                      }`}
-                    >
-                      <Trash2 size={15} />
-                      Delete
-                    </button>
+                    <div className="mt-4">
+                      <StatusButton
+                        user={user}
+                        actionLoading={actionLoading}
+                        onToggle={handleToggleStatus}
+                        fullWidth
+                      />
+                    </div>
+
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <button
+                        onClick={() => openEditModal(user)}
+                        className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                      >
+                        <Pencil size={15} />
+                        Edit
+                      </button>
+
+                      <button
+                        onClick={() => handleDelete(user._id)}
+                        disabled={actionLoading === user._id}
+                        className={`inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-red-200 px-3 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50 ${
+                          actionLoading === user._id
+                            ? "cursor-not-allowed opacity-60"
+                            : ""
+                        }`}
+                      >
+                        <Trash2 size={15} />
+                        Delete
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>
@@ -618,13 +686,15 @@ export default function AllUser() {
 
               <div className="md:col-span-2">
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
-                  <div className="flex items-center gap-3 text-sm text-slate-600">
-                    <CalendarDays size={16} />
+                  <div className="flex items-start gap-3 text-sm text-slate-600">
+                    <CalendarDays size={16} className="mt-0.5" />
                     <span className="break-words">
-                      Joined:{" "}
-                      {selectedUser?.createdAt
-                        ? new Date(selectedUser.createdAt).toLocaleString()
-                        : "N/A"}
+                      <span className="block font-medium text-slate-700">
+                        Joined: {formatDateTimeParts(selectedUser?.createdAt).date}
+                      </span>
+                      <span className="block text-xs text-slate-500">
+                        {formatDateTimeParts(selectedUser?.createdAt).time}
+                      </span>
                     </span>
                   </div>
                 </div>
@@ -723,6 +793,7 @@ export default function AllUser() {
                   className="w-full cursor-not-allowed rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-500 outline-none"
                 >
                   <option value="user">User</option>
+                  
                 </select>
               </FormField>
 
@@ -808,16 +879,19 @@ function UserIdentity({ user }) {
   );
 }
 
-function BadgeVerified({ isVerified }) {
+function OrderBadge({ count }) {
   return (
-    <span
-      className={`rounded-full px-3 py-1 text-xs font-semibold ${
-        isVerified
-          ? "bg-green-100 text-green-600"
-          : "bg-slate-200 text-slate-600"
-      }`}
-    >
-      {isVerified ? "Verified" : "Not Verified"}
+    <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-600">
+      {count} Orders
+    </span>
+  );
+}
+
+function SpentBadge({ amount }) {
+  return (
+    <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-600">
+      <IndianRupee size={12} />
+      {amount}
     </span>
   );
 }
@@ -896,7 +970,7 @@ function MiniInfo({ label, value }) {
   return (
     <div className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3">
       <p className="text-xs text-slate-500">{label}</p>
-      <p className="mt-1 text-sm font-semibold text-slate-800">{value}</p>
+      <div className="mt-1 text-sm font-semibold text-slate-800">{value}</div>
     </div>
   );
 }
