@@ -138,6 +138,24 @@ export default function Sidebar() {
               <Users size={16} /> Customers
             </NavLink>
 
+            {/* NEW FIELD */}
+<NavLink
+  to="/Admindashboard/delivery-partners"
+  className={linkClass}
+  onClick={closeSidebar}
+>
+  <Truck size={16} /> Delivery Partners
+</NavLink>
+
+{/* NEW FIELD */}
+<NavLink
+  to="/Admindashboard/all-restaurants"
+  className={linkClass}
+  onClick={closeSidebar}
+>
+  <Store size={16} /> All Restaurants
+</NavLink>
+
             {/* Reports Dropdown */}
             <button
               onClick={() => toggle("reports")}

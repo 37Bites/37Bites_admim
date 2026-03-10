@@ -1,8 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Bike, X } from "lucide-react";
+import { Bike, X, Shield } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
 
 export default function DeliveryLogin() {
+
+  const navigate = useNavigate();
 
   const [mobile, setMobile] = useState("");
   const [showOtpModal, setShowOtpModal] = useState(false);
@@ -18,12 +21,14 @@ export default function DeliveryLogin() {
 
   /* SEND OTP */
   const handleContinue = async () => {
+
     if (mobile.length !== 10) {
       alert("Enter valid mobile number");
       return;
     }
 
     try {
+
       const res = await api.post("/auth/login", {
         mobile,
         role: "delivery",
@@ -38,6 +43,7 @@ export default function DeliveryLogin() {
     } catch (err) {
       alert(err.response?.data?.message || "Failed to send OTP");
     }
+
   };
 
   /* VERIFY OTP */
@@ -71,6 +77,7 @@ export default function DeliveryLogin() {
     } catch (err) {
       alert(err.response?.data?.message || "OTP verification failed");
     }
+
   };
 
   const handleOtpChange = (value, index) => {
@@ -132,26 +139,38 @@ export default function DeliveryLogin() {
       }}
     >
 
-      {/* Dark overlay */}
       <div className="absolute inset-0 bg-black/70"></div>
 
       {/* Login Card */}
       <div className="relative w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl p-10 text-white">
 
-        {/* Logo */}
-        <div className="text-center">
+        {/* HEADER */}
+        <div className="flex justify-between items-center">
 
-          <h1 className="text-3xl font-extrabold text-[#ff6b4a]">
-            37 Bites
-          </h1>
+          <div>
 
-          <p className="text-white/70 text-sm mt-1">
-            Delivery Partner Portal
-          </p>
+            <h1 className="text-3xl font-extrabold text-[#ff6b4a]">
+              37 Bites
+            </h1>
+
+            <p className="text-white/70 text-sm">
+              Delivery Partner Portal
+            </p>
+
+          </div>
+
+          {/* ADMIN LOGIN BUTTON */}
+          <button
+            onClick={() => navigate("/secure-admin-login")}
+            className="flex items-center gap-2 bg-white/20 px-3 py-2 rounded-lg hover:bg-white/30 text-sm"
+          >
+            <Shield size={16} />
+            Admin Login
+          </button>
 
         </div>
 
-        {/* Icon */}
+        {/* ICON */}
         <div className="flex justify-center mt-6">
           <div className="bg-white/20 p-4 rounded-full">
             <Bike size={30}/>
@@ -162,7 +181,7 @@ export default function DeliveryLogin() {
           Login to start delivering
         </h2>
 
-        {/* Mobile Input */}
+        {/* MOBILE INPUT */}
         <div className="mt-8">
 
           <label className="text-sm text-white/70">
@@ -170,6 +189,7 @@ export default function DeliveryLogin() {
           </label>
 
           <div className="flex items-center bg-white/20 rounded-xl px-4 h-12 mt-2">
+
             <span className="mr-2">+91</span>
 
             <input
@@ -179,6 +199,7 @@ export default function DeliveryLogin() {
               placeholder="Enter mobile number"
               className="bg-transparent outline-none w-full placeholder-white/60"
             />
+
           </div>
 
           <button

@@ -2,29 +2,25 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: "http://localhost:5000/api/v1",
-  withCredentials: true, // ✅ Very Important (send cookies automatically)
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// ================= REQUEST INTERCEPTOR =================
+// Request interceptor
 api.interceptors.request.use(
   (config) => {
-    // ❌ No need to manually set Authorization header
-    // Cookie automatically backend ko bheji jayegi
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// ================= RESPONSE INTERCEPTOR =================
+// Response interceptor
 api.interceptors.response.use(
   (response) => response,
-
   (error) => {
     if (error.response?.status === 401) {
-      // Backend ne token invalid bola
       if (window.location.pathname !== "/") {
         window.location.href = "/";
       }
