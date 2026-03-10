@@ -99,6 +99,20 @@ export default function StoreView() {
       );
   }, [store]);
 
+  const coordinates = store?.address?.location?.coordinates || [];
+  const latitude =
+    Array.isArray(coordinates) && coordinates.length === 2 ? coordinates[1] : null;
+  const longitude =
+    Array.isArray(coordinates) && coordinates.length === 2 ? coordinates[0] : null;
+
+  const restaurantLocationText = [
+    store?.address?.city,
+    store?.address?.state,
+    store?.address?.country,
+  ]
+    .filter(Boolean)
+    .join(", ");
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 p-4 md:p-6">
@@ -145,7 +159,6 @@ export default function StoreView() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100 pb-10">
-      {/* Fixed Back To Stores Button */}
       <div className="fixed bottom-4 right-4 z-50 sm:bottom-5 sm:right-5 md:bottom-auto md:right-6 md:top-20">
         <button
           onClick={() => navigate("/Admindashboard/stores")}
@@ -160,7 +173,6 @@ export default function StoreView() {
         {/* TOP HEADER */}
         <div className="mb-5 rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm md:p-5">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            {/* Left Side */}
             <div className="flex items-start gap-3">
               <button
                 onClick={() => navigate(-1)}
@@ -177,7 +189,6 @@ export default function StoreView() {
               </div>
             </div>
 
-            {/* Right Side */}
             <div className="flex flex-wrap gap-3">
               <NavLink
                 to={`/Admindashboard/stores/edit/${store._id}`}
@@ -247,10 +258,7 @@ export default function StoreView() {
                 </h2>
 
                 <p className="mt-1 text-sm text-white/90">
-                  {store.address?.city ||
-                    store.address?.state ||
-                    "Unknown Location"}
-                  {store.address?.country ? `, ${store.address.country}` : ""}
+                  {restaurantLocationText || "Unknown Location"}
                 </p>
 
                 <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-white/90">
@@ -392,8 +400,8 @@ export default function StoreView() {
                 <DetailItem
                   label="Coordinates"
                   value={
-                    store.address?.coordinates?.length === 2
-                      ? `${store.address.coordinates[1]}, ${store.address.coordinates[0]}`
+                    latitude !== null && longitude !== null
+                      ? `${latitude}, ${longitude}`
                       : "N/A"
                   }
                   icon={<MapPinned size={16} />}
@@ -405,32 +413,32 @@ export default function StoreView() {
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <DetailItem
                   label="Average Cost For Two"
-                  value={`₹${store.averageCostForTwo || 0}`}
+                  value={`₹${store.averageCostForTwo ?? 0}`}
                   icon={<BadgeIndianRupee size={16} />}
                 />
                 <DetailItem
                   label="Minimum Order Amount"
-                  value={`₹${store.minimumOrderAmount || 0}`}
+                  value={`₹${store.minimumOrderAmount ?? 0}`}
                   icon={<BadgeIndianRupee size={16} />}
                 />
                 <DetailItem
                   label="Preparation Time"
-                  value={`${store.preparationTimeInMinutes || 0} mins`}
+                  value={`${store.preparationTimeInMinutes ?? store.averagePreparationTime ?? 0} mins`}
                   icon={<Clock size={16} />}
                 />
                 <DetailItem
                   label="Delivery Time"
-                  value={`${store.deliveryTimeInMinutes || 0} mins`}
+                  value={`${store.deliveryTimeInMinutes ?? 0} mins`}
                   icon={<Truck size={16} />}
                 />
                 <DetailItem
                   label="Delivery Radius"
-                  value={`${store.deliveryRadiusInKm || 0} km`}
+                  value={`${store.deliveryRadiusInKm ?? 0} km`}
                   icon={<MapPinned size={16} />}
                 />
                 <DetailItem
                   label="Packaging Charge"
-                  value={`₹${store.packagingCharge || 0}`}
+                  value={`₹${store.packagingCharge ?? 0}`}
                   icon={<BadgeIndianRupee size={16} />}
                 />
               </div>
@@ -443,7 +451,7 @@ export default function StoreView() {
               <div className="grid grid-cols-1 gap-4">
                 <DetailItem
                   label="Phone"
-                  value={store.phone || "N/A"}
+                  value={store.ownerMobile || store.phone || "N/A"}
                   icon={<Phone size={16} />}
                 />
                 <DetailItem
@@ -453,7 +461,7 @@ export default function StoreView() {
                 />
                 <DetailItem
                   label="Website"
-                  value={store.website || "N/A"}
+                  value={store.socialLinks?.website || store.website || "N/A"}
                   icon={<Globe size={16} />}
                 />
               </div>

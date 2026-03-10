@@ -1,16 +1,19 @@
 import { createSlice } from "@reduxjs/toolkit";
-import React from "react";
-import { useSelector, useDispatch } from "react-redux";
 
-// 🔹 Load from localStorage
-const storedAuth = JSON.parse(localStorage.getItem("auth"));
+// ✅ Safe localStorage parse
+let storedAuth = null;
+try {
+  storedAuth = JSON.parse(localStorage.getItem("auth"));
+} catch (error) {
+  storedAuth = null;
+}
 
 const initialState = {
   user: storedAuth?.user || null,
   accessToken: storedAuth?.accessToken || null,
   refreshToken: storedAuth?.refreshToken || null,
   lastLogin: storedAuth?.lastLogin || null,
-  isAuthenticated: storedAuth ? true : false,
+  isAuthenticated: !!storedAuth?.user,
 };
 
 const authSlice = createSlice({
@@ -23,15 +26,19 @@ const authSlice = createSlice({
       const lastLogin = new Date().toISOString();
 
       state.user = user;
-      state.accessToken = accessToken;
-      state.refreshToken = refreshToken;
+      state.accessToken = accessToken || null;
+      state.refreshToken = refreshToken || null;
       state.lastLogin = lastLogin;
       state.isAuthenticated = true;
 
-      // ✅ Save everything to localStorage
       localStorage.setItem(
         "auth",
-        JSON.stringify({ user, accessToken, refreshToken, lastLogin })
+        JSON.stringify({
+          user,
+          accessToken: accessToken || null,
+          refreshToken: refreshToken || null,
+          lastLogin,
+        })
       );
     },
 
@@ -44,41 +51,25 @@ const authSlice = createSlice({
 
       localStorage.removeItem("auth");
     },
+
+    updateUser: (state, action) => {
+      state.user = {
+        ...state.user,
+        ...action.payload,
+      };
+
+      localStorage.setItem(
+        "auth",
+        JSON.stringify({
+          user: state.user,
+          accessToken: state.accessToken,
+          refreshToken: state.refreshToken,
+          lastLogin: state.lastLogin,
+        })
+      );
+    },
   },
 });
 
-export const { loginSuccess, logout } = authSlice.actions;
+export const { loginSuccess, logout, updateUser } = authSlice.actions;
 export default authSlice.reducer;
-
-/* ===========================
-   🔥 Example Dashboard Component
-   =========================== */
-
-export const Dashboard = () => {
-  const dispatch = useDispatch();
-  const { user, lastLogin } = useSelector((state) => state.auth);
-
-  return (
-    <div style={{ padding: "20px" }}>
-      <h2>Welcome, {user?.name}</h2>
-      <p><strong>Mobile:</strong> {user?.mobile}</p>
-      <p>
-        <strong>Last Login:</strong>{" "}
-        {lastLogin
-          ? new Date(lastLogin).toLocaleString()
-          : "First Login"}
-      </p>
-
-      <button
-        onClick={() => dispatch(logout())}
-        style={{
-          marginTop: "10px",
-          padding: "8px 12px",
-          cursor: "pointer",
-        }}
-      >
-        Logout
-      </button>
-    </div>
-  );
-};

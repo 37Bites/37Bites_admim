@@ -9,6 +9,10 @@ import CreateStore from "./pages/AdminDashboard/CreateStore";
 import StoreView from "./pages/AdminDashboard/StoreView";
 import DeliveryLogin from "./pages/DeliveryLogin";
 
+
+import DeliveryDashboars from "./pages/DeliveryDashboard/DeliveryDashboars";
+import DeliveryHome from "./pages/DeliveryDashboard/DeliveryHome";
+
 function App() {
   return (
     <BrowserRouter>
@@ -29,6 +33,16 @@ function App() {
           <Route path="create" element={<CreateStore />} />
           <Route path="stores/view/:id" element={<StoreView />} />
         </Route>
+
+
+    
+    <Route path="/DeliveryDashboars" element={<DeliveryDashboars />}>
+          <Route index element={<DeliveryHome />} />
+         
+        </Route>
+
+
+        
       </Routes>
     </BrowserRouter>
   );
