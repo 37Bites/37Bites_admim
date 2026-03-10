@@ -13,7 +13,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
 
-export default function AdminHeader({ onMenuClick }) {
+export default function Header({
+  onMenuClick,
+  collapsed = false,
+}) {
   const [profileOpen, setProfileOpen] = useState(false);
   const [notifications] = useState(3);
 
@@ -43,6 +46,9 @@ export default function AdminHeader({ onMenuClick }) {
 
   const userInitial = user?.name?.charAt(0)?.toUpperCase() || "A";
 
+  const profileImage =
+    user?.profileImage?.url || user?.profilePhoto?.url || user?.avatar || "";
+
   const formattedLastLogin = lastLogin
     ? new Date(lastLogin).toLocaleString("en-IN", {
         day: "2-digit",
@@ -55,14 +61,18 @@ export default function AdminHeader({ onMenuClick }) {
     : "First Login";
 
   return (
-    <header className="fixed left-0 right-0 top-0 z-40 border-b border-gray-200 bg-white/95 backdrop-blur-md md:left-72">
+    <header
+      className={`fixed top-0 right-0 z-30 border-b border-gray-200 bg-white/95 backdrop-blur-md transition-all duration-300 ${
+        collapsed ? "lg:left-24" : "lg:left-72"
+      } left-0`}
+    >
       <div className="flex min-h-[70px] items-center justify-between gap-3 px-3 py-3 sm:px-4 md:px-6 lg:px-8">
         {/* LEFT */}
         <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           <button
             type="button"
             onClick={onMenuClick}
-            className="rounded-xl p-2 text-gray-600 transition hover:bg-gray-100 md:hidden"
+            className="rounded-xl p-2 text-gray-600 transition hover:bg-gray-100 lg:hidden"
           >
             <Menu size={20} />
           </button>
@@ -113,9 +123,17 @@ export default function AdminHeader({ onMenuClick }) {
               className="flex items-center gap-2 rounded-2xl px-1 py-1 transition hover:bg-gray-50 sm:px-2"
             >
               <div className="relative">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-orange-500 text-sm font-semibold text-white sm:h-10 sm:w-10">
-                  {userInitial}
-                </div>
+                {profileImage ? (
+                  <img
+                    src={profileImage}
+                    alt={user?.name || "Admin"}
+                    className="h-9 w-9 rounded-full object-cover ring-2 ring-orange-100 sm:h-10 sm:w-10"
+                  />
+                ) : (
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-orange-500 text-sm font-semibold text-white sm:h-10 sm:w-10">
+                    {userInitial}
+                  </div>
+                )}
 
                 <span
                   className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white ${
@@ -146,9 +164,17 @@ export default function AdminHeader({ onMenuClick }) {
                 {/* User Info */}
                 <div className="border-b border-gray-200 px-4 py-4 sm:px-5">
                   <div className="mb-4 flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-500 text-base font-bold text-white sm:h-14 sm:w-14 sm:text-lg">
-                      {userInitial}
-                    </div>
+                    {profileImage ? (
+                      <img
+                        src={profileImage}
+                        alt={user?.name || "Admin"}
+                        className="h-12 w-12 rounded-full object-cover ring-2 ring-orange-100 sm:h-14 sm:w-14"
+                      />
+                    ) : (
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-500 text-base font-bold text-white sm:h-14 sm:w-14 sm:text-lg">
+                        {userInitial}
+                      </div>
+                    )}
 
                     <div className="min-w-0">
                       <p className="truncate text-base font-semibold text-gray-800">

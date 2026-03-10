@@ -28,424 +28,458 @@ import {
   Ticket,
   Gift,
   Wrench,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 
-export default function Sidebar() {
-  const [open, setOpen] = useState(false);
+export default function Sidebar({ collapsed = false, setCollapsed = () => {} }) {
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdown, setDropdown] = useState(null);
 
-  const toggle = (name) => {
+  const isCollapsed = collapsed;
+
+  const toggleDropdown = (name) => {
+    if (isCollapsed) return;
     setDropdown(dropdown === name ? null : name);
   };
 
-  const closeSidebar = () => setOpen(false);
+  const closeMobileSidebar = () => setMobileOpen(false);
 
   const linkClass = ({ isActive }) =>
-    `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition ${
+    `group relative flex items-center ${
+      isCollapsed ? "justify-center px-2" : "gap-3 px-4"
+    } py-3 rounded-2xl text-sm transition-all duration-200 ${
       isActive
-        ? "bg-white text-orange-600 font-semibold"
-        : "text-white hover:bg-orange-600/80"
+        ? "bg-white text-orange-600 font-semibold shadow-md"
+        : "text-white/90 hover:bg-white/10 hover:text-white"
     }`;
 
   const subLinkClass = ({ isActive }) =>
-    `block pl-10 py-1.5 text-sm transition ${
+    `block rounded-xl ${isCollapsed ? "px-2 text-center" : "pl-11 pr-3"} py-2 text-sm transition ${
       isActive
-        ? "text-white font-medium"
-        : "text-orange-100 hover:text-white"
+        ? "bg-white/10 text-white font-medium"
+        : "text-orange-100 hover:bg-white/5 hover:text-white"
     }`;
+
+  const sectionTitleClass = `mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-orange-200/80 ${
+    isCollapsed ? "text-center" : ""
+  }`;
+
+  const menuSections = [
+    {
+      title: "Orders",
+      items: [
+        {
+          type: "link",
+          to: "/Admindashboard",
+          label: "Dashboard",
+          icon: LayoutDashboard,
+          end: true,
+        },
+        {
+          type: "link",
+          to: "/Admindashboard/orders",
+          label: "Orders",
+          icon: ClipboardList,
+        },
+        {
+          type: "link",
+          to: "/Admindashboard/stores",
+          label: "Stores",
+          icon: Store,
+        },
+        {
+          type: "link",
+          to: "/Admindashboard/accounting",
+          label: "Accounting",
+          icon: Calculator,
+        },
+        {
+          type: "link",
+          to: "/Admindashboard/customers",
+          label: "Customers",
+          icon: Users,
+        },
+        {
+          type: "link",
+          to: "/Admindashboard/delivery-partners",
+          label: "Delivery Partners",
+          icon: Truck,
+        },
+        {
+          type: "link",
+          to: "/Admindashboard/all-restaurants",
+          label: "All Restaurants",
+          icon: Store,
+        },
+        {
+          type: "dropdown",
+          key: "reports",
+          label: "Reports",
+          icon: BarChart3,
+          children: [
+            {
+              to: "/Admindashboard/product-reviews",
+              label: "Product Reviews",
+            },
+            {
+              to: "/Admindashboard/product-performance",
+              label: "Product Performance Reports",
+            },
+          ],
+        },
+        {
+          type: "link",
+          to: "/Admindashboard/admin-service-area",
+          label: "Admin Service Area",
+          icon: Map,
+        },
+        {
+          type: "dropdown",
+          key: "chat",
+          label: "Chat",
+          icon: MessageCircle,
+          children: [
+            {
+              to: "/Admindashboard/chat-user-vendor",
+              label: "User / Vendor",
+            },
+            {
+              to: "/Admindashboard/chat-user-driver",
+              label: "User / Driver",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: "Settings",
+      items: [
+        {
+          type: "link",
+          to: "/Admindashboard/profile",
+          label: "Profile",
+          icon: User,
+        },
+        {
+          type: "link",
+          to: "/Admindashboard/accounting-security",
+          label: "Accounting Security",
+          icon: Shield,
+        },
+        {
+          type: "link",
+          to: "/Admindashboard/customize",
+          label: "Customize",
+          icon: Sliders,
+        },
+        {
+          type: "link",
+          to: "/Admindashboard/catalog",
+          label: "Catalog",
+          icon: Package,
+        },
+        {
+          type: "link",
+          to: "/Admindashboard/configurations",
+          label: "Configurations",
+          icon: Layers,
+        },
+        {
+          type: "link",
+          to: "/Admindashboard/tax",
+          label: "Tax",
+          icon: Percent,
+        },
+        {
+          type: "link",
+          to: "/Admindashboard/payment-options",
+          label: "Payment Options",
+          icon: CreditCard,
+        },
+        {
+          type: "link",
+          to: "/Admindashboard/manage-roles",
+          label: "Manage Roles",
+          icon: UserCog,
+        },
+        {
+          type: "link",
+          to: "/Admindashboard/cache-control",
+          label: "Cache Control",
+          icon: Database,
+        },
+        {
+          type: "dropdown",
+          key: "styling",
+          label: "Styling",
+          icon: Layers,
+          children: [
+            {
+              to: "/Admindashboard/app-styling",
+              label: "App Styling",
+            },
+            {
+              to: "/Admindashboard/web-styling",
+              label: "Web Styling",
+            },
+          ],
+        },
+        {
+          type: "dropdown",
+          key: "cms",
+          label: "CMS",
+          icon: FileText,
+          children: [
+            { to: "/Admindashboard/pages", label: "Pages" },
+            { to: "/Admindashboard/emails", label: "Emails" },
+            { to: "/Admindashboard/notifications", label: "Notifications" },
+            { to: "/Admindashboard/sms", label: "SMS" },
+            { to: "/Admindashboard/reasons", label: "Reasons" },
+          ],
+        },
+        {
+          type: "dropdown",
+          key: "delivery",
+          label: "Manage Delivery",
+          icon: Truck,
+          children: [
+            {
+              to: "/Admindashboard/delivery-options",
+              label: "Delivery Options",
+            },
+            {
+              to: "/Admindashboard/delivery-slot",
+              label: "Delivery Slot",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: "Marketing",
+      items: [
+        {
+          type: "dropdown",
+          key: "banners",
+          label: "Banners",
+          icon: Megaphone,
+          children: [
+            { to: "/Admindashboard/web-banners", label: "Web Banners" },
+            { to: "/Admindashboard/mobile-banners", label: "Mobile Banners" },
+          ],
+        },
+        {
+          type: "link",
+          to: "/Admindashboard/promocode",
+          label: "Promocode",
+          icon: Ticket,
+        },
+        {
+          type: "link",
+          to: "/Admindashboard/loyalty-cards",
+          label: "Loyalty Cards",
+          icon: Gift,
+        },
+        {
+          type: "link",
+          to: "/Admindashboard/campaigns",
+          label: "Campaigns",
+          icon: BarChart3,
+        },
+      ],
+    },
+    {
+      title: "Extra",
+      items: [
+        {
+          type: "link",
+          to: "/Admindashboard/tools",
+          label: "Tools",
+          icon: Wrench,
+        },
+        {
+          type: "link",
+          to: "/Admindashboard/db-audit-logs",
+          label: "DB Audit Logs",
+          icon: Database,
+        },
+      ],
+    },
+  ];
+
+  const renderTooltip = (label) => {
+    if (!isCollapsed) return null;
+
+    return (
+      <span className="pointer-events-none absolute left-[calc(100%+12px)] top-1/2 z-50 hidden -translate-y-1/2 whitespace-nowrap rounded-xl bg-gray-900 px-3 py-2 text-xs font-medium text-white shadow-xl group-hover:block">
+        {label}
+      </span>
+    );
+  };
 
   return (
     <>
       {/* Mobile Toggle */}
       <button
-        onClick={() => setOpen(!open)}
-        className="lg:hidden fixed top-4 left-4 z-50 bg-orange-500 text-white p-2 rounded-md shadow-lg"
+        onClick={() => setMobileOpen(!mobileOpen)}
+        className="fixed left-4 top-4 z-50 rounded-xl bg-orange-500 p-2.5 text-white shadow-lg lg:hidden"
       >
-        {open ? <X size={20} /> : <Menu size={20} />}
+        {mobileOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
 
       {/* Mobile Overlay */}
-      {open && (
+      {mobileOpen && (
         <div
-          className="fixed inset-0 bg-black/40 z-30 lg:hidden"
-          onClick={closeSidebar}
+          className="fixed inset-0 z-30 bg-black/40 backdrop-blur-[2px] lg:hidden"
+          onClick={closeMobileSidebar}
         />
       )}
 
-      <div
-        className={`fixed top-0 left-0 h-screen w-72 bg-gradient-to-b
-        from-orange-500 via-orange-600 to-orange-700 text-white shadow-xl z-40
-        transform transition-transform duration-300
-        ${open ? "translate-x-0" : "-translate-x-full"}
-        lg:translate-x-0`}
+      <aside
+        className={`fixed left-0 top-0 z-40 h-screen ${
+          isCollapsed ? "w-24" : "w-72"
+        } transform overflow-hidden border-r border-white/10 bg-gradient-to-b from-orange-500 via-orange-600 to-orange-700 text-white shadow-2xl transition-all duration-300 ${
+          mobileOpen ? "translate-x-0" : "-translate-x-full"
+        } lg:translate-x-0`}
       >
-        {/* Logo */}
-        <div className="flex flex-col items-center justify-center py-6 border-b border-white/10">
-          <img
-            src="/logo.jpeg"
-            alt="37BITES Logo"
-            className="w-12 h-12 object-contain rounded-xl bg-white p-1"
-          />
+        {/* Top */}
+        <div
+          className={`flex items-center border-b border-white/10 ${
+            isCollapsed ? "justify-center px-3 py-5" : "justify-between px-4 py-5"
+          }`}
+        >
+          <div
+            className={`flex items-center ${
+              isCollapsed ? "justify-center" : "gap-3"
+            }`}
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white p-1 shadow-md">
+              <img
+                src="/logo.jpeg"
+                alt="37BITES Logo"
+                className="h-10 w-10 rounded-xl object-contain"
+              />
+            </div>
+
+            {!isCollapsed && (
+              <div>
+                <h2 className="text-base font-bold tracking-wide text-white">
+                  37BITES
+                </h2>
+                <p className="text-xs text-orange-100">Admin Panel</p>
+              </div>
+            )}
+          </div>
+
+          {!isCollapsed && (
+            <button
+              onClick={() => setCollapsed(true)}
+              className="hidden rounded-xl border border-white/20 bg-white/10 p-2 text-white transition hover:bg-white/20 lg:flex"
+            >
+              <PanelLeftClose size={18} />
+            </button>
+          )}
         </div>
 
-        <div className="px-4 py-4 space-y-6 overflow-y-auto no-scrollbar h-[calc(100vh-88px)]">
-          
-          {/* ================= ORDERS ================= */}
-          <div>
-            <h2 className="text-xs uppercase text-orange-200 mb-3 font-semibold">
-              Orders
-            </h2>
-
-            {/* FIXED */}
-            <NavLink
-              end
-              to="/Admindashboard"
-              className={linkClass}
-              onClick={closeSidebar}
-            >
-              <LayoutDashboard size={16} /> Dashboard
-            </NavLink>
-
-            <NavLink
-              to="/Admindashboard/orders"
-              className={linkClass}
-              onClick={closeSidebar}
-            >
-              <ClipboardList size={16} /> Orders
-            </NavLink>
-
-            <NavLink
-              to="/Admindashboard/stores"
-              className={linkClass}
-              onClick={closeSidebar}
-            >
-              <Store size={16} /> Stores
-            </NavLink>
-
-            <NavLink
-              to="/Admindashboard/accounting"
-              className={linkClass}
-              onClick={closeSidebar}
-            >
-              <Calculator size={16} /> Accounting
-            </NavLink>
-
-            <NavLink
-              to="/Admindashboard/customers"
-              className={linkClass}
-              onClick={closeSidebar}
-            >
-              <Users size={16} /> Customers
-            </NavLink>
-
-            {/* NEW FIELD */}
-<NavLink
-  to="/Admindashboard/delivery-partners"
-  className={linkClass}
-  onClick={closeSidebar}
->
-  <Truck size={16} /> Delivery Partners
-</NavLink>
-
-{/* NEW FIELD */}
-<NavLink
-  to="/Admindashboard/restaurant-users"
-  className={linkClass}
-  onClick={closeSidebar}
->
-  <Store size={16} /> All Restaurants
-</NavLink>
-
-            {/* Reports Dropdown */}
+        {/* Expand button in collapsed mode */}
+        {isCollapsed && (
+          <div className="hidden border-b border-white/10 px-3 py-3 lg:block">
             <button
-              onClick={() => toggle("reports")}
-              className="flex items-center justify-between w-full px-4 py-2.5 rounded-lg hover:bg-orange-600/80"
+              onClick={() => setCollapsed(false)}
+              className="flex w-full items-center justify-center rounded-xl border border-white/20 bg-white/10 p-2 text-white transition hover:bg-white/20"
             >
-              <span className="flex items-center gap-3">
-                <BarChart3 size={16} /> Reports
-              </span>
-              {dropdown === "reports" ? (
-                <ChevronDown size={16} />
-              ) : (
-                <ChevronRight size={16} />
-              )}
+              <PanelLeftOpen size={18} />
             </button>
-
-            {dropdown === "reports" && (
-              <>
-                <NavLink
-                  to="/Admindashboard/product-reviews"
-                  className={subLinkClass}
-                  onClick={closeSidebar}
-                >
-                  • Product Reviews
-                </NavLink>
-                <NavLink
-                  to="/Admindashboard/product-performance"
-                  className={subLinkClass}
-                  onClick={closeSidebar}
-                >
-                  • Product Performance Reports
-                </NavLink>
-              </>
-            )}
-
-            <NavLink
-              to="/Admindashboard/admin-service-area"
-              className={linkClass}
-              onClick={closeSidebar}
-            >
-              <Map size={16} /> Admin Service Area
-            </NavLink>
-
-            {/* Chat Dropdown */}
-            <button
-              onClick={() => toggle("chat")}
-              className="flex items-center justify-between w-full px-4 py-2.5 rounded-lg hover:bg-orange-600/80"
-            >
-              <span className="flex items-center gap-3">
-                <MessageCircle size={16} /> Chat
-              </span>
-              {dropdown === "chat" ? (
-                <ChevronDown size={16} />
-              ) : (
-                <ChevronRight size={16} />
-              )}
-            </button>
-
-            {dropdown === "chat" && (
-              <>
-                <NavLink
-                  to="/Admindashboard/chat-user-vendor"
-                  className={subLinkClass}
-                  onClick={closeSidebar}
-                >
-                  • User / Vendor
-                </NavLink>
-                <NavLink
-                  to="/Admindashboard/chat-user-driver"
-                  className={subLinkClass}
-                  onClick={closeSidebar}
-                >
-                  • User / Driver
-                </NavLink>
-              </>
-            )}
           </div>
+        )}
 
-          {/* ================= SETTINGS ================= */}
-          <div>
-            <h2 className="text-xs uppercase text-orange-200 mb-3 font-semibold">
-              Settings
-            </h2>
+        {/* Content */}
+        <div
+          className={`no-scrollbar h-[calc(100vh-89px)] overflow-y-auto ${
+            isCollapsed ? "px-3 py-4" : "px-4 py-4"
+          }`}
+        >
+          <div className="space-y-6">
+            {menuSections.map((section) => (
+              <div key={section.title}>
+                <h2 className={sectionTitleClass}>
+                  {isCollapsed ? section.title.slice(0, 1) : section.title}
+                </h2>
 
-            <NavLink
-              to="/Admindashboard/profile"
-              className={linkClass}
-              onClick={closeSidebar}
-            >
-              <User size={16} /> Profile
-            </NavLink>
+                <div className="space-y-2">
+                  {section.items.map((item) => {
+                    if (item.type === "link") {
+                      const Icon = item.icon;
 
-            <NavLink
-              to="/Admindashboard/accounting-security"
-              className={linkClass}
-              onClick={closeSidebar}
-            >
-              <Shield size={16} /> Accounting Security
-            </NavLink>
+                      return (
+                        <NavLink
+                          key={item.to}
+                          end={item.end}
+                          to={item.to}
+                          className={linkClass}
+                          onClick={closeMobileSidebar}
+                        >
+                          <Icon size={18} className="shrink-0" />
+                          {!isCollapsed && <span>{item.label}</span>}
+                          {renderTooltip(item.label)}
+                        </NavLink>
+                      );
+                    }
 
-            <NavLink
-              to="/Admindashboard/customize"
-              className={linkClass}
-              onClick={closeSidebar}
-            >
-              <Sliders size={16} /> Customize
-            </NavLink>
+                    const Icon = item.icon;
+                    const isOpen = dropdown === item.key;
 
-            <NavLink
-              to="/Admindashboard/catalog"
-              className={linkClass}
-              onClick={closeSidebar}
-            >
-              <Package size={16} /> Catalog
-            </NavLink>
+                    return (
+                      <div key={item.key} className="group relative">
+                        <button
+                          onClick={() => toggleDropdown(item.key)}
+                          className={`flex w-full items-center ${
+                            isCollapsed ? "justify-center px-2" : "justify-between px-4"
+                          } rounded-2xl py-3 text-sm text-white/90 transition hover:bg-white/10 hover:text-white`}
+                        >
+                          <span
+                            className={`flex items-center ${
+                              isCollapsed ? "justify-center" : "gap-3"
+                            }`}
+                          >
+                            <Icon size={18} className="shrink-0" />
+                            {!isCollapsed && <span>{item.label}</span>}
+                          </span>
 
-            <NavLink
-              to="/Admindashboard/configurations"
-              className={linkClass}
-              onClick={closeSidebar}
-            >
-              <Layers size={16} /> Configurations
-            </NavLink>
+                          {!isCollapsed &&
+                            (isOpen ? (
+                              <ChevronDown size={16} />
+                            ) : (
+                              <ChevronRight size={16} />
+                            ))}
+                        </button>
 
-            <NavLink
-              to="/Admindashboard/tax"
-              className={linkClass}
-              onClick={closeSidebar}
-            >
-              <Percent size={16} /> Tax
-            </NavLink>
+                        {renderTooltip(item.label)}
 
-            <NavLink
-              to="/Admindashboard/payment-options"
-              className={linkClass}
-              onClick={closeSidebar}
-            >
-              <CreditCard size={16} /> Payment Options
-            </NavLink>
-
-            <NavLink
-              to="/Admindashboard/manage-roles"
-              className={linkClass}
-              onClick={closeSidebar}
-            >
-              <UserCog size={16} /> Manage Roles
-            </NavLink>
-
-            <NavLink
-              to="/Admindashboard/cache-control"
-              className={linkClass}
-              onClick={closeSidebar}
-            >
-              <Database size={16} /> Cache Control
-            </NavLink>
-
-            {/* Styling Dropdown */}
-            <button
-              onClick={() => toggle("styling")}
-              className="flex items-center justify-between w-full px-4 py-2.5 rounded-lg hover:bg-orange-600/80"
-            >
-              <span className="flex items-center gap-3">
-                <Layers size={16} /> Styling
-              </span>
-              {dropdown === "styling" ? (
-                <ChevronDown size={16} />
-              ) : (
-                <ChevronRight size={16} />
-              )}
-            </button>
-
-            {dropdown === "styling" && (
-              <>
-                <NavLink
-                  to="/Admindashboard/app-styling"
-                  className={subLinkClass}
-                  onClick={closeSidebar}
-                >
-                  • App Styling
-                </NavLink>
-                <NavLink
-                  to="/Admindashboard/web-styling"
-                  className={subLinkClass}
-                  onClick={closeSidebar}
-                >
-                  • Web Styling
-                </NavLink>
-              </>
-            )}
-
-            {/* CMS Dropdown */}
-            <button
-              onClick={() => toggle("cms")}
-              className="flex items-center justify-between w-full px-4 py-2.5 rounded-lg hover:bg-orange-600/80"
-            >
-              <span className="flex items-center gap-3">
-                <FileText size={16} /> CMS
-              </span>
-              {dropdown === "cms" ? (
-                <ChevronDown size={16} />
-              ) : (
-                <ChevronRight size={16} />
-              )}
-            </button>
-
-            {dropdown === "cms" && (
-              <>
-                <NavLink to="/Admindashboard/pages" className={subLinkClass} onClick={closeSidebar}>• Pages</NavLink>
-                <NavLink to="/Admindashboard/emails" className={subLinkClass} onClick={closeSidebar}>• Emails</NavLink>
-                <NavLink to="/Admindashboard/notifications" className={subLinkClass} onClick={closeSidebar}>• Notifications</NavLink>
-                <NavLink to="/Admindashboard/sms" className={subLinkClass} onClick={closeSidebar}>• SMS</NavLink>
-                <NavLink to="/Admindashboard/reasons" className={subLinkClass} onClick={closeSidebar}>• Reasons</NavLink>
-              </>
-            )}
-
-            {/* Manage Delivery Dropdown */}
-            <button
-              onClick={() => toggle("delivery")}
-              className="flex items-center justify-between w-full px-4 py-2.5 rounded-lg hover:bg-orange-600/80"
-            >
-              <span className="flex items-center gap-3">
-                <Truck size={16} /> Manage Delivery
-              </span>
-              {dropdown === "delivery" ? (
-                <ChevronDown size={16} />
-              ) : (
-                <ChevronRight size={16} />
-              )}
-            </button>
-
-            {dropdown === "delivery" && (
-              <>
-                <NavLink to="/Admindashboard/delivery-options" className={subLinkClass} onClick={closeSidebar}>• Delivery Options</NavLink>
-                <NavLink to="/Admindashboard/delivery-slot" className={subLinkClass} onClick={closeSidebar}>• Delivery Slot</NavLink>
-              </>
-            )}
+                        {!isCollapsed && isOpen && (
+                          <div className="mt-2 space-y-1">
+                            {item.children.map((child) => (
+                              <NavLink
+                                key={child.to}
+                                to={child.to}
+                                className={subLinkClass}
+                                onClick={closeMobileSidebar}
+                              >
+                                • {child.label}
+                              </NavLink>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </div>
-
-          {/* ================= MARKETING ================= */}
-          <div>
-            <h2 className="text-xs uppercase text-orange-200 mb-3 font-semibold">
-              Marketing
-            </h2>
-
-            <button
-              onClick={() => toggle("banners")}
-              className="flex items-center justify-between w-full px-4 py-2.5 rounded-lg hover:bg-orange-600/80"
-            >
-              <span className="flex items-center gap-3">
-                <Megaphone size={16} /> Banners
-              </span>
-              {dropdown === "banners" ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-            </button>
-
-            {dropdown === "banners" && (
-              <>
-                <NavLink to="/Admindashboard/web-banners" className={subLinkClass} onClick={closeSidebar}>• Web Banners</NavLink>
-                <NavLink to="/Admindashboard/mobile-banners" className={subLinkClass} onClick={closeSidebar}>• Mobile Banners</NavLink>
-              </>
-            )}
-
-            <NavLink to="/Admindashboard/promocode" className={linkClass} onClick={closeSidebar}>
-              <Ticket size={16} /> Promocode
-            </NavLink>
-
-            <NavLink to="/Admindashboard/loyalty-cards" className={linkClass} onClick={closeSidebar}>
-              <Gift size={16} /> Loyalty Cards
-            </NavLink>
-
-            <NavLink to="/Admindashboard/campaigns" className={linkClass} onClick={closeSidebar}>
-              <BarChart3 size={16} /> Campaigns
-            </NavLink>
-          </div>
-
-          {/* ================= EXTRA ================= */}
-          <div>
-            <h2 className="text-xs uppercase text-orange-200 mb-3 font-semibold">
-              Extra
-            </h2>
-
-            <NavLink to="/Admindashboard/tools" className={linkClass} onClick={closeSidebar}>
-              <Wrench size={16} /> Tools
-            </NavLink>
-
-            <NavLink to="/Admindashboard/db-audit-logs" className={linkClass} onClick={closeSidebar}>
-              <Database size={16} /> DB Audit Logs
-            </NavLink>
-          </div>
-
         </div>
-      </div>
+      </aside>
     </>
   );
 }
