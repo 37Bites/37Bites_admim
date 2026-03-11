@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
 import api from "../api/axios";
 import { loginSuccess } from "../features/auth/authSlice";
 
@@ -13,8 +14,13 @@ export default function AdminLogin() {
     password: "",
   });
 
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+    server: "",
+  });
+
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,32 +30,49 @@ export default function AdminLogin() {
       [name]: value,
     }));
 
-    if (error) setError("");
+    setErrors((prev) => ({
+      ...prev,
+      [name]: "",
+      server: "",
+    }));
   };
 
   const validateForm = () => {
-    if (!form.email.trim() || !form.password.trim()) {
-      setError("All fields are required");
-      return false;
+    const newErrors = {
+      email: "",
+      password: "",
+      server: "",
+    };
+
+    let isValid = true;
+
+    if (!form.email.trim()) {
+      newErrors.email = "Email is required";
+      isValid = false;
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(form.email.trim())) {
+        newErrors.email = "Please enter a valid email address";
+        isValid = false;
+      }
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(form.email.trim())) {
-      setError("Please enter a valid email address");
-      return false;
+    if (!form.password.trim()) {
+      newErrors.password = "Password is required";
+      isValid = false;
     }
 
-    if (form.password.trim().length < 6) {
-      setError("Password must be at least 6 characters");
-      return false;
+    setErrors(newErrors);
+
+    if (!isValid) {
+      toast.error("Please fill the required fields");
     }
 
-    return true;
+    return isValid;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
 
     if (!validateForm()) return;
 
@@ -58,7 +81,7 @@ export default function AdminLogin() {
 
       const payload = {
         email: form.email.trim(),
-        password: form.password.trim(),
+        password: form.password,
       };
 
       const res = await api.post("/admin/login", payload);
@@ -72,13 +95,30 @@ export default function AdminLogin() {
           })
         );
 
+        toast.success(res?.data?.message || "Admin login successful");
         navigate("/Admindashboard");
       } else {
-        setError(res?.data?.message || "Login failed");
+        const message = res?.data?.message || "Login failed";
+        setErrors((prev) => ({
+          ...prev,
+          server: message,
+        }));
+        toast.error(message);
       }
     } catch (err) {
       console.error("Admin login error:", err);
-      setError(err?.response?.data?.message || "Something went wrong");
+
+      const message =
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        "Invalid email or password";
+
+      setErrors((prev) => ({
+        ...prev,
+        server: message,
+      }));
+
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -93,15 +133,17 @@ export default function AdminLogin() {
             alt="Admin Logo"
             className="mb-3 h-20 w-20 rounded-2xl object-cover shadow-md"
           />
+
           <h2 className="text-3xl font-bold text-gray-800">Admin Login</h2>
+
           <p className="mt-1 text-center text-sm text-gray-500">
             Welcome back! Please login to continue
           </p>
         </div>
 
-        {error && (
-          <div className="mb-4 rounded-xl border border-red-200 bg-red-50 p-3 text-center text-sm font-medium text-red-600">
-            {error}
+        {errors.server && (
+          <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+            {errors.server}
           </div>
         )}
 
@@ -110,6 +152,7 @@ export default function AdminLogin() {
             <label className="text-sm font-medium text-gray-700">
               Email Address
             </label>
+
             <input
               type="email"
               name="email"
@@ -117,14 +160,23 @@ export default function AdminLogin() {
               onChange={handleChange}
               placeholder="admin@example.com"
               autoComplete="email"
-              className="mt-1 w-full rounded-xl border border-gray-300 px-4 py-3 transition focus:outline-none focus:ring-2 focus:ring-orange-400"
+              className={`mt-1 w-full rounded-xl border px-4 py-3 transition focus:outline-none focus:ring-2 ${
+                errors.email
+                  ? "border-red-400 bg-red-50 focus:ring-red-300"
+                  : "border-gray-300 focus:ring-orange-400"
+              }`}
             />
+
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+            )}
           </div>
 
           <div>
             <label className="text-sm font-medium text-gray-700">
               Password
             </label>
+
             <input
               type="password"
               name="password"
@@ -132,8 +184,16 @@ export default function AdminLogin() {
               onChange={handleChange}
               placeholder="Enter your password"
               autoComplete="current-password"
-              className="mt-1 w-full rounded-xl border border-gray-300 px-4 py-3 transition focus:outline-none focus:ring-2 focus:ring-orange-400"
+              className={`mt-1 w-full rounded-xl border px-4 py-3 transition focus:outline-none focus:ring-2 ${
+                errors.password || errors.server
+                  ? "border-red-400 bg-red-50 focus:ring-red-300"
+                  : "border-gray-300 focus:ring-orange-400"
+              }`}
             />
+
+            {errors.password && (
+              <p className="mt-1 text-sm text-red-500">{errors.password}</p>
+            )}
           </div>
 
           <button

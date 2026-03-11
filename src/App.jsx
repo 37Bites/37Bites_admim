@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
 import AdminHome from "./pages/AdminDashboard/AdminHome";
@@ -19,6 +21,12 @@ import DeliveryHome from "./pages/DeliveryDashboard/DeliveryHome";
 
 function App() {
   return (
+<>
+    <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        theme="colored"
+      />
     <BrowserRouter>
       <Routes>
 
@@ -52,6 +60,7 @@ function App() {
         
       </Routes>
     </BrowserRouter>
+    </>
   );
 }
 
