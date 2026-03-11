@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+ import api from "../api/axios";
 import {
   Globe,
   User,
@@ -16,10 +17,11 @@ import { useNavigate } from "react-router-dom";
 export default function Header({
   onMenuClick,
   collapsed = false,
+  adminProfile
 }) {
   const [profileOpen, setProfileOpen] = useState(false);
   const [notifications] = useState(3);
-
+  
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const profileRef = useRef(null);
@@ -27,6 +29,7 @@ export default function Header({
   const { user, isAuthenticated, lastLogin } = useSelector(
     (state) => state.auth
   );
+  const profile = adminProfile || user;
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -39,15 +42,28 @@ export default function Header({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
-    dispatch(logout());
-    navigate("/secure-admin-login");
-  };
+ 
 
-  const userInitial = user?.name?.charAt(0)?.toUpperCase() || "A";
+const handleLogout = async () => {
+  try {
+    // call backend logout api
+    await api.post("/admin/logout"); // adjust route if different
+
+    // clear redux state
+    dispatch(logout());
+
+    // redirect to admin login
+    navigate("/secure-admin-login");
+
+  } catch (error) {
+    console.error("Admin logout failed:", error);
+  }
+};
+
+  const userInitial = profile?.name?.charAt(0)?.toUpperCase() || "A";
 
   const profileImage =
-    user?.profileImage?.url || user?.profilePhoto?.url || user?.avatar || "";
+    profile?.profileImage?.url || profile?.profilePhoto?.url || profile?.avatar || "";
 
   const formattedLastLogin = lastLogin
     ? new Date(lastLogin).toLocaleString("en-IN", {

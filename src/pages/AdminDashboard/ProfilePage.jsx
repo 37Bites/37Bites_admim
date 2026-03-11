@@ -50,6 +50,21 @@ export default function ProfilePage() {
     isActive: false,
   });
 
+useEffect(() => {
+  const fetchProfile = async () => {
+    try {
+      const res = await api.get("/admin/profile");
+
+      if (res?.data?.data) {
+        dispatch(updateUser(res.data.data));
+      }
+    } catch (error) {
+      console.log("Profile fetch failed");
+    }
+  };
+
+  fetchProfile();
+}, [dispatch]);
   useEffect(() => {
     if (!user) return;
 
@@ -179,11 +194,11 @@ export default function ProfilePage() {
       const imageFormData = new FormData();
       imageFormData.append("profileImage", selectedFile);
 
-      const res = await api.post("/users/upload-profile-image", imageFormData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const res = await api.post("/admin/upload-profile-image", imageFormData, {
+  headers: {
+    "Content-Type": "multipart/form-data",
+  },
+});
 
       const uploadedUrl =
         res?.data?.data?.url ||
@@ -271,7 +286,7 @@ export default function ProfilePage() {
           : undefined,
       };
 
-      const res = await api.put("/users/update-profile", payload);
+      const res = await api.put("/admin/update-profile", payload);
 
       const updatedUser = res?.data?.data || res?.data?.user || null;
 

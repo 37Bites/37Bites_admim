@@ -46,23 +46,23 @@ export default function Stores() {
     fetchStores();
   }, []);
 
-  const getStoreCoverImage = (store) => {
-    return (
-      store?.coverImage?.url ||
-      store?.galleryImages?.[0]?.url ||
-      store?.profileImage?.url ||
-      "https://via.placeholder.com/600x400?text=Restaurant"
-    );
-  };
+const getStoreCoverImage = (store) => {
+  return (
+    store?.coverImage?.url ||
+    store?.galleryImages?.[0]?.url ||
+    store?.profileImage?.url ||
+    null
+  );
+};
 
-  const getStoreProfileImage = (store) => {
-    return (
-      store?.profileImage?.url ||
-      store?.coverImage?.url ||
-      store?.galleryImages?.[0]?.url ||
-      "https://via.placeholder.com/100x100?text=Store"
-    );
-  };
+const getStoreProfileImage = (store) => {
+  return (
+    store?.profileImage?.url ||
+    store?.coverImage?.url ||
+    store?.galleryImages?.[0]?.url ||
+    null
+  );
+};
 
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this restaurant?")) return;
@@ -389,15 +389,18 @@ export default function Stores() {
                 >
                   <div className="grid grid-cols-1 gap-4 p-3 sm:p-4 xl:grid-cols-[240px_minmax(0,1fr)_300px] 2xl:grid-cols-[260px_minmax(0,1fr)_320px]">
                     <div className="relative h-40 w-full overflow-hidden rounded-[20px] bg-slate-100 sm:h-44">
-                      <img
-                        src={getStoreCoverImage(store)}
-                        alt={store.name}
-                        className="h-full w-full object-cover transition duration-500 hover:scale-105"
-                        onError={(e) => {
-                          e.currentTarget.src =
-                            "https://via.placeholder.com/600x400?text=Restaurant";
-                        }}
-                      />
+
+  {getStoreCoverImage(store) ? (
+    <img
+      src={getStoreCoverImage(store)}
+      alt={store.name}
+      className="h-full w-full object-cover transition duration-500 hover:scale-105"
+    />
+  ) : (
+    <div className="flex h-full w-full items-center justify-center text-slate-400 text-sm">
+      No Image
+    </div>
+  )}
 
                       <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
 
