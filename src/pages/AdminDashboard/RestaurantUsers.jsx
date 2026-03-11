@@ -62,7 +62,7 @@ export default function RestaurantUsers() {
     try {
       setLoading(true);
 
-      const res = await api.get("/users/all");
+      const res = await api.get("/admin/restowners/all");
 
       // Support both:
       // 1. res.data.data

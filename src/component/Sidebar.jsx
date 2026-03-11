@@ -108,7 +108,7 @@ export default function Sidebar({ collapsed = false, setCollapsed = () => {} }) 
         },
         {
           type: "link",
-          to: "/Admindashboard/all-restaurants",
+          to: "/Admindashboard/restaurant-users",
           label: "All Restaurants",
           icon: Store,
         },

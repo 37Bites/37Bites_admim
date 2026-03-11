@@ -65,7 +65,7 @@ export default function DeliveryPartners() {
   const fetchPartners = async () => {
     try {
       setLoading(true);
-      const res = await api.get("/users/all");
+      const res = await api.post("/admin/delivery/all");
       const allUsers = res.data?.data || res.data?.users || [];
       const deliveryUsers = allUsers.filter(
         (user) => user?.role === "delivery"
